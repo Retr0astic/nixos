@@ -27,6 +27,7 @@
       libsecret
       openrgb
       ludusavi
+      gh
     ];
   };
 
