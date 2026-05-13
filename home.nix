@@ -28,6 +28,7 @@
       openrgb
       ludusavi
       gh
+      zoxide
     ];
   };
 
@@ -37,8 +38,12 @@
     shellAliases = {
       rebuild = "sudo nixos-rebuild switch --flake ~/nixos";
       update = "cd ~/nixos && nix flake update && sudo nixos-rebuild switch --flake .";
+      cd = "z";
     };
   };
+  programs.zoxide = {
+    enable = true;
+   };  
 
   programs.neovim = {
     enable = true;
@@ -61,7 +66,7 @@
   };
   programs.wezterm.enable = true;
   programs.ghostty.enable = true;
-
+  programs.fzf.enableBashIntegration = true;
   programs.noctalia-shell = {
     enable = true;
     settings = builtins.fromJSON (builtins.readFile ./noctalia/noctalia-settings.json);
