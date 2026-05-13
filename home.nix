@@ -76,6 +76,10 @@
     enable = true;
     enableBashIntegration = true;
   };
+  programs.starship = {
+    enable = true;
+    enableBashIntegration = true;
+  };
 
   dconf.settings = {
     "org/gnome/desktop/interface" = {
