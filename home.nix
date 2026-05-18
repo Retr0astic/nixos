@@ -215,7 +215,6 @@ wayland.windowManager.hyprland = {
     };
 
     dwindle = {
-      pseudotile = true;
       preserve_split = true;
     };
 
@@ -231,7 +230,7 @@ wayland.windowManager.hyprland = {
 
     render = {
       cm_enabled = true;
-      cm_fs_passthrough = 2;
+      render:cm_auto_hdr
       direct_scanout = true;
     };
 
@@ -257,7 +256,6 @@ wayland.windowManager.hyprland = {
       "$mainMod, V, togglefloating"
       "$mainMod, R, exec, $menu"
       "$mainMod, P, pseudo"
-      "$mainMod, J, togglesplit"
       "$mainMod, Z, exec, $ipc controlCenter toggle"
       "$mainMod, comma, exec, $ipc setting toggle"
 
