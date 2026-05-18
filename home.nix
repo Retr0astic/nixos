@@ -28,6 +28,7 @@
       openrgb
       ludusavi
       gh
+      bitwarden-desktop
       zoxide
     ];
   };
@@ -225,7 +226,6 @@ wayland.windowManager.hyprland = {
       force_default_wallpaper = -1;
       disable_hyprland_logo = false;
       vrr = 2;
-      vfr = 1;
     };
 
     render = {
