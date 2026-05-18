@@ -2,6 +2,7 @@
 
   imports = [
     inputs.noctalia.homeModules.default
+    inputs.silentSDDM.nixosModules.default
   ];
 
   home = {
@@ -80,7 +81,13 @@
   programs.starship = {
     enable = true;
     enableBashIntegration = true;
-  };
+  };i
+
+  programs.silentSDDM = {
+    enable = true;
+    theme = "defaul";
+    #settings = { ... }; see example in module
+    };
 
   dconf.settings = {
     "org/gnome/desktop/interface" = {
