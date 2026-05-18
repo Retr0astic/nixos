@@ -230,7 +230,7 @@ wayland.windowManager.hyprland = {
 
     render = {
       cm_enabled = true;
-      cm_auto_hdr;
+      cm_auto_hdr = true;
       direct_scanout = true;
     };
 
