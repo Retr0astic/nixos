@@ -81,7 +81,7 @@
   programs.starship = {
     enable = true;
     enableBashIntegration = true;
-  };i
+  }
 
   programs.silentSDDM = {
     enable = true;
