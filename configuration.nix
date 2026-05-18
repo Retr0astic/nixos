@@ -8,6 +8,7 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      inputs.silentSDDM.nixosModules.default
     ];
 
   # Use the systemd-boot EFI boot loader.
@@ -96,6 +97,12 @@
     extraCompatPackages = [
       pkgs.proton-ge-bin
     ];
+  };
+
+  programs.silentSDDM = {
+    enable = true;
+    theme = "rei";
+  # settings = { ... }; see example in module
   };
 
   programs.gamemode.enable = true;
