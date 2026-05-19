@@ -102,7 +102,9 @@
   programs.silentSDDM = {
     enable = true;
     theme = "default";
-  # settings = { ... }; see example in module
+    settings = { 
+	backgroundFillMode = "crop";
+    };
   };
 
   programs.gamemode.enable = true;
