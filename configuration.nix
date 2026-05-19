@@ -104,7 +104,7 @@
     theme = "default";
     settings = { 
 	"General" = {
-		background_fill_mode = "fit";
+		background_fill_mode = "crop";
 	};
     };
   };
