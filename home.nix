@@ -319,6 +319,11 @@ wayland.windowManager.hyprland = {
       ", XF86AudioPrev,  exec, playerctl previous"
     ];
   };
+  
+  # Window Rules
+      windowrulev2 = [
+        "immediate, class:^(cs2)$"
+      ];
 
 
   # layerrule block and source line can't be expressed as
