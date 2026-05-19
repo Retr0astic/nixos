@@ -127,9 +127,8 @@ vim
      libsecret
      pkgs.nwg-look
      hyprpolkitagent
-      adw-gtk3
-      adw-gtk3-dark
-      qt6ct
+     adw-gtk3
+     qt6ct
     ];
    environment.sessionVariables.NIXOS_OZONE_WL = "1";
    nixpkgs.config.allowUnfree = true; # To allow unfree packages
