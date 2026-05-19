@@ -318,13 +318,13 @@ wayland.windowManager.hyprland = {
       ", XF86AudioPlay,  exec, playerctl play-pause"
       ", XF86AudioPrev,  exec, playerctl previous"
     ];
-  };
-  
+
   # Window Rules
       windowrule = [
         "immediate, class:^(cs2)$"
       ];
 
+  };
 
   # layerrule block and source line can't be expressed as
   # structured settings so they go here as raw config
