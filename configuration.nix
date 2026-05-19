@@ -104,7 +104,7 @@
     theme = "default";
     settings = { 
 	"General" = {
-		"backgroundFillMode" = fit;
+		"backgroundfillmode" = fit;
 	};
     };
   };
