@@ -103,7 +103,9 @@
     enable = true;
     theme = "default";
     settings = { 
-	backgroundFillMode = "crop";
+	"General" = {
+		"backgroundFillMode" = fit;
+	};
     };
   };
 
