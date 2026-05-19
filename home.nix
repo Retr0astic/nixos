@@ -321,7 +321,7 @@ wayland.windowManager.hyprland = {
   };
   
   # Window Rules
-      windowrulev2 = [
+      windowrule = [
         "immediate, class:^(cs2)$"
       ];
 
