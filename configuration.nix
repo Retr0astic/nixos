@@ -74,11 +74,8 @@
      isNormalUser = true;
      description = "Sree";
      extraGroups = [ "wheel" "video" "input" "networkmanager"]; # Enable ‘sudo’ for the user.
-     shell = pkgs.bash;
-     packages = with pkgs; [
-       tree
-     ];
-     home = "/home/sree";
+shell = pkgs.bash;
+      home = "/home/sree";
   };
 
   programs.firefox.enable = true;
@@ -114,11 +111,9 @@
   # List packages installed in system profile.
   # You can use https://search.nixos.org/ to find more packages (and options).
     environment.systemPackages = with pkgs; [
-     vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-     wget
-     pkgs.kitty
-     pkgs.sbctl
-     wezterm
+vim
+      wget
+      pkgs.sbctl
      git
      glib
      gsettings-desktop-schemas
@@ -132,9 +127,10 @@
      libsecret
      pkgs.nwg-look
      hyprpolkitagent
-     adw-gtk3
-     kdePackages.qt6ct
-   ];
+      adw-gtk3
+      adw-gtk3-dark
+      qt6ct
+    ];
    environment.sessionVariables.NIXOS_OZONE_WL = "1";
    nixpkgs.config.allowUnfree = true; # To allow unfree packages
 

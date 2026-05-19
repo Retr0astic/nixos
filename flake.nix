@@ -31,8 +31,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
    };
 
-    millennium.url = "github:SteamClientHomebrew/Millennium?dir=packages/nix";
-
     lucidglyph = {
       url = "github:maximilionus/lucidglyph";
       flake = false;  # it's not a flake, just a repo

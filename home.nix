@@ -109,6 +109,7 @@
     WAYLAND_DISPLAY = "$WAYLAND_DISPLAY";
     XDG_CURRENT_DESKTOP = "Hyprland";
     XDG_SESSION_TYPE = "wayland";
+    QT_QPA_PLATFORMTHEME = "qt6ct";
   };
 xdg.userDirs = {
     enable = true;
