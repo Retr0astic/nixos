@@ -31,6 +31,9 @@
       gh
       bitwarden-desktop
       zoxide
+      cliphist
+      wlsunset
+      kdePackages.qtwebsockets
     ];
   };
 

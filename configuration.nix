@@ -111,24 +111,25 @@ shell = pkgs.bash;
   # List packages installed in system profile.
   # You can use https://search.nixos.org/ to find more packages (and options).
     environment.systemPackages = with pkgs; [
-vim
+      vim
       wget
       pkgs.sbctl
-     git
-     glib
-     gsettings-desktop-schemas
-     pkgs.opencode
-     pkgs.dconf
-     xdg-desktop-portal-hyprland
-     xdg-desktop-portal-gtk
-     ddcutil
-     pkgs.seahorse
-     gnome-keyring
-     libsecret
-     pkgs.nwg-look
-     hyprpolkitagent
-     adw-gtk3
-     qt6Packages.qt6ct
+      git
+      glib
+      gsettings-desktop-schemas
+      pkgs.opencode
+      pkgs.dconf
+      xdg-desktop-portal-hyprland
+      xdg-desktop-portal-gtk
+      ddcutil
+      pkgs.seahorse
+      gnome-keyring
+      libsecret
+      pkgs.nwg-look
+      hyprpolkitagent
+      adw-gtk3
+      qt6Packages.qt6ct
+      bluez
     ];
    environment.sessionVariables.NIXOS_OZONE_WL = "1";
    nixpkgs.config.allowUnfree = true; # To allow unfree packages
