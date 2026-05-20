@@ -22,9 +22,6 @@
        allowDiscards = true;
     };
 };
-  # Use latest kernel.
-   boot.kernelPackages = pkgs.linuxPackages_latest;
-
    networking.hostName = "chapel"; # Define your hostname.
 
   # Configure network connections interactively with nmcli or nmtui.
@@ -74,8 +71,8 @@
      isNormalUser = true;
      description = "Sree";
      extraGroups = [ "wheel" "video" "input" "networkmanager"]; # Enable ‘sudo’ for the user.
-shell = pkgs.bash;
-      home = "/home/sree";
+     shell = pkgs.bash;
+        home = "/home/sree";
   };
 
   programs.firefox.enable = true;
@@ -147,6 +144,7 @@ shell = pkgs.bash;
 	         open = false;
 	   };
      hardware.bluetooth.enable = true;
+     hardware.enableRedistributableFirmware = true;
   # XDG Portal
 
   xdg.portal = {
