@@ -135,6 +135,7 @@
         "$mainMod, P, pseudo"
         "$mainMod, Z, exec, $ipc controlCenter toggle"
         "$mainMod, comma, exec, $ipc setting toggle"
+	"$mainMod SHIFT, c, exec, $ipc launcher clipboard"
 
         "$mainMod, left,  movefocus, l"
         "$mainMod, right, movefocus, r"
