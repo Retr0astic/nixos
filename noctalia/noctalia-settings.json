@@ -390,9 +390,6 @@
           "id": "Notifications"
         },
         {
-          "id": "PowerProfile"
-        },
-        {
           "id": "KeepAwake"
         },
         {
@@ -616,12 +613,6 @@
     "preferredPlayer": "",
     "volumeFeedback": false,
     "volumeFeedbackSoundFile": ""
-  },
-  "brightness": {
-    "brightnessStep": 5,
-    "enforceMinimum": true,
-    "enableDdcSupport": false,
-    "backlightDeviceMappings": []
   },
   "colorSchemes": {
     "useWallpaperColors": true,
