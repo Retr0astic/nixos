@@ -193,6 +193,16 @@
     subpixel.rgba = "none";
     };
 
+    fonts.packages = with pkgs; [
+ 	 inter
+ 	 geist-font
+ 	 jetbrains-mono
+ 	 iosevka
+ 	 noto-fonts
+ 	 noto-fonts-color-emoji
+	 nerd-fonts.jetbrains-mono
+    ];
+
 
   # List services that you want to enable:
     services.power-profiles-daemon.enable = true;

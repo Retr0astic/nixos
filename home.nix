@@ -65,6 +65,10 @@
 	    background_opacity = "0.5";
 	    background_blur = 5;
     };
+    font = {
+    	name = "JetBrainsMono Nerd Font";
+    	size = 11;
+    };
     extraConfig = ''
       include ~/.config/kitty/themes/noctalia.conf
     '';
@@ -86,7 +90,20 @@
     enableBashIntegration = true;
   };
 
- # Misc
+ # Themeing
+
+ qt = {
+  enable = true;
+  platformTheme.name = "gtk";  # makes Qt follow GTK font
+};
+
+gtk = {
+  enable = true;
+  font = {
+    name = "Inter";
+    size = 11;
+  };
+};
 
   dconf.settings = {
     "org/gnome/desktop/interface" = {
@@ -101,7 +118,7 @@
     WAYLAND_DISPLAY = "$WAYLAND_DISPLAY";
     XDG_CURRENT_DESKTOP = "Hyprland";
     XDG_SESSION_TYPE = "wayland";
-    QT_QPA_PLATFORMTHEME = "qt6ct";
+#    QT_QPA_PLATFORMTHEME = "qt6ct";
   };
 xdg.userDirs = {
     enable = true;
