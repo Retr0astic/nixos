@@ -183,6 +183,17 @@
   #   enableSSHSupport = true;
   # };
 
+  # Font
+    fonts.fontconfig = {
+      enable = true;
+      hinting = {
+        enable = true;
+        style = "slight";
+     };
+    subpixel.rgba = "none";
+    };
+
+
   # List services that you want to enable:
     services.power-profiles-daemon.enable = true;
     services.upower.enable = true;

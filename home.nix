@@ -86,20 +86,6 @@
     enableBashIntegration = true;
   };
 
- # Font
-
-   fonts.fontconfig = {
-     enable = true;
-     hinting = {
-       enable = true;
-       style = "slight";
-     };
-     subpixel = {
-       rgba = "none";      # grayscale, same as lucidglyph
-       lcdfilter = "none";
-     };
-   };
-
  # Misc
 
   dconf.settings = {
