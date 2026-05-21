@@ -128,7 +128,11 @@
       qt6Packages.qt6ct
       bluez
     ];
-   environment.sessionVariables.NIXOS_OZONE_WL = "1";
+   environment.sessionVariables = {
+	NIXOS_OZONE_WL = "1";
+	FREETYPE_PROPERTIES = "autofitter:darkening-parameters=500,300,1000,200 autofitter:no-stem-darkening=0";
+   };
+
    nixpkgs.config.allowUnfree = true; # To allow unfree packages
 
   #Hardware
@@ -144,7 +148,7 @@
 	         open = false;
 	   };
      hardware.bluetooth.enable = true;
-     hardware.enableRedistributableFirmware = true;
+
   # XDG Portal
 
   xdg.portal = {
