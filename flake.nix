@@ -9,7 +9,7 @@
   };
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs/549bd84d6279f9852cae6225e372cc67fb91a4c1";
 
     home-manager = {
       url = "github:nix-community/home-manager";
@@ -30,12 +30,6 @@
       url = "github:uiriansan/SilentSDDM";
       inputs.nixpkgs.follows = "nixpkgs";
    };
-
-    lucidglyph = {
-      url = "github:maximilionus/lucidglyph";
-      flake = false;  # it's not a flake, just a repo
-    };
-
 
   };
     outputs = inputs@{ self, nixpkgs, home-manager, zenBrowser, ... }: {

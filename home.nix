@@ -96,18 +96,6 @@
     };
   };
 
-  xdg.configFile = let
-    src = "${inputs.lucidglyph}/src/modules";
- 	 in {
-	    "fontconfig/conf.d/11-lucidglyph-grayscale.conf".source = 
-	      "${src}/fontconfig/11-lucidglyph-grayscale.conf";
-	    "fontconfig/conf.d/12-lucidglyph-hinting.conf".source = 
-	      "${src}/fontconfig/12-lucidglyph-hinting.conf";
-	    "fontconfig/conf.d/13-lucidglyph-embolden.conf".source = 
-	      "${src}/fontconfig/13-lucidglyph-embolden.conf";
-	    "environment.d/lucidglyph.conf".source = 
-	      "${src}/environment/lucidglyph-freetype-properties.conf";
-            };
   systemd.user.sessionVariables = {
     WAYLAND_DISPLAY = "$WAYLAND_DISPLAY";
     XDG_CURRENT_DESKTOP = "Hyprland";
