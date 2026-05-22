@@ -205,8 +205,14 @@
 	 nerd-fonts.jetbrains-mono
     ];
 
-    virtualisation.libvirtd.enable = true;
-
+    virtualisation.libvirtd = {
+	enable = true;
+	qemu = {
+	#    package = pkgs.qemu_kvm;   # leaner KVM-only build
+	#    runAsRoot = true;
+	    swtpm.enable = true;       # TPM emulation (needed for Win11)
+	};
+    };
   # List services that you want to enable:
     services.power-profiles-daemon.enable = true;
     services.upower.enable = true;
