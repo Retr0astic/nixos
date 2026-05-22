@@ -70,10 +70,12 @@
   users.users.sree = {
      isNormalUser = true;
      description = "Sree";
-     extraGroups = [ "wheel" "video" "input" "networkmanager"]; # Enable ‘sudo’ for the user.
+     extraGroups = [ "wheel" "video" "input" "networkmanager" "libvirtd"]; # Enable ‘sudo’ for the user.
      shell = pkgs.bash;
         home = "/home/sree";
   };
+
+  programs.virt-manager.enable = true;
 
   programs.firefox.enable = true;
   programs.hyprland = {
@@ -203,6 +205,7 @@
 	 nerd-fonts.jetbrains-mono
     ];
 
+    virtualisation.libvirtd.enable = true;
 
   # List services that you want to enable:
     services.power-profiles-daemon.enable = true;
