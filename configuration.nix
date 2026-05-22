@@ -126,7 +126,7 @@
       hyprpolkitagent
       adw-gtk3
       qt6Packages.qt6ct
-      bluez
+      openrgb-with-all-plugins
     ];
    environment.sessionVariables = {
 	NIXOS_OZONE_WL = "1";
@@ -210,7 +210,7 @@
     services.dbus.packages = [ pkgs.gsettings-desktop-schemas ];
     services.displayManager.defaultSession = "hyprland";
     services.gnome.gnome-keyring.enable = true;
-    services.udev.packages = [ pkgs.openrgb ];
+    services.hardware.openrgb.enable = true;
   # Security
     security.pam.services.sddm.enableGnomeKeyring = true;
   # Enable the OpenSSH daemon.
