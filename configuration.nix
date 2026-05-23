@@ -144,6 +144,8 @@
 	    hardware.graphics = {
 		enable = true;
 		enable32Bit = true;
+		extraPackages = with pkgs; [ mesa ];
+	  	};
 	    };
 	    services.xserver.videoDrivers = ["nvidia"];
 	   hardware.nvidia = {
@@ -151,10 +153,6 @@
         	 powerManagement.enable = true;
 	         open = false;
 	   };
-	hardware.opengl = {
-	  enable = true;
-	  extraPackages = with pkgs; [ mesa ];
-	};
      hardware.bluetooth.enable = true;
 
   # XDG Portal
