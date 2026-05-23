@@ -15,7 +15,7 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.kernelModules = [ "i2c-dev" "vfio_pci" "vfio" "vfio_iommu_type1"];
-  boot.kernelParams = [ "amd_iommu=on" "iommu=pt" ];i
+  boot.kernelParams = [ "amd_iommu=on" "iommu=pt" ];
   boot.initrd.kernelModules = [ "vfio_pci" "vfio" "vfio_iommu_type1" ];
   boot.initrd.luks.devices = {
     luksroot = {
