@@ -212,7 +212,7 @@
 	enable = true;
 	qemu = {
 	#    package = pkgs.qemu_kvm;   # leaner KVM-only build
-	    runAsRoot = true;
+#	    runAsRoot = true;
 	    swtpm.enable = true;       # TPM emulation (needed for Win11)
 	};
     };
