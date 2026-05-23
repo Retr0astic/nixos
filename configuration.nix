@@ -14,7 +14,9 @@
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  boot.kernelModules = [ "i2c-dev" ];
+  boot.kernelModules = [ "i2c-dev" "vfio_pci" "vfio" "vfio_iommu_type1"];
+  boot.kernelParams = [ "amd_iommu=on" "iommu=pt" ];i
+  boot.initrd.kernelModules = [ "vfio_pci" "vfio" "vfio_iommu_type1" ];
   boot.initrd.luks.devices = {
     luksroot = {
        device = "/dev/disk/by-uuid/85719e7e-dcea-4a0a-afe1-d0c796b0e59d";
@@ -70,7 +72,7 @@
   users.users.sree = {
      isNormalUser = true;
      description = "Sree";
-     extraGroups = [ "wheel" "video" "input" "networkmanager" "libvirtd"]; # Enable ‘sudo’ for the user.
+     extraGroups = [ "wheel" "video" "input" "networkmanager" "libvirtd" "render"]; # Enable ‘sudo’ for the user.
      shell = pkgs.bash;
         home = "/home/sree";
   };
@@ -209,7 +211,7 @@
 	enable = true;
 	qemu = {
 	#    package = pkgs.qemu_kvm;   # leaner KVM-only build
-	#    runAsRoot = true;
+	    runAsRoot = true;
 	    swtpm.enable = true;       # TPM emulation (needed for Win11)
 	};
     };
