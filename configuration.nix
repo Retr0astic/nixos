@@ -140,14 +140,13 @@
    nixpkgs.config.allowUnfree = true; # To allow unfree packages
 
   #Hardware
+    hardware.graphics = {
+	enable = true;
+	enable32Bit = true;
+	extraPackages = with pkgs; [ mesa ];
+	};
 	# Nvidia
-	    hardware.graphics = {
-		enable = true;
-		enable32Bit = true;
-		extraPackages = with pkgs; [ mesa ];
-	  	};
-	    };
-	    services.xserver.videoDrivers = ["nvidia"];
+	   services.xserver.videoDrivers = ["nvidia"];
 	   hardware.nvidia = {
 	         modesetting.enable = true;
         	 powerManagement.enable = true;
