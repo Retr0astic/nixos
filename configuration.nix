@@ -131,6 +131,7 @@
       adw-gtk3
       qt6Packages.qt6ct
       openrgb-with-all-plugins
+      qemu
     ];
    environment.sessionVariables = {
 	NIXOS_OZONE_WL = "1";
