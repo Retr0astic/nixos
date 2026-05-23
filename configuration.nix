@@ -151,6 +151,11 @@
         	 powerManagement.enable = true;
 	         open = false;
 	   };
+	hardware.opengl = {
+	  enable = true;
+	  driSupport = true;
+	  extraPackages = with pkgs; [ mesa ];
+	};
      hardware.bluetooth.enable = true;
 
   # XDG Portal
