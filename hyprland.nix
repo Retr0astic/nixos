@@ -15,6 +15,7 @@
 	 "DP-5, highresxmaxwidth@highrr, 0x0, 1, bitdepth, 10, cm, auto"
 	"HDMI-A-1, disable"
       ];
+
       exec-once = [ 
         "noctalia-shell"
       ];
