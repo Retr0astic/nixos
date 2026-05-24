@@ -1,5 +1,5 @@
 {
-  description = "Sree's NixOS config";
+  description = "NixOS configuration with Noctalia";
 
   nixConfig = {
     extra-substituters = [ "https://noctalia.cachix.org" ];
@@ -38,6 +38,7 @@
       specialArgs = { inherit inputs; };
       modules = [
         ./configuration.nix
+	./noctalia.nix
 
         home-manager.nixosModules.home-manager
         {

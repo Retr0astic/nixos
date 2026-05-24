@@ -10,11 +10,9 @@
       "$terminal" = "kitty";
       "$fileManager" = "dolphin";
       "$menu" = "$ipc launcher toggle";
-
-      monitor = [
-	 "DP-5, highresxmaxwidth@highrr, 0x0, 1, bitdepth, 10, cm, auto"
-	"HDMI-A-1, disable"
-      ];
+    monitor = [
+     "DP-5, highresxmaxwidth@highrr, 0x0, 1, bitdepth, 10, cm, auto, sdrsaturation, 0.50, sdrbrightness, 0.20"
+    ];
 
       exec-once = [ 
         "noctalia-shell"
@@ -205,17 +203,6 @@
       ];
 
     };
-
-    extraConfig = ''
-      layerrule {
-        name = noctalia
-        match:namespace = noctalia-background-.*$
-        ignore_alpha = 0.5
-        blur = true
-        blur_popups = true
-      }
-
-      source = /home/sree/.config/hypr/noctalia/noctalia-colors.conf
-    '';
   };
+
 }

@@ -1,7 +1,6 @@
 { config, pkgs, inputs, system, ... }: {
 
   imports = [
-    inputs.noctalia.homeModules.default
     ./hyprland.nix
   ];
 
@@ -69,17 +68,11 @@
     	name = "JetBrainsMono Nerd Font";
     	size = 11;
     };
-    extraConfig = ''
-      include ~/.config/kitty/themes/noctalia.conf
-    '';
   };
+
   programs.wezterm.enable = true;
   programs.ghostty.enable = true;
   programs.fzf.enableBashIntegration = true;
-  programs.noctalia-shell = {
-    enable = true;
-    settings = builtins.fromJSON (builtins.readFile ./noctalia/noctalia-settings.json);
-  };
 
   programs.yazi = {
     enable = true;
