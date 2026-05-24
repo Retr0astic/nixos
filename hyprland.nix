@@ -11,18 +11,11 @@
       "$fileManager" = "dolphin";
       "$menu" = "$ipc launcher toggle";
 
-<<<<<<< HEAD
       monitor = [
 	 "DP-5, highresxmaxwidth@highrr, 0x0, 1, bitdepth, 10, cm, auto"
 	"HDMI-A-1, disable"
       ];
 
-=======
-    monitor = [
-      "DP-5, highresxmaxwidth@highrr, 0x0, 1, bitdepth, 10, cm, auto"
-      "HDMI-A-1, mirror, DP-5"
-    ];
->>>>>>> 368616b (fixed mirror)
       exec-once = [ 
         "noctalia-shell"
       ];
