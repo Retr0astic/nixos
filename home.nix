@@ -14,7 +14,6 @@
       kitty
       wezterm
       ghostty
-      inputs.zenBrowser.packages."${system}".default
       hyprshot
       vesktop
       jq

@@ -39,7 +39,7 @@
       modules = [
         ./configuration.nix
 	./noctalia/noctalia.nix
-
+	./zen.nix
         home-manager.nixosModules.home-manager
         {
           home-manager.useGlobalPkgs = true;
