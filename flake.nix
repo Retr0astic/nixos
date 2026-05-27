@@ -11,6 +11,11 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/549bd84d6279f9852cae6225e372cc67fb91a4c1";
 
+    flake-parts.url = "github:hercules-ci/flake-parts";
+    import-tree.url = "github:vic/import-tree";
+
+    wrapper-modules.url = "github:BirdeeHub/nix-wrapper-modules";
+
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -32,15 +37,10 @@
    };
 
   };
-    outputs = inputs@{ self, nixpkgs, home-manager, zenBrowser, ... }: {
-    nixosConfigurations.chapel = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
-      specialArgs = { inherit inputs; };
-      modules = [
-        ./configuration.nix
-	./noctalia/noctalia.nix
-	./zen.nix
-        home-manager.nixosModules.home-manager
+    outputs = inputs@{ self, nixpkgs, home-manager, flake-parts.lib.mkFlake, ... }: {
+      { inherit inputs; }
+      (inputs.import-tree ./modules);
+      home-manager.nixosModules.home-manager
         {
           home-manager.useGlobalPkgs = true;
 	  home-manager.backupFileExtension = "backup";
