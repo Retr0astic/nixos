@@ -3,7 +3,9 @@
 {
   wayland.windowManager.hyprland = {
     enable = true;
-    systemd.enable = true;
+    package = null;
+    portalPackage = null;
+    systemd.enable = false;
     settings = {
       "$ipc" = "noctalia-shell ipc call";
       "$mainMod" = "SUPER";
@@ -11,7 +13,7 @@
       "$fileManager" = "dolphin";
       "$menu" = "$ipc launcher toggle";
     monitor = [
-     "DP-5, highresxmaxwidth@highrr, 0x0, 1, bitdepth, 10, cm, auto, sdrsaturation, 0.50, sdrbrightness, 0.20"
+     "DP-5, highresxmaxwidth@highrr,0x0, 1, bitdepth, 10, sdrsaturation, 0.50, sdrbrightness, 0.80"
     ];
 
       exec-once = [ 
@@ -36,8 +38,6 @@
         gaps_in = 5;
         gaps_out = 10;
         border_size = 2;
-        "col.active_border" = "rgba(33ccffee) rgba(00ff99ee) 45deg";
-        "col.inactive_border" = "rgba(595959aa)";
         resize_on_border = false;
         allow_tearing = true;
         layout = "dwindle";
@@ -201,7 +201,15 @@
       windowrule = [
         "match:class = cs2,immediate = yes"
       ];
+      cursor = [ "no_hardware_cursors = false"];
 
+layerrule = {
+    name = "noctalia";
+    "match:namespace" = "noctalia-background-.*$";
+    ignore_alpha = 0.2;
+    blur = true;
+    blur_popups = true;
+  };
     };
   };
 

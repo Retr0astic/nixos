@@ -49,7 +49,9 @@
 		inherit inputs;
 		system = "x86_64-linux"; 
 	 };
-          home-manager.users.sree = import ./home.nix;
+          home-manager.users.sree ={ 
+		imports = [./home.nix];
+	  };
 #        nixpkgs.overlays = [ inputs.millennium.overlays.default ];
         }
       ];

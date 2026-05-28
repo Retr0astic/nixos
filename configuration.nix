@@ -12,11 +12,9 @@
     ];
 
   # Use the systemd-boot EFI boot loader.
+  boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  boot.kernelModules = [ "i2c-dev" "vfio_pci" "vfio" "vfio_iommu_type1"];
-  boot.kernelParams = [ "amd_iommu=on" "iommu=pt" ];
-  boot.initrd.kernelModules = [ "vfio_pci" "vfio" "vfio_iommu_type1" ];
   boot.initrd.luks.devices = {
     luksroot = {
        device = "/dev/disk/by-uuid/85719e7e-dcea-4a0a-afe1-d0c796b0e59d";
@@ -82,6 +80,7 @@
   programs.firefox.enable = true;
   programs.hyprland = {
     enable = true;
+    withUWSM = true;
     xwayland.enable = true;
   };
 
@@ -96,6 +95,10 @@
       pkgs.proton-ge-bin
     ];
   };
+  programs.gamescope.enable = true;
+  programs.gamemode.enable = true;
+
+
 
   programs.silentSDDM = {
     enable = true;
@@ -107,7 +110,6 @@
     };
   };
 
-  programs.gamemode.enable = true;
 
   # List packages installed in system profile.
   # You can use https://search.nixos.org/ to find more packages (and options).
@@ -133,6 +135,12 @@
       openrgb-with-all-plugins
       qemu
       quickemu
+      (heroic.override {
+      extraPkgs = pkgs: with pkgs; [
+        gamescope
+        gamemode
+      ];
+    })
     ];
    environment.sessionVariables = {
 	NIXOS_OZONE_WL = "1";
@@ -152,6 +160,7 @@
 	   hardware.nvidia = {
 	         modesetting.enable = true;
         	 powerManagement.enable = true;
+                 nvidiaPersistenced = true;
 	         open = false;
 	   };
      hardware.bluetooth.enable = true;

@@ -1,4 +1,4 @@
-{ pkgs, inputs, ... }:
+{ pkgs, inputs,lib, ... }:
 {
 
   # install package
@@ -19,4 +19,15 @@
       settings = (builtins.fromJSON(builtins.readFile ./noctalia.json)).settings;
       };
     };
+
+  home-manager.users.sree = {
+    programs.kitty = {
+      extraConfig = lib.mkMerge [
+        ''
+          include themes/noctalia.conf
+        ''
+      ];
+    };
+  };
+
 }

@@ -17,14 +17,10 @@
       hyprshot
       vesktop
       jq
-      heroic        # Epic/GOG launcher
-      gamemode
       gamescope-wsi
       gamescope     # Valve's micro compositor, great for HDR/VRR per-game
       mangohud 
-      goofcord
       libsecret
-      openrgb
       ludusavi
       gh
       bitwarden-desktop
@@ -89,22 +85,35 @@
   platformTheme.name = "gtk";  # makes Qt follow GTK font
 };
 
-gtk = {
-  enable = true;
-  font = {
-    name = "Inter";
-    size = 11;
-  };
-};
 
-  dconf.settings = {
-    "org/gnome/desktop/interface" = {
-      color-scheme = "default";  # Noctalia will toggle this to prefer-dark/prefer-light
-      gtk-theme = "adw-gtk3";
-      cursor-theme = "Adwaita";
-      cursor-size = 24;
+  home.pointerCursor = {
+    gtk.enable = true;
+    x11.enable = true;
+    package = pkgs.bibata-cursors;
+    name = "Bibata-Modern-Classic";
+    size = 16;
     };
-  };
+
+	gtk = {
+	  enable = true;
+	  font = {
+	    name = "Inter";
+	    size = 11;
+	  };
+	  cursorTheme = {
+	    name = "Bibata-Modern-Classic";
+	    package = pkgs.bibata-cursors;
+	  };
+	# Note the different syntax for gtk3 and gtk4
+	  gtk3.extraConfig = {
+	    "gtk-cursor-theme-name" = "Bibata-Modern-Classic";
+	  };
+	  gtk4.extraConfig = {
+	    Settings = ''
+	    gtk-cursor-theme-name=Bibata-Modern-Classic
+	    '';
+	  };
+	};
 
   systemd.user.sessionVariables = {
     WAYLAND_DISPLAY = "$WAYLAND_DISPLAY";

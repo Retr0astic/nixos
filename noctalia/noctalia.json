@@ -5,11 +5,11 @@
       "barType": "floating",
       "position": "top",
       "monitors": [],
-      "density": "default",
+      "density": "spacious",
       "showOutline": false,
       "showCapsule": true,
       "capsuleOpacity": 0.25,
-      "capsuleColorKey": "primary",
+      "capsuleColorKey": "secondary",
       "widgetSpacing": 6,
       "contentPadding": 2,
       "fontScale": 1,
@@ -216,7 +216,7 @@
     },
     "general": {
       "avatarImage": "/home/sree/.face",
-      "dimmerOpacity": 0.2,
+      "dimmerOpacity": 0.5,
       "showScreenCorners": false,
       "forceBlackScreenCorners": false,
       "scaleRatio": 1,
@@ -285,8 +285,8 @@
       "fontFixedScale": 1,
       "tooltipsEnabled": true,
       "scrollbarAlwaysVisible": true,
-      "boxBorderEnabled": true,
-      "panelBackgroundOpacity": 0.85,
+      "boxBorderEnabled": false,
+      "panelBackgroundOpacity": 0.76,
       "translucentWidgets": false,
       "panelsAttachedToBar": true,
       "settingsPanelMode": "attached",
@@ -666,7 +666,60 @@
       "syncGsettings": true
     },
     "templates": {
-      "activeTemplates": [],
+      "activeTemplates": [
+        {
+          "enabled": true,
+          "id": "hyprland"
+        },
+        {
+          "enabled": true,
+          "id": "btop"
+        },
+        {
+          "enabled": true,
+          "id": "discord"
+        },
+        {
+          "enabled": true,
+          "id": "gtk"
+        },
+        {
+          "enabled": true,
+          "id": "spicetify"
+        },
+        {
+          "enabled": true,
+          "id": "telegram"
+        },
+        {
+          "enabled": true,
+          "id": "zenBrowser"
+        },
+        {
+          "enabled": true,
+          "id": "starship"
+        },
+        {
+          "enabled": true,
+          "id": "yazi"
+        },
+        {
+          "enabled": true,
+          "id": "kitty"
+        },
+        {
+          "enabled": true,
+          "id": "qt"
+        },
+        {
+          "enabled": true,
+          "id": "steam"
+        },
+        {
+          "enabled": true,
+          "id": "hyprtoolkit"
+        }
+      ],
       "enableUserTheming": false
     },
     "nightLight": {
@@ -723,8 +776,8 @@
     "openedPanel": "",
     "lockScreenActive": false,
     "wallpapers": {
-      "DP-5": "/home/sree/Pictures/Wallpapers/Fantasy Art.png",
-      "HDMI-A-1": "/home/sree/Pictures/Wallpapers/Fantasy Art.png"
+      "DP-5": "/home/sree/Pictures/Wallpapers/At the Island by Hangmoon.png",
+      "HDMI-A-1": "/home/sree/Pictures/Wallpapers/At the Island by Hangmoon.png"
     },
     "desktopWidgetsEditMode": false,
     "display": {
@@ -754,7 +807,7 @@
       }
     },
     "notificationsState": {
-      "lastSeenTs": 1779782836000
+      "lastSeenTs": 1779892192000
     },
     "changelogState": {
       "lastSeenVersion": "v4.7.6"
