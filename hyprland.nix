@@ -13,7 +13,7 @@
       "$fileManager" = "dolphin";
       "$menu" = "$ipc launcher toggle";
     monitor = [
-     "DP-5, highresxmaxwidth@highrr,0x0, 1, bitdepth, 10, sdrsaturation, 0.50, sdrbrightness, 0.80"
+     "DP-5, highresxmaxwidth@highrr,0x0, 1, cm, auto, bitdepth, 10, sdrsaturation, 1, sdrbrightness, 1.0"
     ];
 
       exec-once = [ 
