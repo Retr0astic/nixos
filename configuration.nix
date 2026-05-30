@@ -143,7 +143,12 @@
       ];
     })
     ];
-   environment.sessionVariables = {
+
+nixpkgs.config.permittedInsecurePackages = [
+  "electron-39.8.10"
+];
+
+  environment.sessionVariables = {
 	NIXOS_OZONE_WL = "1";
 	FREETYPE_PROPERTIES = "autofitter:darkening-parameters=500,300,1000,200 autofitter:no-stem-darkening=0";
    };
@@ -154,8 +159,7 @@
     hardware.graphics = {
 	enable = true;
 	enable32Bit = true;
-	extraPackages = with pkgs; [ mesa ];
-	};
+    };
 	# Nvidia
 	   services.xserver.videoDrivers = ["nvidia"];
 	   hardware.nvidia = {
@@ -230,11 +234,20 @@
     };
   # List services that you want to enable:
     services.power-profiles-daemon.enable = true;
-    services.upower.enable = true;
     services.dbus.packages = [ pkgs.gsettings-desktop-schemas ];
     services.displayManager.defaultSession = "hyprland";
     services.gnome.gnome-keyring.enable = true;
     services.hardware.openrgb.enable = true;
+
+  # Systemd Services
+  systemd.services.nvidia-power-limit = {
+    description = "Set NVIDIA GPU Power Limit";
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "/run/current-system/sw/bin/nvidia-smi -pl 314";
+    };
+  };
   # Security
     security.pam.services.sddm.enableGnomeKeyring = true;
   # Enable the OpenSSH daemon.
