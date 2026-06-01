@@ -201,7 +201,7 @@
       windowrule = [
         "match:class = cs2,immediate = yes"
       ];
-      cursor = [ "no_hardware_cursors = false"];
+      cursor = [ "no_hardware_cursors = 2"];
 
 layerrule = {
     name = "noctalia";

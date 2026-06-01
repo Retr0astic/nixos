@@ -151,7 +151,8 @@ nixpkgs.config.permittedInsecurePackages = [
   environment.sessionVariables = {
 	NIXOS_OZONE_WL = "1";
 	FREETYPE_PROPERTIES = "autofitter:darkening-parameters=500,300,1000,200 autofitter:no-stem-darkening=0";
-   };
+	SDL_VIDEODRIVER = "wayland";
+  };
 
    nixpkgs.config.allowUnfree = true; # To allow unfree packages
 
