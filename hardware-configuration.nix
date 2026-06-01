@@ -31,8 +31,14 @@
       options = [ "subvol=home" ];
     };
 
+  fileSystems."/efi" = {
+    device = "/dev/disk/by-uuid/1E2F-B544";   # your existing ESP UUID
+    fsType = "vfat";
+    options = [ "fmask=0022" "dmask=0022" ];
+  };
+
   fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/1E2F-B544";
+    { device = "/dev/disk/by-uuid/97A6-F58D";
       fsType = "vfat";
       options = [ "fmask=0022" "dmask=0022" ];
     };

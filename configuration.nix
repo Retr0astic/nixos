@@ -16,6 +16,8 @@
   boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+  boot.loader.efi.efiSysMountPoint = "/efi";
+  boot.loader.systemd-boot.xbootldrMountPoint = "/boot";
   boot.initrd.luks.devices = {
     luksroot = {
        device = "/dev/disk/by-uuid/85719e7e-dcea-4a0a-afe1-d0c796b0e59d";
@@ -30,6 +32,25 @@
 
   # Set your time zone.
    time.timeZone = "Asia/Dubai";
+
+  fileSystems."/efi" = {
+    device = "/dev/disk/by-uuid/1E2F-B544";   # your existing ESP UUID
+    fsType = "vfat";
+    options = [ "fmask=0022" "dmask=0022" ];
+  };
+
+  fileSystems."/boot" =
+    { device = "/dev/disk/by-uuid/97A6-F58D";
+      fsType = "vfat";
+      options = [ "fmask=0022" "dmask=0022" ];
+    };
+
+  fileSystems."/mnt/bigdrive" =
+    { device = "/dev/disk/by-uuid/C26251F26251EBA3";
+      fsType = "ntfs3";
+      options = [ "rw" "uid=1000" "nofail" ];
+    };
+
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
