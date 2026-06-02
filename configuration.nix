@@ -18,13 +18,17 @@
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.efi.efiSysMountPoint = "/efi";
   boot.loader.systemd-boot.xbootldrMountPoint = "/boot";
+  boot.initrd.kernelModules = ["usb_storage" "uas" "ext4"];
   boot.initrd.luks.devices = {
     luksroot = {
        device = "/dev/disk/by-uuid/85719e7e-dcea-4a0a-afe1-d0c796b0e59d";
        preLVM = true;
        allowDiscards = true;
+       keyFile = "/lukskey.bin:/dev/disk/by-uuid/b233771c-80b9-4288-ad93-1716d277b5a7";
+       crypttabExtraOpts = [ "keyfile-timeout=5s" ];
     };
-};
+  };
+
    networking.hostName = "chapel"; # Define your hostname.
 
   # Configure network connections interactively with nmcli or nmtui.
