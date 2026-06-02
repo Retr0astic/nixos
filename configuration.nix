@@ -161,6 +161,7 @@
       openrgb-with-all-plugins
       qemu
       quickemu
+      inputs.self.packages.${pkgs.system}.nvf
       (heroic.override {
       extraPkgs = pkgs: with pkgs; [
         gamescope

@@ -44,14 +44,6 @@
     enable = true;
    };  
 
-  programs.neovim = {
-    enable = true;
-    defaultEditor = true;
-    plugins = with pkgs.vimPlugins; [
-      gruvbox-material
-      nerdtree
-    ];
-  };
   programs.kitty = {
     enable = true;
     settings = {

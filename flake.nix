@@ -28,10 +28,17 @@
     silentSDDM = {
       url = "github:uiriansan/SilentSDDM";
       inputs.nixpkgs.follows = "nixpkgs";
-   };
+    };
+    nvf.url = "github:notashelf/nvf";  
 
   };
-    outputs = inputs@{ self, nixpkgs, home-manager, zenBrowser, ... }: {
+    outputs = inputs@{ self, nixpkgs, home-manager, zenBrowser, nvf, ... }: {
+    packages."x86_64-linux".nvf = 
+    	(nvf.lib.neovimConfiguration {
+		pkgs = nixpkgs.legacyPackages."x86_64-linux";
+		modules = [ ./nvf.nix ];
+	}).neovim;
+
     nixosConfigurations.chapel = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       specialArgs = { inherit inputs; };
