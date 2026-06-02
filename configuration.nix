@@ -101,6 +101,7 @@
         home = "/home/sree";
   };
 
+  programs.coolercontrol.enable = true;
   programs.virt-manager.enable = true;
 
   programs.firefox.enable = true;

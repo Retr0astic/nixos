@@ -2,8 +2,12 @@
   description = "NixOS configuration with Noctalia";
 
   nixConfig = {
-    extra-substituters = [ "https://noctalia.cachix.org" ];
+    extra-substituters = [
+      "https://nvf.cachix.org"
+      "https://noctalia.cachix.org"
+    ];
     extra-trusted-public-keys = [
+      "nvf.cachix.org-1:dSDpAzmzDzAlG7yL9T7nL+iX070q4LzY21CycL7/aOk="
       "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
     ];
   };
@@ -19,48 +23,57 @@
       url = "github:noctalia-dev/noctalia-shell/v4.7.6";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-   
+
     zenBrowser = {
       url = "github:youwen5/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    
+
     silentSDDM = {
       url = "github:uiriansan/SilentSDDM";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nvf.url = "github:notashelf/nvf";  
+    nvf.url = "github:notashelf/nvf";
 
   };
-    outputs = inputs@{ self, nixpkgs, home-manager, zenBrowser, nvf, ... }: {
-    packages."x86_64-linux".nvf = 
-    	(nvf.lib.neovimConfiguration {
-		pkgs = nixpkgs.legacyPackages."x86_64-linux";
-		modules = [ ./nvf.nix ];
-	}).neovim;
+  outputs =
+    inputs@{
+      self,
+      nixpkgs,
+      home-manager,
+      zenBrowser,
+      nvf,
+      ...
+    }:
+    {
+      packages."x86_64-linux".nvf =
+        (nvf.lib.neovimConfiguration {
+          pkgs = nixpkgs.legacyPackages."x86_64-linux";
+          modules = [ ./nvf.nix ];
+        }).neovim;
 
-    nixosConfigurations.chapel = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
-      specialArgs = { inherit inputs; };
-      modules = [
-        ./configuration.nix
-	./noctalia/noctalia.nix
-	./zen.nix
-        home-manager.nixosModules.home-manager
-        {
-          home-manager.useGlobalPkgs = true;
-	  home-manager.backupFileExtension = "backup";
-          home-manager.useUserPackages = true;
-          home-manager.extraSpecialArgs = { 
-		inherit inputs;
-		system = "x86_64-linux"; 
-	 };
-          home-manager.users.sree ={ 
-		imports = [./home.nix];
-	  };
-#        nixpkgs.overlays = [ inputs.millennium.overlays.default ];
-        }
-      ];
+      nixosConfigurations.chapel = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        specialArgs = { inherit inputs; };
+        modules = [
+          ./configuration.nix
+          ./noctalia/noctalia.nix
+          ./zen.nix
+          home-manager.nixosModules.home-manager
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.backupFileExtension = "backup";
+            home-manager.useUserPackages = true;
+            home-manager.extraSpecialArgs = {
+              inherit inputs;
+              system = "x86_64-linux";
+            };
+            home-manager.users.sree = {
+              imports = [ ./home.nix ];
+            };
+            #        nixpkgs.overlays = [ inputs.millennium.overlays.default ];
+          }
+        ];
+      };
     };
-  };
 }
