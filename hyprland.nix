@@ -1,4 +1,9 @@
-{ lib, pkgs, config, ... }:
+{
+  lib,
+  pkgs,
+  config,
+  ...
+}:
 
 {
   wayland.windowManager.hyprland = {
@@ -12,11 +17,11 @@
       "$terminal" = "kitty";
       "$fileManager" = "dolphin";
       "$menu" = "$ipc launcher toggle";
-    monitor = [
-     "DP-5, highresxmaxwidth@highrr,0x0, 1, cm, auto, bitdepth, 10, sdrsaturation, 1, sdrbrightness, 1.0"
-    ];
+      monitor = [
+        "DP-5, highresxmaxwidth@highrr,0x0, 1, cm, auto, bitdepth, 10, sdrsaturation, 1, sdrbrightness, 1.0"
+      ];
 
-      exec-once = [ 
+      exec-once = [
         "noctalia-shell"
       ];
 
@@ -31,7 +36,7 @@
         "NVD_BACKEND,direct"
         "DXVK_HDR,1"
         "NIXOS_OZONE_WL,1"
-	"QT_QPA_PLATFORMTHEME,qt6ct"
+        "QT_QPA_PLATFORMTHEME,qt6ct"
       ];
 
       general = {
@@ -136,7 +141,7 @@
         "$mainMod, P, pseudo"
         "$mainMod, Z, exec, $ipc controlCenter toggle"
         "$mainMod, comma, exec, $ipc setting toggle"
-	"$mainMod SHIFT, c, exec, $ipc launcher clipboard"
+        "$mainMod SHIFT, c, exec, $ipc launcher clipboard"
 
         "$mainMod, left,  movefocus, l"
         "$mainMod, right, movefocus, r"
@@ -200,16 +205,18 @@
 
       windowrule = [
         "match:class = cs2,immediate = yes"
+        "idleinhibit fullscreen, classL.* "
+        "match:class xdg-desktop-portal-gtk, float on"
       ];
-      cursor = [ "no_hardware_cursors = 2"];
+      cursor = [ "no_hardware_cursors = 2" ];
 
-layerrule = {
-    name = "noctalia";
-    "match:namespace" = "noctalia-background-.*$";
-    ignore_alpha = 0.2;
-    blur = true;
-    blur_popups = true;
-  };
+      layerrule = {
+        name = "noctalia";
+        "match:namespace" = "noctalia-background-.*$";
+        ignore_alpha = 0.2;
+        blur = true;
+        blur_popups = true;
+      };
     };
   };
 

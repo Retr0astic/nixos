@@ -2,59 +2,78 @@
 # your system. Help is available in the configuration.nix(5) man page, on
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
-{ config, lib, pkgs, inputs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  inputs,
+  ...
+}:
 
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-      inputs.silentSDDM.nixosModules.default
-    ];
+  imports = [
+    # Include the results of the hardware scan.
+    ./hardware-configuration.nix
+    inputs.silentSDDM.nixosModules.default
+  ];
 
   # Use the systemd-boot EFI boot loader.
-  boot.kernelModules = ["ntsync"];
+  boot.kernelModules = [ "ntsync" ];
   boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.efi.efiSysMountPoint = "/efi";
   boot.loader.systemd-boot.xbootldrMountPoint = "/boot";
-  boot.initrd.kernelModules = ["usb_storage" "uas" "ext4"];
+  boot.initrd.kernelModules = [
+    "usb_storage"
+    "uas"
+    "ext4"
+  ];
   boot.initrd.luks.devices = {
     luksroot = {
-       device = "/dev/disk/by-uuid/85719e7e-dcea-4a0a-afe1-d0c796b0e59d";
-       preLVM = true;
-       allowDiscards = true;
-       keyFile = "/lukskey.bin:/dev/disk/by-uuid/b233771c-80b9-4288-ad93-1716d277b5a7";
-       crypttabExtraOpts = [ "keyfile-timeout=5s" ];
+      device = "/dev/disk/by-uuid/85719e7e-dcea-4a0a-afe1-d0c796b0e59d";
+      preLVM = true;
+      allowDiscards = true;
+      keyFile = "/lukskey.bin:/dev/disk/by-uuid/b233771c-80b9-4288-ad93-1716d277b5a7";
+      crypttabExtraOpts = [ "keyfile-timeout=5s" ];
     };
   };
 
-   networking.hostName = "chapel"; # Define your hostname.
+  networking.hostName = "chapel"; # Define your hostname.
 
   # Configure network connections interactively with nmcli or nmtui.
-   networking.networkmanager.enable = true;
+  networking.networkmanager.enable = true;
 
   # Set your time zone.
-   time.timeZone = "Asia/Dubai";
+  time.timeZone = "Asia/Dubai";
 
   fileSystems."/efi" = {
-    device = "/dev/disk/by-uuid/1E2F-B544";   # your existing ESP UUID
+    device = "/dev/disk/by-uuid/1E2F-B544"; # your existing ESP UUID
     fsType = "vfat";
-    options = [ "fmask=0022" "dmask=0022" ];
+    options = [
+      "fmask=0022"
+      "dmask=0022"
+    ];
   };
 
-  fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/97A6-F58D";
-      fsType = "vfat";
-      options = [ "fmask=0022" "dmask=0022" ];
-    };
+  fileSystems."/boot" = {
+    device = "/dev/disk/by-uuid/97A6-F58D";
+    fsType = "vfat";
+    options = [
+      "fmask=0022"
+      "dmask=0022"
+    ];
+  };
 
-  fileSystems."/mnt/bigdrive" =
-    { device = "/dev/disk/by-uuid/C26251F26251EBA3";
-      fsType = "ntfs3";
-      options = [ "rw" "uid=1000" "nofail" ];
-    };
-
+  fileSystems."/mnt/bigdrive" = {
+    device = "/dev/disk/by-uuid/C26251F26251EBA3";
+    fsType = "ntfs3";
+    options = [
+      "rw"
+      "uid=1000"
+      "nofail"
+    ];
+  };
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
@@ -71,9 +90,6 @@
   # Enable the X11 windowing system.
   # services.xserver.enable = true;
 
-
-  
-
   # Configure keymap in X11
   # services.xserver.xkb.layout = "us";
   # services.xserver.xkb.options = "eurosign:e,caps:escape";
@@ -85,20 +101,27 @@
   # services.pulseaudio.enable = true;
   # OR
   services.pipewire = {
-     enable = true;
-     pulse.enable = true;
+    enable = true;
+    pulse.enable = true;
   };
- 
+
   # Enable touchpad support (enabled default in most desktopManager).
   # services.libinput.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.sree = {
-     isNormalUser = true;
-     description = "Sree";
-     extraGroups = [ "wheel" "video" "input" "networkmanager" "libvirtd" "render"]; # Enable ‘sudo’ for the user.
-     shell = pkgs.bash;
-        home = "/home/sree";
+    isNormalUser = true;
+    description = "Sree";
+    extraGroups = [
+      "wheel"
+      "video"
+      "input"
+      "networkmanager"
+      "libvirtd"
+      "render"
+    ]; # Enable ‘sudo’ for the user.
+    shell = pkgs.bash;
+    home = "/home/sree";
   };
 
   programs.coolercontrol.enable = true;
@@ -125,105 +148,114 @@
   programs.gamescope.enable = true;
   programs.gamemode.enable = true;
 
-
-
   programs.silentSDDM = {
     enable = true;
     theme = "default";
-    settings = { 
-	"General" = {
-		background_fill_mode = "crop";
-	};
+    settings = {
+      "General" = {
+        background_fill_mode = "crop";
+      };
     };
   };
-
 
   # List packages installed in system profile.
   # You can use https://search.nixos.org/ to find more packages (and options).
-    environment.systemPackages = with pkgs; [
-      vim
-      wget
-      pkgs.sbctl
-      git
-      glib
-      gsettings-desktop-schemas
-      pkgs.opencode
-      pkgs.dconf
-      xdg-desktop-portal-hyprland
-      xdg-desktop-portal-gtk
-      ddcutil
-      pkgs.seahorse
-      gnome-keyring
-      libsecret
-      pkgs.nwg-look
-      hyprpolkitagent
-      adw-gtk3
-      qt6Packages.qt6ct
-      openrgb-with-all-plugins
-      qemu
-      quickemu
-      inputs.self.packages.${pkgs.system}.nvf
-      (heroic.override {
-      extraPkgs = pkgs: with pkgs; [
-        gamescope
-        gamemode
-      ];
+  environment.systemPackages = with pkgs; [
+    vim
+    wget
+    sbctl
+    git
+    glib
+    gsettings-desktop-schemas
+    opencode
+    dconf
+    xdg-desktop-portal-hyprland
+    xdg-desktop-portal-gtk
+    ddcutil
+    seahorse
+    gnome-keyring
+    libsecret
+    nwg-look
+    hyprpolkitagent
+    adw-gtk3
+    qt6Packages.qt6ct
+    openrgb-with-all-plugins
+    qemu
+    quickemu
+    inputs.self.packages.${pkgs.system}.nvf
+    gsettings-desktop-schemas
+    (heroic.override {
+      extraPkgs =
+        pkgs: with pkgs; [
+          gamescope
+          gamemode
+        ];
     })
-    ];
+  ];
 
-nixpkgs.config.permittedInsecurePackages = [
-  "electron-39.8.10"
-];
+  nixpkgs.config.permittedInsecurePackages = [
+    "electron-39.8.10"
+  ];
 
   environment.sessionVariables = {
-	NIXOS_OZONE_WL = "1";
-	FREETYPE_PROPERTIES = "autofitter:darkening-parameters=500,300,1000,200 autofitter:no-stem-darkening=0";
-	SDL_VIDEODRIVER = "wayland";
+    NIXOS_OZONE_WL = "1";
+    FREETYPE_PROPERTIES = "autofitter:darkening-parameters=500,300,1000,200 autofitter:no-stem-darkening=0";
+    SDL_VIDEODRIVER = "wayland";
+    GSETTINGS_SCHEMA_DIR = "${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}/glib-2.0/schemas";
   };
 
-   nixpkgs.config.allowUnfree = true; # To allow unfree packages
+  nixpkgs.config.allowUnfree = true; # To allow unfree packages
 
   #Hardware
-    hardware.graphics = {
-	enable = true;
-	enable32Bit = true;
-    };
-	# Nvidia
-	   services.xserver.videoDrivers = ["nvidia"];
-	   hardware.nvidia = {
-	         modesetting.enable = true;
-        	 powerManagement.enable = true;
-                 nvidiaPersistenced = true;
-	         open = false;
-	   };
-     hardware.bluetooth.enable = true;
+  hardware.graphics = {
+    enable = true;
+    enable32Bit = true;
+  };
+  # Nvidia
+  services.xserver.videoDrivers = [ "nvidia" ];
+  hardware.nvidia = {
+    modesetting.enable = true;
+    powerManagement.enable = true;
+    nvidiaPersistenced = true;
+    open = false;
+  };
+  hardware.bluetooth.enable = true;
 
   # XDG Portal
 
   xdg.portal = {
     enable = true;
-    extraPortals = [ 
+    extraPortals = [
       pkgs.xdg-desktop-portal-hyprland
-      pkgs.xdg-desktop-portal-gtk 
+      pkgs.xdg-desktop-portal-gtk
     ];
-   config = {
-     hyprland = {
-       default = [ "hyprland" "gtk" ];
-       "org.freedesktop.impl.portal.Settings" = [ "gtk" ];
+    config = {
+      hyprland = {
+        default = [
+          "hyprland"
+          "gtk"
+        ];
+        "org.freedesktop.impl.portal.Settings" = [ "gtk" ];
+      };
     };
   };
-     };
 
   services.displayManager.sddm = {
     enable = true;
 
-  # Enables experimental Wayland support
+    # Enables experimental Wayland support
     wayland.enable = true;
   };
 
- # Nix Settings
-    nix.settings.experimental-features = [ "nix-command" "flakes" ];
-    nix.settings.trusted-users = [ "root" "sree" ];
+  # Nix Settings
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
+  nix.settings.trusted-users = [
+    "root"
+    "sree"
+  ];
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;
@@ -233,39 +265,39 @@ nixpkgs.config.permittedInsecurePackages = [
   # };
 
   # Font
-    fonts.fontconfig = {
+  fonts.fontconfig = {
+    enable = true;
+    hinting = {
       enable = true;
-      hinting = {
-        enable = true;
-        style = "slight";
-     };
+      style = "slight";
+    };
     subpixel.rgba = "none";
-    };
+  };
 
-    fonts.packages = with pkgs; [
- 	 inter
- 	 geist-font
- 	 jetbrains-mono
- 	 iosevka
- 	 noto-fonts
- 	 noto-fonts-color-emoji
-	 nerd-fonts.jetbrains-mono
-    ];
+  fonts.packages = with pkgs; [
+    inter
+    geist-font
+    jetbrains-mono
+    iosevka
+    noto-fonts
+    noto-fonts-color-emoji
+    nerd-fonts.jetbrains-mono
+  ];
 
-    virtualisation.libvirtd = {
-	enable = true;
-	qemu = {
-	#    package = pkgs.qemu_kvm;   # leaner KVM-only build
-#	    runAsRoot = true;
-	    swtpm.enable = true;       # TPM emulation (needed for Win11)
-	};
+  virtualisation.libvirtd = {
+    enable = true;
+    qemu = {
+      #    package = pkgs.qemu_kvm;   # leaner KVM-only build
+      #	    runAsRoot = true;
+      swtpm.enable = true; # TPM emulation (needed for Win11)
     };
+  };
   # List services that you want to enable:
-    services.power-profiles-daemon.enable = true;
-    services.dbus.packages = [ pkgs.gsettings-desktop-schemas ];
-    services.displayManager.defaultSession = "hyprland";
-    services.gnome.gnome-keyring.enable = true;
-    services.hardware.openrgb.enable = true;
+  services.power-profiles-daemon.enable = true;
+  services.dbus.packages = [ pkgs.gsettings-desktop-schemas ];
+  services.displayManager.defaultSession = "hyprland";
+  services.gnome.gnome-keyring.enable = true;
+  services.hardware.openrgb.enable = true;
 
   # Systemd Services
   systemd.services.nvidia-power-limit = {
@@ -277,7 +309,7 @@ nixpkgs.config.permittedInsecurePackages = [
     };
   };
   # Security
-    security.pam.services.sddm.enableGnomeKeyring = true;
+  security.pam.services.sddm.enableGnomeKeyring = true;
   # Enable the OpenSSH daemon.
   # services.openssh.enable = true;
 
@@ -312,4 +344,3 @@ nixpkgs.config.permittedInsecurePackages = [
   system.stateVersion = "25.11"; # Did you read the comment?
 
 }
-
