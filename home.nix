@@ -1,4 +1,11 @@
-{ config, pkgs, inputs, system, ... }: {
+{
+  config,
+  pkgs,
+  inputs,
+  system,
+  ...
+}:
+{
 
   imports = [
     ./hyprland.nix
@@ -18,8 +25,8 @@
       vesktop
       jq
       gamescope-wsi
-      gamescope     # Valve's micro compositor, great for HDR/VRR per-game
-      mangohud 
+      gamescope # Valve's micro compositor, great for HDR/VRR per-game
+      mangohud
       libsecret
       ludusavi
       gh
@@ -31,7 +38,7 @@
     ];
   };
 
- # Programs
+  # Programs
   programs.bash = {
     enable = true;
     shellAliases = {
@@ -42,24 +49,27 @@
   };
   programs.zoxide = {
     enable = true;
-   };  
+  };
 
   programs.kitty = {
     enable = true;
     settings = {
-	    dynamic_background_opacity = true;
-	    background_opacity = "0.5";
-	    background_blur = 5;
+      dynamic_background_opacity = true;
+      background_opacity = "0.75";
+      background_blur = 7;
     };
     font = {
-    	name = "JetBrainsMono Nerd Font";
-    	size = 11;
+      name = "JetBrainsMono Nerd Font";
+      size = 10;
     };
   };
 
   programs.wezterm.enable = true;
   programs.ghostty.enable = true;
-  programs.fzf.enableBashIntegration = true;
+  programs.fzf = {
+    enable = true;
+    enableBashIntegration = true;
+  };
 
   programs.yazi = {
     enable = true;
@@ -70,13 +80,12 @@
     enableBashIntegration = true;
   };
 
- # Themeing
+  # Themeing
 
- qt = {
-  enable = true;
-  platformTheme.name = "gtk";  # makes Qt follow GTK font
-};
-
+  qt = {
+    enable = true;
+    platformTheme.name = "gtk"; # makes Qt follow GTK font
+  };
 
   home.pointerCursor = {
     gtk.enable = true;
@@ -84,38 +93,38 @@
     package = pkgs.bibata-cursors;
     name = "Bibata-Modern-Classic";
     size = 16;
-    };
+  };
 
-	gtk = {
-	  enable = true;
-	  font = {
-	    name = "Inter";
-	    size = 11;
-	  };
-	  cursorTheme = {
-	    name = "Bibata-Modern-Classic";
-	    package = pkgs.bibata-cursors;
-	  };
-	# Note the different syntax for gtk3 and gtk4
-	  gtk3.extraConfig = {
-	    "gtk-cursor-theme-name" = "Bibata-Modern-Classic";
-	  };
-	  gtk4.extraConfig = {
-	    Settings = ''
-	    gtk-cursor-theme-name=Bibata-Modern-Classic
-	    '';
-	  };
-	};
+  gtk = {
+    enable = true;
+    font = {
+      name = "Inter";
+      size = 11;
+    };
+    cursorTheme = {
+      name = "Bibata-Modern-Classic";
+      package = pkgs.bibata-cursors;
+    };
+    # Note the different syntax for gtk3 and gtk4
+    gtk3.extraConfig = {
+      "gtk-cursor-theme-name" = "Bibata-Modern-Classic";
+    };
+    gtk4.extraConfig = {
+      Settings = ''
+        	    gtk-cursor-theme-name=Bibata-Modern-Classic
+        	    '';
+    };
+  };
 
   systemd.user.sessionVariables = {
     WAYLAND_DISPLAY = "$WAYLAND_DISPLAY";
     XDG_CURRENT_DESKTOP = "Hyprland";
     XDG_SESSION_TYPE = "wayland";
-#    QT_QPA_PLATFORMTHEME = "qt6ct";
+    #    QT_QPA_PLATFORMTHEME = "qt6ct";
   };
-xdg.userDirs = {
+  xdg.userDirs = {
     enable = true;
-    createDirectories = true;  # actually creates them on rebuild
+    createDirectories = true; # actually creates them on rebuild
     documents = "${config.home.homeDirectory}/Documents";
     download = "${config.home.homeDirectory}/Downloads";
     pictures = "${config.home.homeDirectory}/Pictures";
