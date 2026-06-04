@@ -1,16 +1,13 @@
 # Edit this configuration file to define what should be installed on
 # your system. Help is available in the configuration.nix(5) man page, on
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
-
 {
   config,
   lib,
   pkgs,
   inputs,
   ...
-}:
-
-{
+}: {
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
@@ -18,7 +15,7 @@
   ];
 
   # Use the systemd-boot EFI boot loader.
-  boot.kernelModules = [ "ntsync" ];
+  boot.kernelModules = ["ntsync"];
   boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
@@ -35,7 +32,7 @@
       preLVM = true;
       allowDiscards = true;
       keyFile = "/lukskey.bin:/dev/disk/by-uuid/b233771c-80b9-4288-ad93-1716d277b5a7";
-      crypttabExtraOpts = [ "keyfile-timeout=5s" ];
+      crypttabExtraOpts = ["keyfile-timeout=5s"];
     };
   };
 
@@ -185,8 +182,8 @@
     inputs.self.packages.${pkgs.system}.nvf
     gsettings-desktop-schemas
     (heroic.override {
-      extraPkgs =
-        pkgs: with pkgs; [
+      extraPkgs = pkgs:
+        with pkgs; [
           gamescope
           gamemode
         ];
@@ -212,7 +209,7 @@
     enable32Bit = true;
   };
   # Nvidia
-  services.xserver.videoDrivers = [ "nvidia" ];
+  services.xserver.videoDrivers = ["nvidia"];
   hardware.nvidia = {
     modesetting.enable = true;
     powerManagement.enable = true;
@@ -235,7 +232,7 @@
           "hyprland"
           "gtk"
         ];
-        "org.freedesktop.impl.portal.Settings" = [ "gtk" ];
+        "org.freedesktop.impl.portal.Settings" = ["gtk"];
       };
     };
   };
@@ -293,7 +290,7 @@
   };
   # List services that you want to enable:
   services.power-profiles-daemon.enable = true;
-  services.dbus.packages = [ pkgs.gsettings-desktop-schemas ];
+  services.dbus.packages = [pkgs.gsettings-desktop-schemas];
   services.displayManager.defaultSession = "hyprland";
   services.gnome.gnome-keyring.enable = true;
   services.hardware.openrgb.enable = true;
@@ -301,7 +298,7 @@
   # Systemd Services
   systemd.services.nvidia-power-limit = {
     description = "Set NVIDIA GPU Power Limit";
-    wantedBy = [ "multi-user.target" ];
+    wantedBy = ["multi-user.target"];
     serviceConfig = {
       Type = "oneshot";
       ExecStart = "/run/current-system/sw/bin/nvidia-smi -pl 314";
@@ -341,5 +338,4 @@
   #
   # For more information, see `man configuration.nix` or https://nixos.org/manual/nixos/stable/options#opt-system.stateVersion .
   system.stateVersion = "25.11"; # Did you read the comment?
-
 }

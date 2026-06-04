@@ -18,6 +18,13 @@
       #style = "frappe";
       transparent = true;
     };
+    # ── Indentation Defaults ─────────────────────────────────
+    options = {
+      tabstop = 2;
+      shiftwidth = 2;
+      expandtab = true;
+      smartindent = true;
+    };
 
     statusline.lualine.enable = true;
     telescope.enable = true;
@@ -56,7 +63,6 @@
       lightbulb.enable = true; # code action indicator
       nvim-docs-view.enable = true;
     };
-
     # ── Completion ────────────────────────────────────────────
     autocomplete.nvim-cmp.enable = true;
     snippets.luasnip.enable = true;
@@ -64,7 +70,15 @@
       enableLSP = true;
       enableTreesitter = true;
 
-      nix.enable = true;
+      nix = {
+        enable = true;
+        lsp.enable = true;
+        treesitter.enable = true;
+        format = {
+          enable = true;
+          type = "alejandra"; # Forces neat 2-space alignment for Nix
+        };
+      };
       ts.enable = true;
       rust.enable = true;
       bash.enable = true;

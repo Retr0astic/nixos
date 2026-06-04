@@ -3,9 +3,7 @@
   pkgs,
   config,
   ...
-}:
-
-{
+}: {
   wayland.windowManager.hyprland = {
     enable = true;
     package = null;
@@ -207,7 +205,7 @@
         "match:class = cs2,immediate = yes"
         "match:class xdg-desktop-portal-gtk, float on"
       ];
-      cursor = [ "no_hardware_cursors = 2" ];
+      cursor = ["no_hardware_cursors = 2"];
 
       layerrule = {
         name = "noctalia";
@@ -240,5 +238,4 @@
       ];
     };
   };
-
 }
