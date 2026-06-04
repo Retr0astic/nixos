@@ -5,7 +5,7 @@
       "barType": "floating",
       "position": "top",
       "monitors": [],
-      "density": "spacious",
+      "density": "default",
       "showOutline": false,
       "showCapsule": true,
       "capsuleOpacity": 0.25,
@@ -776,7 +776,7 @@
     "openedPanel": "",
     "lockScreenActive": false,
     "wallpapers": {
-      "DP-5": "/mnt/bigdrive/Wallpapers/UW/'Waste Youth', Hong Kong.jpg"
+      "DP-5": "/mnt/bigdrive/Wallpapers/UW/9.png"
     },
     "desktopWidgetsEditMode": false,
     "display": {
