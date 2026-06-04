@@ -205,7 +205,6 @@
 
       windowrule = [
         "match:class = cs2,immediate = yes"
-        "idleinhibit fullscreen, classL.* "
         "match:class xdg-desktop-portal-gtk, float on"
       ];
       cursor = [ "no_hardware_cursors = 2" ];
@@ -217,6 +216,28 @@
         blur = true;
         blur_popups = true;
       };
+    };
+  };
+
+  services.hypridle = {
+    enable = true;
+    settings = {
+      general = {
+        lock_cmd = "pidof hyprlock || hyprlock"; # Prevents multiple instances
+        before_sleep_cmd = "loginctl lock-session"; # Lock before suspend
+        after_sleep_cmd = "hyprctl dispatch dpms on"; # Turn on displays after sleep
+      };
+
+      listener = [
+        {
+          timeout = 600; # 10 minutes
+          on-timeout = "loginctl lock-session"; # Lock session
+        }
+        {
+          timeout = 900; # 15 minutes
+          on-timeout = "systemctl suspend"; # Suspend PC
+        }
+      ];
     };
   };
 

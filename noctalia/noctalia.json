@@ -327,11 +327,11 @@
     "wallpaper": {
       "enabled": true,
       "overviewEnabled": false,
-      "directory": "/home/sree/Pictures/Wallpapers",
+      "directory": "/mnt/bigdrive/Wallpapers/UW",
       "monitorDirectories": [],
       "enableMultiMonitorDirectories": false,
       "showHiddenFiles": false,
-      "viewMode": "single",
+      "viewMode": "recursive",
       "setWallpaperOnAllMonitors": true,
       "linkLightAndDarkWallpapers": true,
       "fillMode": "crop",
@@ -368,7 +368,7 @@
       "wallhavenResolutionMode": "atleast",
       "wallhavenResolutionWidth": "",
       "wallhavenResolutionHeight": "",
-      "sortOrder": "name",
+      "sortOrder": "date_asc",
       "favorites": []
     },
     "appLauncher": {
@@ -661,7 +661,7 @@
       "schedulingMode": "off",
       "manualSunrise": "06:30",
       "manualSunset": "18:30",
-      "generationMethod": "tonal-spot",
+      "generationMethod": "fruit-salad",
       "monitorForColors": "",
       "syncGsettings": true
     },
@@ -732,9 +732,9 @@
       "manualSunset": "18:30"
     },
     "hooks": {
-      "enabled": false,
+      "enabled": true,
       "wallpaperChange": "",
-      "darkModeChange": "",
+      "darkModeChange": "/home/sree/nixos/noctalia/gtk-lightordarktheme.sh $1",
       "screenLock": "",
       "screenUnlock": "",
       "performanceModeEnabled": "",
@@ -776,8 +776,7 @@
     "openedPanel": "",
     "lockScreenActive": false,
     "wallpapers": {
-      "DP-5": "/home/sree/Pictures/Wallpapers/At the Island by Hangmoon.png",
-      "HDMI-A-1": "/home/sree/Pictures/Wallpapers/At the Island by Hangmoon.png"
+      "DP-5": "/mnt/bigdrive/Wallpapers/UW/'Waste Youth', Hong Kong.jpg"
     },
     "desktopWidgetsEditMode": false,
     "display": {
@@ -792,22 +791,10 @@
         "active_workspace": 1,
         "vrr": false,
         "focused": true
-      },
-      "HDMI-A-1": {
-        "name": "HDMI-A-1",
-        "scale": 1,
-        "width": 3840,
-        "height": 1080,
-        "refresh_rate": 59.968,
-        "x": 5120,
-        "y": 0,
-        "active_workspace": 2,
-        "vrr": false,
-        "focused": false
       }
     },
     "notificationsState": {
-      "lastSeenTs": 1779892192000
+      "lastSeenTs": 1780497050000
     },
     "changelogState": {
       "lastSeenVersion": "v4.7.6"
