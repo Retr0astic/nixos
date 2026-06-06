@@ -272,16 +272,6 @@
   #   enableSSHSupport = true;
   # };
 
-  # Font
-  fonts.fontconfig = {
-    enable = true;
-    hinting = {
-      enable = true;
-      style = "slight";
-    };
-    subpixel.rgba = "none";
-  };
-
   fonts.packages = with pkgs; [
     inter
     geist-font

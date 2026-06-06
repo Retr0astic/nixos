@@ -24,6 +24,6 @@ in {
   };
 
   environment.variables = {
-    FREETYPE_PROPERTIES = "autofitter:darkening-parameters=499,300,1000,200 autofitter:no-stem-darkening=0";
+    FREETYPE_PROPERTIES = "autofitter:no-stem-darkening=0";
   };
 }
