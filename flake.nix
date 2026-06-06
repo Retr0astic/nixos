@@ -34,46 +34,44 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nvf.url = "github:notashelf/nvf";
-
   };
-  outputs =
-    inputs@{
-      self,
-      nixpkgs,
-      home-manager,
-      zenBrowser,
-      nvf,
-      ...
-    }:
-    {
-      packages."x86_64-linux".nvf =
-        (nvf.lib.neovimConfiguration {
-          pkgs = nixpkgs.legacyPackages."x86_64-linux";
-          modules = [ ./nvf.nix ];
-        }).neovim;
+  outputs = inputs @ {
+    self,
+    nixpkgs,
+    home-manager,
+    zenBrowser,
+    nvf,
+    ...
+  }: {
+    packages."x86_64-linux".nvf =
+      (nvf.lib.neovimConfiguration {
+        pkgs = nixpkgs.legacyPackages."x86_64-linux";
+        modules = [./nvf.nix];
+      }).neovim;
 
-      nixosConfigurations.chapel = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        specialArgs = { inherit inputs; };
-        modules = [
-          ./configuration.nix
-          ./noctalia/noctalia.nix
-          ./zen.nix
-          home-manager.nixosModules.home-manager
-          {
-            home-manager.useGlobalPkgs = true;
-            home-manager.backupFileExtension = "backup";
-            home-manager.useUserPackages = true;
-            home-manager.extraSpecialArgs = {
-              inherit inputs;
-              system = "x86_64-linux";
-            };
-            home-manager.users.sree = {
-              imports = [ ./home.nix ];
-            };
-            #        nixpkgs.overlays = [ inputs.millennium.overlays.default ];
-          }
-        ];
-      };
+    nixosConfigurations.chapel = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      specialArgs = {inherit inputs;};
+      modules = [
+        ./configuration.nix
+        ./noctalia/noctalia.nix
+        ./zen.nix
+        ./lucidglyph.nix
+        home-manager.nixosModules.home-manager
+        {
+          home-manager.useGlobalPkgs = true;
+          home-manager.backupFileExtension = "backup";
+          home-manager.useUserPackages = true;
+          home-manager.extraSpecialArgs = {
+            inherit inputs;
+            system = "x86_64-linux";
+          };
+          home-manager.users.sree = {
+            imports = [./home.nix];
+          };
+          #        nixpkgs.overlays = [ inputs.millennium.overlays.default ];
+        }
+      ];
     };
+  };
 }

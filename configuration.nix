@@ -123,7 +123,17 @@
 
   programs.coolercontrol.enable = true;
   programs.virt-manager.enable = true;
-
+  programs.nix-ld = {
+    enable = true;
+    libraries = with pkgs; [
+      ## Put here any library that is required when running a package
+      ## ...
+      ## Uncomment if you want to use the libraries provided by default in the steam distribution
+      ## but this is quite far from being exhaustive
+      ## https://github.com/NixOS/nixpkgs/issues/354513
+      # (pkgs.runCommand "steamrun-lib" {} "mkdir $out; ln -s ${pkgs.steam-run.fhsenv}/usr/lib64 $out/lib")
+    ];
+  };
   programs.firefox.enable = true;
   programs.hyprland = {
     enable = true;
@@ -179,6 +189,8 @@
     openrgb-with-all-plugins
     qemu
     quickemu
+    mpv
+    btop
     inputs.self.packages.${pkgs.system}.nvf
     gsettings-desktop-schemas
     (heroic.override {
@@ -196,7 +208,7 @@
 
   environment.sessionVariables = {
     NIXOS_OZONE_WL = "1";
-    FREETYPE_PROPERTIES = "autofitter:darkening-parameters=500,300,1000,200 autofitter:no-stem-darkening=0";
+    #    FREETYPE_PROPERTIES = "autofitter:darkening-parameters=499,300,1000,200 autofitter:no-stem-darkening=0";
     SDL_VIDEODRIVER = "wayland";
     GSETTINGS_SCHEMA_DIR = "${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}/glib-2.0/schemas";
   };

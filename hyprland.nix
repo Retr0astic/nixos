@@ -43,7 +43,7 @@
         border_size = 2;
         resize_on_border = false;
         allow_tearing = true;
-        layout = "dwindle";
+        layout = "master";
       };
 
       decoration = {
@@ -100,7 +100,9 @@
       };
 
       master = {
-        new_status = "master";
+        new_status = "inherit";
+        orientation = "center";
+        slave_count_for_center_master = 0;
       };
 
       misc = {
