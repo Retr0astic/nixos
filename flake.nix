@@ -24,6 +24,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    lucidglyph = {
+      url = "github:maximilionus/lucidglyph/v0.14.0";
+      flake = false;
+    };
     zenBrowser = {
       url = "github:youwen5/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -41,6 +45,7 @@
     home-manager,
     zenBrowser,
     nvf,
+    lucidglyph,
     ...
   }: {
     packages."x86_64-linux".nvf =

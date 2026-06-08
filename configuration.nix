@@ -272,16 +272,6 @@
   #   enableSSHSupport = true;
   # };
 
-  fonts.packages = with pkgs; [
-    inter
-    geist-font
-    jetbrains-mono
-    iosevka
-    noto-fonts
-    noto-fonts-color-emoji
-    nerd-fonts.jetbrains-mono
-  ];
-
   virtualisation.libvirtd = {
     enable = true;
     qemu = {

@@ -1,25 +1,31 @@
 {
   pkgs,
-  lib,
+  inputs,
   ...
 }: let
-  lucidglyph = pkgs.fetchFromGitHub {
-    owner = "maximilionus";
-    repo = "lucidglyph";
-    rev = "v0.14.0";
-    hash = "sha256-RAHGVEUS5Hkig8xtPQCcaLVsXY0ER6N4eYNnYiV56eM=";
-  };
   lucidglyphConf = pkgs.runCommand "lucidglyph-fontconfig" {} ''
     mkdir -p $out/etc/fonts/conf.d
-    ln -s ${lucidglyph}/src/modules/fontconfig/11-lucidglyph-grayscale.conf \
+    ln -s ${inputs.lucidglyph}/src/modules/fontconfig/11-lucidglyph-grayscale.conf \
       $out/etc/fonts/conf.d/11-lucidglyph-grayscale.conf
-    ln -s ${lucidglyph}/src/modules/fontconfig/11-lucidglyph-hinting-slight.conf \
+    ln -s ${inputs.lucidglyph}/src/modules/fontconfig/11-lucidglyph-hinting-slight.conf \
       $out/etc/fonts/conf.d/11-lucidglyph-hinting-slight.conf
   '';
 in {
-  fonts.fontconfig = {
-    enable = true;
-    confPackages = [lucidglyphConf];
+  fonts = {
+    packages = with pkgs; [
+      inter
+      geist-font
+      jetbrains-mono
+      iosevka
+      noto-fonts
+      noto-fonts-color-emoji
+      nerd-fonts.jetbrains-mono
+    ];
+
+    fontconfig = {
+      enable = true;
+      confPackages = [lucidglyphConf];
+    };
   };
 
   environment.variables = {

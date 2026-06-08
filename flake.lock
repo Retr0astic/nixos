@@ -57,6 +57,23 @@
         "type": "github"
       }
     },
+    "lucidglyph": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1775539129,
+        "narHash": "sha256-RAHGVEUS5Hkig8xtPQCcaLVsXY0ER6N4eYNnYiV56eM=",
+        "owner": "maximilionus",
+        "repo": "lucidglyph",
+        "rev": "5108db5ccb88f42580772a2d18b603494a7b1b93",
+        "type": "github"
+      },
+      "original": {
+        "owner": "maximilionus",
+        "ref": "v0.14.0",
+        "repo": "lucidglyph",
+        "type": "github"
+      }
+    },
     "mnw": {
       "locked": {
         "lastModified": 1778541201,
@@ -197,6 +214,7 @@
     "root": {
       "inputs": {
         "home-manager": "home-manager",
+        "lucidglyph": "lucidglyph",
         "nixpkgs": "nixpkgs",
         "noctalia": "noctalia",
         "nvf": "nvf",
