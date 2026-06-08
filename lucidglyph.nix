@@ -5,10 +5,9 @@
 }: let
   lucidglyphConf = pkgs.runCommand "lucidglyph-fontconfig" {} ''
     mkdir -p $out/etc/fonts/conf.d
-    ln -s ${inputs.lucidglyph}/src/modules/fontconfig/11-lucidglyph-grayscale.conf \
-      $out/etc/fonts/conf.d/11-lucidglyph-grayscale.conf
-    ln -s ${inputs.lucidglyph}/src/modules/fontconfig/11-lucidglyph-hinting-slight.conf \
-      $out/etc/fonts/conf.d/11-lucidglyph-hinting-slight.conf
+    for f in ${inputs.lucidglyph}/src/modules/fontconfig/*.conf; do
+      ln -s "$f" $out/etc/fonts/conf.d/$(basename "$f")
+    done
   '';
 in {
   fonts = {
