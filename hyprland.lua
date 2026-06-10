@@ -11,14 +11,19 @@ local menu        = ipc .. " launcher toggle"
 
 -- ── Monitor ───────────────────────────────────────────────────
 hl.monitor({
-  output        = "DP-5",
-  mode          = "highresxmaxwidth@highrr",
-  position      = "0x0",
-  scale         = 1,
-  cm            = "auto",
-  bitdepth      = 10,
-  sdrsaturation = 1,
-  sdrbrightness = 1.8,
+  output            = "DP-5",
+  mode              = "highresxmaxwidth@highrr",
+  position          = "0x0",
+  scale             = 1,
+  cm                = "auto",
+  bitdepth          = 10,
+  sdrsaturation     = 1,
+  sdrbrightness     = 1.0,
+  sdr_max_luminance = 400,   -- SDR reference white in nits (~typical brightness setting)
+  sdr_min_luminance = 0.001, -- near-zero for good black
+  max_luminance     = 1015,  -- peak HDR nits
+  max_avg_luminance = 603,   -- sustained brightness
+  min_luminance     = 0.001,
 })
 
 -- ── Autostart ─────────────────────────────────────────────────
@@ -93,8 +98,9 @@ hl.config({
 
   render = {
     cm_enabled     = true,
-    cm_auto_hdr    = true,
+    cm_auto_hdr    = 2,
     direct_scanout = true,
+    use_fp16       = true
   },
 
   input = {
