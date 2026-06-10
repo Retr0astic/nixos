@@ -13,14 +13,18 @@
   };
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/549bd84d6279f9852cae6225e372cc67fb91a4c1";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    hyprland = {
+      url = "github:hyprwm/Hyprland";
+    };
+
     noctalia = {
-      url = "github:noctalia-dev/noctalia-shell/v4.7.6";
+      url = "github:noctalia-dev/noctalia/legacy-v4";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -43,6 +47,7 @@
     self,
     nixpkgs,
     home-manager,
+    hyprland,
     zenBrowser,
     nvf,
     lucidglyph,

@@ -4,17 +4,11 @@
   inputs,
   system,
   ...
-}:
-{
-
-  imports = [
-    ./hyprland.nix
-  ];
-
+}: {
   home = {
     username = "sree";
     homeDirectory = "/home/sree";
-    stateVersion = "25.11";
+    stateVersion = "26.05";
     packages = with pkgs; [
       fastfetch
       htop
@@ -37,6 +31,10 @@
       kdePackages.qtwebsockets
     ];
   };
+
+  imports = [
+    ./hyprland.nix
+  ];
 
   # Programs
   programs.bash = {
@@ -111,8 +109,8 @@
     };
     gtk4.extraConfig = {
       Settings = ''
-        	    gtk-cursor-theme-name=Bibata-Modern-Classic
-        	    '';
+        gtk-cursor-theme-name=Bibata-Modern-Classic
+      '';
     };
   };
 
