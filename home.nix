@@ -4,9 +4,7 @@
   inputs,
   system,
   ...
-}:
-{
-
+}: {
   imports = [
     ./hyprland.nix
   ];
@@ -34,6 +32,7 @@
       zoxide
       cliphist
       wlsunset
+      nextcloud-client
       kdePackages.qtwebsockets
     ];
   };
@@ -111,8 +110,8 @@
     };
     gtk4.extraConfig = {
       Settings = ''
-        	    gtk-cursor-theme-name=Bibata-Modern-Classic
-        	    '';
+        gtk-cursor-theme-name=Bibata-Modern-Classic
+      '';
     };
   };
 
