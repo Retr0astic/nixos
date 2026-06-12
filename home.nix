@@ -29,6 +29,7 @@
       cliphist
       wlsunset
       kdePackages.qtwebsockets
+      protonup-qt
     ];
   };
 
