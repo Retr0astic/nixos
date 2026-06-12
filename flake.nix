@@ -63,7 +63,7 @@
       specialArgs = {inherit inputs;};
       modules = [
         ./configuration.nix
-        ./noctalia/noctalia.nix
+        ./modules/noctalia/noctalia.nix
         ./modules/zen.nix
         ./modules/lucidglyph.nix
         home-manager.nixosModules.home-manager
