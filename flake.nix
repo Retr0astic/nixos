@@ -55,7 +55,7 @@
     packages."x86_64-linux".nvf =
       (nvf.lib.neovimConfiguration {
         pkgs = nixpkgs.legacyPackages."x86_64-linux";
-        modules = [./nvf.nix];
+        modules = [./modules/nvf.nix];
       }).neovim;
 
     nixosConfigurations.chapel = nixpkgs.lib.nixosSystem {
@@ -64,8 +64,8 @@
       modules = [
         ./configuration.nix
         ./noctalia/noctalia.nix
-        ./zen.nix
-        ./lucidglyph.nix
+        ./modules/zen.nix
+        ./modules/lucidglyph.nix
         home-manager.nixosModules.home-manager
         {
           home-manager.useGlobalPkgs = true;

@@ -12,7 +12,7 @@
   home-manager.users.sree = {config, ...}: {
     imports = [
       inputs.noctalia.homeModules.default
-      ../home.nix
+      ../../home.nix
     ];
 
     programs.noctalia = {

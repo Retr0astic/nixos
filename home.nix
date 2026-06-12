@@ -33,7 +33,7 @@
   };
 
   imports = [
-    ./hyprland.nix
+    ./modules/hyprland/hyprland.nix
   ];
 
   # Programs
