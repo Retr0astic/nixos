@@ -6,8 +6,8 @@
 local mainMod     = "SUPER"
 local terminal    = "kitty"
 local fileManager = "dolphin"
-local ipc         = "noctalia-shell ipc call"
-local menu        = ipc .. " launcher toggle"
+local ipc         = "noctalia msg"
+local menu        = ipc .. "panel-toggle launcher"
 
 -- ── Monitor ───────────────────────────────────────────────────
 hl.monitor({
@@ -30,7 +30,7 @@ hl.monitor({
 -- bash -c ensures $PATH is fully expanded (needed on NixOS where
 -- noctalia-shell lives in the user profile, not the system PATH)
 hl.on("hyprland.start", function()
-  hl.exec_cmd("bash -c 'noctalia-shell'")
+  hl.exec_cmd("noctalia")
 end)
 
 -- ── Environment variables ──────────────────────────────────────
@@ -58,17 +58,15 @@ hl.config({
   },
 
   decoration = {
-    rounding         = 20,
-    rounding_power   = 2,
-    active_opacity   = 1.0,
-    inactive_opacity = 1.0,
-    shadow           = {
+    rounding       = 20,
+    rounding_power = 2,
+    shadow         = {
       enabled      = true,
       range        = 4,
       render_power = 3,
-      color        = "rgba(1a1a1aee)",
+      color        = 0xee1a1a1a,
     },
-    blur             = {
+    blur           = {
       enabled  = true,
       size     = 3,
       passes   = 2,
@@ -178,8 +176,8 @@ hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))
 hl.bind(mainMod .. " + V", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + R", hl.dsp.exec_cmd(menu))
 hl.bind(mainMod .. " + P", hl.dsp.layout("pseudo"))
-hl.bind(mainMod .. " + Z", hl.dsp.exec_cmd(ipc .. " controlCenter toggle"))
-hl.bind(mainMod .. " + comma", hl.dsp.exec_cmd(ipc .. " setting toggle"))
+hl.bind(mainMod .. " + Z", hl.dsp.exec_cmd(ipc .. "panel-toggle control-center"))
+hl.bind(mainMod .. " + comma", hl.dsp.exec_cmd(ipc .. " setting-toggle"))
 hl.bind(mainMod .. " + SHIFT + c", hl.dsp.exec_cmd(ipc .. " launcher clipboard"))
 
 -- Focus movement

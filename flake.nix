@@ -24,8 +24,7 @@
     };
 
     noctalia = {
-      url = "github:noctalia-dev/noctalia/legacy-v4";
-      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:noctalia-dev/noctalia";
     };
 
     lucidglyph = {
@@ -77,7 +76,9 @@
             system = "x86_64-linux";
           };
           home-manager.users.sree = {
-            imports = [./home.nix];
+            imports = [
+              ./home.nix
+            ];
           };
           #        nixpkgs.overlays = [ inputs.millennium.overlays.default ];
         }
