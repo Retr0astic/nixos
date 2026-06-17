@@ -5,14 +5,17 @@
   system,
   ...
 }: {
+<<<<<<< HEAD
   imports = [
     ./hyprland.nix
   ];
 
+=======
+>>>>>>> main
   home = {
     username = "sree";
     homeDirectory = "/home/sree";
-    stateVersion = "25.11";
+    stateVersion = "26.05";
     packages = with pkgs; [
       fastfetch
       htop
@@ -34,8 +37,15 @@
       wlsunset
       nextcloud-client
       kdePackages.qtwebsockets
+      protonup-qt
+      nextcloud-client
     ];
   };
+
+  imports = [
+    ./modules/hyprland/hyprland.nix
+    inputs.spicetify-nix.homeManagerModules.default
+  ];
 
   # Programs
   programs.bash = {
@@ -77,6 +87,29 @@
   programs.starship = {
     enable = true;
     enableBashIntegration = true;
+  };
+
+  programs.spicetify = let
+    spicePkgs = inputs.spicetify-nix.legacyPackages.${pkgs.stdenv.hostPlatform.system};
+  in {
+    enable = true;
+
+    enabledExtensions = with spicePkgs.extensions; [
+      adblock
+      hidePodcasts
+      shuffle # shuffle+ (special characters are sanitized out of extension names)
+    ];
+    enabledCustomApps = with spicePkgs.apps; [
+      newReleases
+      ncsVisualizer
+    ];
+    enabledSnippets = with spicePkgs.snippets; [
+      rotatingCoverart
+      pointer
+    ];
+
+    theme = spicePkgs.themes.comfy;
+    colorScheme = "Kanagawa";
   };
 
   # Themeing

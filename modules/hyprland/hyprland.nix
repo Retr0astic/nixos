@@ -8,19 +8,20 @@
     enable = true;
     package = null;
     portalPackage = null;
+    configType = "hyprlang";
     systemd.enable = false;
     settings = {
-      "$ipc" = "noctalia-shell ipc call";
+      "$ipc" = "noctalia msg";
       "$mainMod" = "SUPER";
       "$terminal" = "kitty";
-      "$fileManager" = "dolphin";
-      "$menu" = "$ipc launcher toggle";
+      "$fileManager" = "yazi";
+      "$menu" = "$ipc panel-toggle launcher";
       monitor = [
         "DP-5, highresxmaxwidth@highrr,0x0, 1, cm, auto, bitdepth, 10, sdrsaturation, 1, sdrbrightness, 1.0"
       ];
 
       exec-once = [
-        "noctalia-shell"
+        "noctalia"
       ];
 
       env = [
@@ -139,9 +140,9 @@
         "$mainMod, V, togglefloating"
         "$mainMod, R, exec, $menu"
         "$mainMod, P, pseudo"
-        "$mainMod, Z, exec, $ipc controlCenter toggle"
-        "$mainMod, comma, exec, $ipc setting toggle"
-        "$mainMod SHIFT, c, exec, $ipc launcher clipboard"
+        "$mainMod, Z, exec, $ipc panel-toggle control-center"
+        "$mainMod, comma, exec, $ipc settings-toggle"
+        "$mainMod SHIFT, c, exec, $ipc panel-toggle launcher clipboard"
 
         "$mainMod, left,  movefocus, l"
         "$mainMod, right, movefocus, r"
@@ -211,31 +212,32 @@
 
       layerrule = {
         name = "noctalia";
-        "match:namespace" = "noctalia-background-.*$";
-        ignore_alpha = 0.2;
+        "match:namespace" = "^noctalia-(bar-.+|notification|dock|panel|attached-panel|osd)$";
+        ignore_alpha = 0.5;
         blur = true;
         blur_popups = true;
       };
     };
   };
+  xdg.configFile."hypr/hyprland.lua".source = ./hyprland.lua;
 
   services.hypridle = {
     enable = true;
     settings = {
       general = {
-        lock_cmd = "pidof hyprlock || hyprlock"; # Prevents multiple instances
-        before_sleep_cmd = "loginctl lock-session"; # Lock before suspend
-        after_sleep_cmd = "hyprctl dispatch dpms on"; # Turn on displays after sleep
+        lock_cmd = "pidof hyprlock || hyprlock";
+        before_sleep_cmd = "loginctl lock-session";
+        after_sleep_cmd = "hyprctl dispatch dpms on";
       };
 
       listener = [
         {
-          timeout = 600; # 10 minutes
-          on-timeout = "loginctl lock-session"; # Lock session
+          timeout = 600;
+          on-timeout = "loginctl lock-session";
         }
         {
-          timeout = 900; # 15 minutes
-          on-timeout = "systemctl suspend"; # Suspend PC
+          timeout = 900;
+          on-timeout = "systemctl suspend";
         }
       ];
     };

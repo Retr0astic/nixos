@@ -13,15 +13,18 @@
   };
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/549bd84d6279f9852cae6225e372cc67fb91a4c1";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    hyprland = {
+      url = "github:hyprwm/Hyprland/v0.54.3-b";
+    };
+
     noctalia = {
-      url = "github:noctalia-dev/noctalia-shell/v4.7.6";
-      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:noctalia-dev/noctalia";
     };
 
     lucidglyph = {
@@ -38,11 +41,13 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nvf.url = "github:notashelf/nvf";
+    spicetify-nix.url = "github:Gerg-L/spicetify-nix";
   };
   outputs = inputs @ {
     self,
     nixpkgs,
     home-manager,
+    hyprland,
     zenBrowser,
     nvf,
     lucidglyph,
@@ -51,7 +56,7 @@
     packages."x86_64-linux".nvf =
       (nvf.lib.neovimConfiguration {
         pkgs = nixpkgs.legacyPackages."x86_64-linux";
-        modules = [./nvf.nix];
+        modules = [./modules/nvf.nix];
       }).neovim;
 
     nixosConfigurations.chapel = nixpkgs.lib.nixosSystem {
@@ -59,9 +64,9 @@
       specialArgs = {inherit inputs;};
       modules = [
         ./configuration.nix
-        ./noctalia/noctalia.nix
-        ./zen.nix
-        ./lucidglyph.nix
+        ./modules/noctalia/noctalia.nix
+        ./modules/zen.nix
+        ./modules/lucidglyph.nix
         home-manager.nixosModules.home-manager
         {
           home-manager.useGlobalPkgs = true;
@@ -72,7 +77,9 @@
             system = "x86_64-linux";
           };
           home-manager.users.sree = {
-            imports = [./home.nix];
+            imports = [
+              ./home.nix
+            ];
           };
           #        nixpkgs.overlays = [ inputs.millennium.overlays.default ];
         }
