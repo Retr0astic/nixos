@@ -100,8 +100,8 @@
       pointer
     ];
 
-    theme = spicePkgs.themes.catppuccin;
-    colorScheme = "mocha";
+    theme = spicePkgs.themes.comfy;
+    colorScheme = "Kanagawa";
   };
 
   # Themeing
