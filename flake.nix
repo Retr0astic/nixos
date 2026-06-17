@@ -20,7 +20,7 @@
     };
 
     hyprland = {
-      url = "github:hyprwm/Hyprland";
+      url = "github:hyprwm/Hyprland/v0.54.3-b";
     };
 
     noctalia = {

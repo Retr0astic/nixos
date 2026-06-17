@@ -30,6 +30,7 @@
       wlsunset
       kdePackages.qtwebsockets
       protonup-qt
+      nextcloud-client
     ];
   };
 
