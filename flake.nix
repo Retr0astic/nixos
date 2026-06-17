@@ -41,6 +41,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nvf.url = "github:notashelf/nvf";
+    spicetify-nix.url = "github:Gerg-L/spicetify-nix";
   };
   outputs = inputs @ {
     self,
