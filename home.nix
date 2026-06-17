@@ -2,16 +2,8 @@
   config,
   pkgs,
   inputs,
-  system,
   ...
 }: {
-<<<<<<< HEAD
-  imports = [
-    ./hyprland.nix
-  ];
-
-=======
->>>>>>> main
   home = {
     username = "sree";
     homeDirectory = "/home/sree";

@@ -1,9 +1,9 @@
-{ pkgs, lib, ... }:
-
 {
-
+  pkgs,
+  lib,
+  ...
+}: {
   vim = {
-
     # ── Editor behaviour ──────────────────────────────────────
     viAlias = true;
     vimAlias = true;
@@ -67,7 +67,6 @@
     autocomplete.nvim-cmp.enable = true;
     snippets.luasnip.enable = true;
     languages = {
-      enableLSP = true;
       enableTreesitter = true;
 
       nix = {
@@ -76,20 +75,19 @@
         treesitter.enable = true;
         format = {
           enable = true;
-          type = "alejandra"; # Forces neat 2-space alignment for Nix
+          type = ["alejandra"]; # Forces neat 2-space alignment for Nix
         };
       };
-      ts.enable = true;
+      typescript.enable = true;
       rust.enable = true;
       bash.enable = true;
       lua.enable = true;
       python.enable = true;
-
     };
     # ── Spellcheck ────────────────────────────────────────────
     spellcheck = {
       enable = true;
-      languages = [ "en" ];
+      languages = ["en"];
     };
   };
 }

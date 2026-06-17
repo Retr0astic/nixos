@@ -60,9 +60,9 @@
       }).neovim;
 
     nixosConfigurations.chapel = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
       specialArgs = {inherit inputs;};
       modules = [
+        {nixpkgs.hostPlatform = "x86_64-linux";}
         ./configuration.nix
         ./modules/noctalia/noctalia.nix
         ./modules/zen.nix
@@ -74,7 +74,6 @@
           home-manager.useUserPackages = true;
           home-manager.extraSpecialArgs = {
             inherit inputs;
-            system = "x86_64-linux";
           };
           home-manager.users.sree = {
             imports = [
