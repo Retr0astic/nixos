@@ -31,6 +31,7 @@
       kdePackages.qtwebsockets
       protonup-qt
       nextcloud-client
+      kdePackages.dolphin
     ];
   };
 
@@ -100,8 +101,8 @@
       pointer
     ];
 
-    theme = spicePkgs.themes.comfy;
-    colorScheme = "Kanagawa";
+    theme = spicePkgs.themes.text;
+    #    colorScheme = "Kitty";
   };
 
   # Themeing
