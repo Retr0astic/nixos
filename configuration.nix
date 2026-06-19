@@ -14,8 +14,8 @@
   ];
 
   # Use the systemd-boot EFI boot loader.
-  boot.kernelModules = ["ntsync"];
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  boot.kernelModules = ["ntsync" "nct6687"];
+  boot.kernelPackages = pkgs.linuxKernel.packages.linux_zen;
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.efi.efiSysMountPoint = "/efi";
@@ -34,6 +34,7 @@
       crypttabExtraOpts = ["keyfile-timeout=5s"];
     };
   };
+  boot.extraModulePackages = [config.boot.kernelPackages.nct6687d];
 
   networking.hostName = "chapel"; # Define your hostname.
 
@@ -173,6 +174,7 @@
     sbctl
     git
     glib
+    lm_sensors
     gsettings-desktop-schemas
     opencode
     dconf
@@ -237,6 +239,7 @@
     };
   };
   hardware.bluetooth.enable = true;
+  hardware.i2c.enable = true;
 
   # XDG Portal
 
