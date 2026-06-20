@@ -21,6 +21,36 @@ type = "nightlight"
 [[control_center.shortcuts]]
 type = "notification"
 
+[desktop_widgets]
+schema_version = 2
+widget_order = [ "desktop-widget-0000000000000001", "desktop-widget-0000000000000002" ]
+
+    [desktop_widgets.grid]
+    cell_size = 16
+    major_interval = 4
+    visible = true
+
+    [desktop_widgets.widget.desktop-widget-0000000000000001]
+    box_height = 144.0
+    box_width = 304.0
+    cx = 1424.0
+    cy = 720.0
+    output = "DP-5"
+    rotation = 0.0
+    type = "clock"
+
+    [desktop_widgets.widget.desktop-widget-0000000000000002]
+    box_height = 448.0
+    box_width = 496.0
+    cx = 2560.0
+    cy = 720.0
+    output = "DP-5"
+    rotation = 0.0
+    type = "fancy_audio_visualizer"
+
+        [desktop_widgets.widget.desktop-widget-0000000000000002.settings]
+        background = false
+
 [dock]
 auto_hide = true
 reserve_space = false
@@ -229,7 +259,6 @@ source = "wallpaper"
 wallpaper_scheme = "vibrant"
 
     [theme.templates]
-    builtin_ids = [ "btop", "gtk3", "gtk4", "hyprland", "kcolorscheme", "kitty", "qt", "starship" ]
     community_ids = [ "spicetify", "zen-browser", "discord", "steam", "telegram", "yazi", "hyprtoolkit" ]
 
 [wallpaper]
@@ -237,13 +266,13 @@ directory = "/mnt/bigdrive/Wallpapers/UW"
 transition_on_startup = true
 
     [wallpaper.default]
-    path = "/mnt/bigdrive/Wallpapers/UW/10.png"
+    path = "/mnt/bigdrive/Wallpapers/UW/6.png"
 
     [wallpaper.last]
-    path = "/mnt/bigdrive/Wallpapers/UW/10.png"
+    path = "/mnt/bigdrive/Wallpapers/UW/6.png"
 
     [wallpaper.monitors.DP-5]
-    path = "/mnt/bigdrive/Wallpapers/UW/10.png"
+    path = "/mnt/bigdrive/Wallpapers/UW/6.png"
 
     [[wallpaper.favorite]]
     palette_source = "wallpaper"
