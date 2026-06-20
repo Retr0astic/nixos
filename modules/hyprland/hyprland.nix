@@ -35,16 +35,16 @@
       ];
 
       general = {
-        gaps_in = 5;
-        gaps_out = 10;
-        border_size = 2;
+        gaps_in = 3;
+        gaps_out = 5;
+        border_size = 1;
         resize_on_border = false;
         allow_tearing = true;
         layout = "master";
       };
 
       decoration = {
-        rounding = 20;
+        rounding = 5;
         rounding_power = 2;
         active_opacity = 1.0;
         inactive_opacity = 1.0;
@@ -174,9 +174,12 @@
         "$mainMod, mouse_down, workspace, e+1"
         "$mainMod, mouse_up,   workspace, e-1"
 
-        "$mainMod, PRINT,       exec, hyprshot -m window"
-        ", PRINT,               exec, hyprshot -m output"
-        "SHIFT, PRINT,          exec, hyprshot -m region"
+        "$mainMod, print,       exec, hyprshot -m window --clipboard-only"
+        ", print,               exec, hyprshot -m output --clipboard-only"
+        "shift, print,          exec, hyprshot -m region --clipboard-only"
+        "ctrl, print,           exec, hyprshot -m window"
+        "ctrl $mainMod, print,  exec, hyprshot -m output"
+        "ctrl shift, print,     exec, hyprshot -m region"
       ];
 
       bindm = [
@@ -203,6 +206,7 @@
       windowrule = [
         "match:class = cs2,immediate = yes"
         "match:class xdg-desktop-portal-gtk, float on"
+        "match:class feh, float on"
       ];
       cursor = ["no_hardware_cursors = 2"];
 
