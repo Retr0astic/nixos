@@ -32,7 +32,7 @@
       protonup-qt
       nextcloud-client
       kdePackages.dolphin
-      feh
+      imv
     ];
   };
 
@@ -40,16 +40,6 @@
     ./modules/hyprland/hyprland.nix
     inputs.spicetify-nix.homeManagerModules.default
   ];
-
-  xdg.mimeApps = {
-    enable = true;
-    defaultApplications = {
-      "image/jpeg" = ["feh.desktop"];
-      "image/png" = ["feh.desktop"];
-      "image/gif" = ["feh.desktop"];
-      "image/webp" = ["feh.desktop"];
-    };
-  };
 
   # Programs
   programs.bash = {

@@ -206,7 +206,6 @@
       windowrule = [
         "match:class = cs2,immediate = yes"
         "match:class xdg-desktop-portal-gtk, float on"
-        "match:class feh, float on"
       ];
       cursor = ["no_hardware_cursors = 2"];
 
