@@ -166,6 +166,8 @@
     };
   };
 
+  environment.etc."xdg/menus/applications.menu".source = ./modules/dolphin.menu;
+
   # List packages installed in system profile.
   # You can use https://search.nixos.org/ to find more packages (and options).
   environment.systemPackages = with pkgs; [
@@ -192,6 +194,8 @@
     qemu
     quickemu
     mpv
+    imv
+    kdePackages.dolphin
     btop
     inputs.self.packages.${pkgs.system}.nvf
     gsettings-desktop-schemas
