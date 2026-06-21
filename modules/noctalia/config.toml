@@ -1,8 +1,11 @@
-[bar.widgets]
-auto_hide = true
-center = [ "audio_visualizer", "active_window" ]
-end = [ "media", "tray", "notifications", "clipboard", "bluetooth", "volume", "control-center", "session" ]
-reserve_space = false
+[bar]
+order = [ "widgets" ]
+
+    [bar.widgets]
+    auto_hide = true
+    center = [ "audio_visualizer", "active_window" ]
+    end = [ "media", "tray", "notifications", "clipboard", "bluetooth", "volume", "control-center", "session" ]
+    reserve_space = false
 
 [brightness]
 enable_ddcutil = true
@@ -39,6 +42,11 @@ widget_order = [ "desktop-widget-0000000000000001", "desktop-widget-000000000000
     rotation = 0.0
     type = "clock"
 
+        [desktop_widgets.widget.desktop-widget-0000000000000001.settings]
+        background_opacity = 0.29999999999999999
+        background_padding = 0.0
+        background_radius = 25.0
+
     [desktop_widgets.widget.desktop-widget-0000000000000002]
     box_height = 448.0
     box_width = 496.0
@@ -60,23 +68,12 @@ show_dots = true
 auto_locate = true
 
 [lockscreen_widgets]
-enabled = true
+enabled = false
 schema_version = 2
-widget_order = [
-    "lockscreen-widget-0000000000000007",
-    "lockscreen-login-box@DP-2",
-    "lockscreen-widget-0000000000000003",
-    "lockscreen-widget-0000000000000004",
-    "lockscreen-widget-0000000000000005",
-    "lockscreen-widget-0000000000000006",
-    "lockscreen-widget-0000000000000008",
-    "lockscreen-widget-0000000000000009",
-    "lockscreen-widget-000000000000000a",
-    "lockscreen-widget-000000000000000b"
-]
+widget_order = [ "lockscreen-login-box@DP-2" ]
 
     [lockscreen_widgets.grid]
-    cell_size = 24
+    cell_size = 16
     major_interval = 4
     visible = true
 
@@ -84,7 +81,7 @@ widget_order = [
     box_height = 70.0
     box_width = 400.0
     cx = 2560.0
-    cy = 1331.0
+    cy = 1321.0
     output = "DP-2"
     rotation = 0.0
     type = "login_box"
@@ -259,20 +256,21 @@ source = "wallpaper"
 wallpaper_scheme = "vibrant"
 
     [theme.templates]
-    community_ids = [ "spicetify", "zen-browser", "discord", "steam", "telegram", "yazi", "hyprtoolkit" ]
+    builtin_ids = [ "btop", "gtk3", "gtk4", "hyprland", "kcolorscheme", "kitty", "qt", "starship" ]
+    community_ids = [ "spicetify", "zen-browser", "neovim", "discord", "steam", "telegram", "yazi", "hyprtoolkit" ]
 
 [wallpaper]
 directory = "/mnt/bigdrive/Wallpapers/UW"
 transition_on_startup = true
 
     [wallpaper.default]
-    path = "/mnt/bigdrive/Wallpapers/UW/6.png"
+    path = "/mnt/bigdrive/Wallpapers/UW/2.jpg"
 
     [wallpaper.last]
-    path = "/mnt/bigdrive/Wallpapers/UW/6.png"
+    path = "/mnt/bigdrive/Wallpapers/UW/2.jpg"
 
     [wallpaper.monitors.DP-2]
-    path = "/mnt/bigdrive/Wallpapers/UW/6.png"
+    path = "/mnt/bigdrive/Wallpapers/UW/2.jpg"
 
     [[wallpaper.favorite]]
     palette_source = "wallpaper"
