@@ -35,7 +35,7 @@ widget_order = [ "desktop-widget-0000000000000001", "desktop-widget-000000000000
     box_width = 304.0
     cx = 1424.0
     cy = 720.0
-    output = "DP-5"
+    output = "DP-2"
     rotation = 0.0
     type = "clock"
 
@@ -44,7 +44,7 @@ widget_order = [ "desktop-widget-0000000000000001", "desktop-widget-000000000000
     box_width = 496.0
     cx = 2560.0
     cy = 720.0
-    output = "DP-5"
+    output = "DP-2"
     rotation = 0.0
     type = "fancy_audio_visualizer"
 
@@ -64,7 +64,7 @@ enabled = true
 schema_version = 2
 widget_order = [
     "lockscreen-widget-0000000000000007",
-    "lockscreen-login-box@DP-5",
+    "lockscreen-login-box@DP-2",
     "lockscreen-widget-0000000000000003",
     "lockscreen-widget-0000000000000004",
     "lockscreen-widget-0000000000000005",
@@ -80,16 +80,16 @@ widget_order = [
     major_interval = 4
     visible = true
 
-    [lockscreen_widgets.widget."lockscreen-login-box@DP-5"]
+    [lockscreen_widgets.widget."lockscreen-login-box@DP-2"]
     box_height = 70.0
     box_width = 400.0
     cx = 2560.0
     cy = 1331.0
-    output = "DP-5"
+    output = "DP-2"
     rotation = 0.0
     type = "login_box"
 
-        [lockscreen_widgets.widget."lockscreen-login-box@DP-5".settings]
+        [lockscreen_widgets.widget."lockscreen-login-box@DP-2".settings]
         background_color = "surface_variant"
         background_opacity = 0.88
         background_radius = 12.0
@@ -102,7 +102,7 @@ widget_order = [
     box_width = 384.0
     cx = 2560.0
     cy = 816.0
-    output = "DP-5"
+    output = "DP-2"
     rotation = 0.0
     type = "fancy_audio_visualizer"
 
@@ -115,7 +115,7 @@ widget_order = [
     box_width = 0.0
     cx = 2560.0
     cy = 1176.0
-    output = "DP-5"
+    output = "DP-2"
     rotation = 0.0
     type = "media_player"
 
@@ -128,7 +128,7 @@ widget_order = [
     box_width = 0.0
     cx = 2872.0
     cy = 1145.0
-    output = "DP-5"
+    output = "DP-2"
     rotation = 0.0
     type = "sysmon"
 
@@ -144,7 +144,7 @@ widget_order = [
     box_width = 160.0
     cx = 2664.0
     cy = 448.0
-    output = "DP-5"
+    output = "DP-2"
     rotation = 0.0
     type = "weather"
 
@@ -157,7 +157,7 @@ widget_order = [
     box_width = 312.0
     cx = 2560.0
     cy = 348.0
-    output = "DP-5"
+    output = "DP-2"
     rotation = 0.0
     type = "clock"
 
@@ -170,7 +170,7 @@ widget_order = [
     box_width = 0.0
     cx = 2248.0
     cy = 1144.0
-    output = "DP-5"
+    output = "DP-2"
     rotation = 0.0
     type = "sysmon"
 
@@ -184,7 +184,7 @@ widget_order = [
     box_width = 0.0
     cx = 2444.0
     cy = 448.0
-    output = "DP-5"
+    output = "DP-2"
     rotation = 0.0
     type = "button"
 
@@ -201,7 +201,7 @@ widget_order = [
     box_width = 0.0
     cx = 2492.0
     cy = 448.0
-    output = "DP-5"
+    output = "DP-2"
     rotation = 0.0
     type = "button"
 
@@ -218,7 +218,7 @@ widget_order = [
     box_width = 0.0
     cx = 2540.0
     cy = 448.0
-    output = "DP-5"
+    output = "DP-2"
     rotation = 0.0
     type = "button"
 
@@ -271,7 +271,7 @@ transition_on_startup = true
     [wallpaper.last]
     path = "/mnt/bigdrive/Wallpapers/UW/6.png"
 
-    [wallpaper.monitors.DP-5]
+    [wallpaper.monitors.DP-2]
     path = "/mnt/bigdrive/Wallpapers/UW/6.png"
 
     [[wallpaper.favorite]]
