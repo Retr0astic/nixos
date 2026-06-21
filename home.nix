@@ -31,7 +31,6 @@
       kdePackages.qtwebsockets
       protonup-qt
       nextcloud-client
-      openrgb-with-all-plugins
     ];
   };
 
@@ -41,14 +40,6 @@
   ];
 
   xdg.mimeApps.enable = true;
-  #  xdg.mimeApps.defaultApplications = {
-  #  "image/png" = "imv.desktop";
-  #  "image/jpeg" = "imv.desktop";
-  #  "image/gif" = "imv.desktop";
-  #  "image/bmp" = "imv.desktop";
-  #  "image/tiff" = "imv.desktop";
-  #  "image/webp" = "imv.desktop";
-  #};
 
   # Programs
   programs.bash = {
