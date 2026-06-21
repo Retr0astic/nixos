@@ -68,7 +68,7 @@ show_dots = true
 auto_locate = true
 
 [lockscreen_widgets]
-enabled = false
+enabled = true
 schema_version = 2
 widget_order = [ "lockscreen-login-box@DP-2" ]
 

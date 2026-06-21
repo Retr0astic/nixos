@@ -310,7 +310,8 @@
     };
   };
   services.hardware.openrgb.enable = true;
-  systemd.services.openrgb.enable = lib.mkForce false;
+  systemd.services.openrgb.enable = false;
+  #  systemd.services.openrgb.enable = lib.mkForce false;
   # Security
   security.pam.services.sddm.enableGnomeKeyring = true;
   # Enable the OpenSSH daemon.
