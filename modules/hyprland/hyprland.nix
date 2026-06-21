@@ -17,7 +17,7 @@
       "$fileManager" = "yazi";
       "$menu" = "$ipc panel-toggle launcher";
       monitor = [
-        "DP-5, highresxmaxwidth@highrr,0x0, 1, cm, auto, bitdepth, 10, sdrsaturation, 1, sdrbrightness, 1.0"
+        "DP-2, highresxmaxwidth@highrr,0x0, 1, cm, auto, bitdepth, 10, sdrsaturation, 1, sdrbrightness, 1.0"
       ];
 
       exec-once = [
@@ -32,6 +32,8 @@
         "LIBVA_DRIVER_NAME,nvidia"
         "NVD_BACKEND,direct"
         "NIXOS_OZONE_WL,1"
+        "__GL_GSYNC_ALLOWED,1"
+        "__GL_VRR_ALLOWED,0"
       ];
 
       general = {

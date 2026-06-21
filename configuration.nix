@@ -5,6 +5,7 @@
   config,
   pkgs,
   inputs,
+  lib,
   ...
 }: {
   imports = [
@@ -189,7 +190,6 @@
     hyprpolkitagent
     adw-gtk3
     qt6Packages.qt6ct
-    openrgb-with-all-plugins
     qemu
     quickemu
     mpv
@@ -230,16 +230,8 @@
   hardware.nvidia = {
     modesetting.enable = true;
     powerManagement.enable = true;
-    #    nvidiaPersistenced = true;
-    open = false;
-    package = config.boot.kernelPackages.nvidiaPackages.mkDriver {
-      version = "610.43.02";
-      sha256_64bit = "sha256:0qvllxnb20arjhw3bxdz0hw521di9ib75hldzx97gpscpdaa0d1h";
-      sha256_aarch64 = "sha256:0qvllxnb20arjhw3bxdz0hw521di9ib75hldzx97gpscpdaa0d1h";
-      openSha256 = "sha256-hP5NVZZ4vGsACHLmUDKq4uckpd/kn1GxCSYnnJfAuBs=";
-      settingsSha256 = "sha256-0YAhufRgjDW+uR+kjaTb154fibpcDw8QowfrucoZsKE=";
-      persistencedSha256 = "sha256:0nd0bf2s9b2ic8a0rcscddasddkryx2qf6mx4861bv44wblm513z";
-    };
+    nvidiaPersistenced = true;
+    open = true;
   };
   hardware.bluetooth.enable = true;
   hardware.i2c.enable = true;
@@ -299,7 +291,6 @@
   services.dbus.packages = [pkgs.gsettings-desktop-schemas];
   services.displayManager.defaultSession = "hyprland";
   services.gnome.gnome-keyring.enable = true;
-  services.hardware.openrgb.enable = true;
 
   # Systemd Services
   systemd.services.nvidia-power-limit = {
@@ -310,6 +301,8 @@
       ExecStart = "/run/current-system/sw/bin/nvidia-smi -pl 314";
     };
   };
+  services.hardware.openrgb.enable = true;
+  systemd.services.openrgb.enable = lib.mkForce false;
   # Security
   security.pam.services.sddm.enableGnomeKeyring = true;
   # Enable the OpenSSH daemon.

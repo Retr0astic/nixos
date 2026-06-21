@@ -31,6 +31,7 @@
       kdePackages.qtwebsockets
       protonup-qt
       nextcloud-client
+      openrgb-with-all-plugins
     ];
   };
 
@@ -167,5 +168,13 @@
     desktop = "${config.home.homeDirectory}/Desktop";
     templates = "${config.home.homeDirectory}/Templates";
     publicShare = "${config.home.homeDirectory}/Public";
+  };
+  systemd.user.services.openrgb = {
+    Unit.Description = "OpenRGB SDK Server";
+    Service = {
+      ExecStart = "${pkgs.openrgb-with-all-plugins}/bin/openrgb --server --server-port 6742";
+      Restart = "on-failure";
+    };
+    Install.WantedBy = ["graphical-session.target"];
   };
 }
