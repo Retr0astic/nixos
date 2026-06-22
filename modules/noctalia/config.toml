@@ -10,8 +10,6 @@ order = [ "widgets" ]
 [brightness]
 enable_ddcutil = true
 
-[config]
-
 [[control_center.shortcuts]]
 type = "bluetooth"
 
@@ -70,7 +68,7 @@ auto_locate = true
 [lockscreen_widgets]
 enabled = true
 schema_version = 2
-widget_order = [ "lockscreen-login-box@DP-2" ]
+widget_order = [ "lockscreen-login-box@DP-2", "lockscreen-widget-0000000000000003",  "lockscreen-widget-0000000000000004", "lockscreen-widget-0000000000000005", "lockscreen-widget-0000000000000006", "lockscreen-widget-0000000000000007", "lockscreen-widget-0000000000000008", "lockscreen-widget-0000000000000009", "lockscreen-widget-000000000000000a", "lockscreen-widget-000000000000000b" ]
 
     [lockscreen_widgets.grid]
     cell_size = 16
@@ -247,7 +245,6 @@ settings_show_advanced = true
     open_near_click_wallpaper = true
     transparency_mode = "glass"
 
-[templates]
 
 [theme]
 builtin = "Noctalia"

@@ -49,6 +49,7 @@
       update = "cd ~/nixos && nix flake update && sudo nixos-rebuild switch --flake .";
       cd = "z";
       noctalia-config = "noctalia config export > ~/nixos/modules/noctalia/config.toml";
+      cat = "bat";
     };
   };
   programs.zoxide = {
@@ -148,11 +149,20 @@
     XDG_CURRENT_DESKTOP = "Hyprland";
     XDG_SESSION_TYPE = "wayland";
   };
+
   systemd.user.services.openrgb = {
-    Unit.Description = "OpenRGB";
-    Service.ExecStart = "${pkgs.openrgb-with-all-plugins}/bin/openrgb --server";
+    Unit = {
+      Description = "OpenRGB";
+      After = ["graphical-session-pre.target"];
+      PartOf = ["graphical-session.target"];
+    };
+    Service = {
+      ExecStart = "${pkgs.openrgb-with-all-plugins}/bin/openrgb --startminimized";
+      Restart = "on-failure";
+    };
     Install.WantedBy = ["graphical-session.target"];
   };
+
   xdg.userDirs = {
     enable = true;
     createDirectories = true; # actually creates them on rebuild
