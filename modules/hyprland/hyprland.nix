@@ -140,7 +140,7 @@
       bind = [
         "$mainMod, Return, exec, $terminal"
         "$mainMod, C, killactive"
-        "$mainMod, Escape, exit"
+        "$mainMod CTRL, Escape, exit"
         "$mainMod, E, exec, $fileManager"
         "$mainMod, V, togglefloating"
         "$mainMod, R, exec, $menu"
