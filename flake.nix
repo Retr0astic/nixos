@@ -34,6 +34,7 @@
     silentSDDM = {
       url = "github:uiriansan/SilentSDDM";
       inputs.nixpkgs.follows = "nixpkgs";
+<<<<<<< Updated upstream
    };
 
   };
@@ -41,6 +42,43 @@
       { inherit inputs; }
       (inputs.import-tree ./modules);
       home-manager.nixosModules.home-manager
+=======
+    };
+    nvf.url = "github:notashelf/nvf";
+    spicetify-nix.url = "github:Gerg-L/spicetify-nix";
+    vds-src = {
+      url = "github:hurryman2212/vds";
+      flake = false;
+    };
+  };
+  outputs = inputs @ {
+    self,
+    nixpkgs,
+    home-manager,
+    hyprland,
+    zenBrowser,
+    nvf,
+    lucidglyph,
+    vds-src,
+    ...
+  }: {
+    packages."x86_64-linux".nvf =
+      (nvf.lib.neovimConfiguration {
+        pkgs = nixpkgs.legacyPackages."x86_64-linux";
+        modules = [./modules/nvf.nix];
+      }).neovim;
+
+    nixosConfigurations.chapel = nixpkgs.lib.nixosSystem {
+      specialArgs = {inherit inputs;};
+      modules = [
+        {nixpkgs.hostPlatform = "x86_64-linux";}
+        ./configuration.nix
+        ./modules/noctalia/noctalia.nix
+        ./modules/zen.nix
+        ./modules/lucidglyph.nix
+        ./modules/vds.nix
+        home-manager.nixosModules.home-manager
+>>>>>>> Stashed changes
         {
           home-manager.useGlobalPkgs = true;
 	  home-manager.backupFileExtension = "backup";
