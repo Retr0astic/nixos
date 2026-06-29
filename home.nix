@@ -35,6 +35,7 @@
       libreoffice-qt6-fresh
       hunspell
       hunspellDicts.en-us-large
+      kdePackages.okular
     ];
   };
 
