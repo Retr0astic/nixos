@@ -154,7 +154,14 @@
     ];
   };
   programs.gamescope.enable = true;
-  programs.gamemode.enable = true;
+  programs.gamemode = {
+    settings = {
+      cpu = {
+        governor = "performance"; # applied on game start
+        desiredgov = "power"; # same, alternative key some versions use
+      };
+    };
+  };
 
   programs.silentSDDM = {
     enable = true;
@@ -217,6 +224,7 @@
     #    FREETYPE_PROPERTIES = "autofitter:darkening-parameters=499,300,1000,200 autofitter:no-stem-darkening=0";
     SDL_VIDEODRIVER = "wayland";
     GSETTINGS_SCHEMA_DIR = "${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}/glib-2.0/schemas";
+    SAL_USE_VCLPLUGIN = "qt6";
   };
 
   nixpkgs.config.allowUnfree = true; # To allow unfree packages

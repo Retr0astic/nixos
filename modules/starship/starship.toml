@@ -1,0 +1,134 @@
+# ~/.config/starship.toml
+
+"$schema" = 'https://starship.rs/config-schema.json'
+
+format = """
+[░▒▓](fg:#1e1e2e)\
+$os\
+$username\
+[](fg:#1e1e2e bg:#313244)\
+$directory\
+[](fg:#313244 bg:#45475a)\
+$git_branch\
+$git_status\
+[](fg:#45475a bg:#585b70)\
+$c\
+$rust\
+$python\
+$nix_shell\
+$nodejs\
+[](fg:#585b70 bg:none)\
+$fill\
+$cmd_duration\
+[](fg:#313244)\
+$time\
+[▓▒░](fg:#313244)\
+\n$character"""
+
+
+[os]
+disabled = false
+style = "bg:#1e1e2e fg:#cba6f7"
+
+[os.symbols]
+NixOS = "󱄅 "
+Fedora = " "
+Linux = " "
+
+[username]
+show_always = true
+style_user  = "bg:#1e1e2e fg:#cba6f7"
+style_root  = "bg:#1e1e2e fg:#f38ba8"
+format      = "[ $user ]($style)"
+
+[directory]
+style            = "bg:#313244 fg:#89b4fa"
+format           = "[ 󰉋 $path ]($style)"
+truncation_length = 3
+truncate_to_repo = true
+truncation_symbol = "…/"
+
+[directory.substitutions]
+"~"         = "󱂵"
+"~/nixos"   = "󱄅 nixos"
+"~/dev"     = " dev"
+"~/Documents" = "󰈙 docs"
+"~/Downloads" = " dl"
+
+[git_branch]
+symbol = " "
+style  = "bg:#45475a fg:#a6e3a1"
+format = "[ $symbol$branch ]($style)"
+
+[git_status]
+style  = "bg:#45475a fg:#f9e2af"
+format = "[$all_status$ahead_behind ]($style)"
+conflicted = "󰩌 "
+ahead      = "⇡${count} "
+behind     = "⇣${count} "
+diverged   = "⇕⇡${ahead_count}⇣${behind_count} "
+untracked  = "󰋗 "
+stashed    = "󰏗 "
+modified   = " "
+staged     = "󰐕 "
+renamed    = "󰑕 "
+deleted    = " "
+
+[fill]
+symbol = " "
+
+[cmd_duration]
+min_time          = 2000
+style             = "fg:#f9e2af"
+format            = "[ 󱦟 $duration ]($style)"
+
+[time]
+disabled      = false
+time_format   = "%H:%M"
+style         = "bg:#313244 fg:#b4befe"
+format        = "[ 󱑍 $time ]($style)"
+
+[character]
+success_symbol = "[❯](bold fg:#a6e3a1)"
+error_symbol   = "[❯](bold fg:#f38ba8)"
+vimcmd_symbol  = "[❮](bold fg:#cba6f7)"
+
+# --- Language modules (only show when in-project) ---
+
+[nix_shell]
+symbol   = "󱄅 "
+style    = "bg:#585b70 fg:#89dceb"
+format   = "[ $symbol$name ]($style)"
+impure_msg    = ""
+pure_msg      = "pure"
+unknown_msg   = "shell"
+
+[rust]
+symbol = " "
+style  = "bg:#585b70 fg:#fab387"
+format = "[ $symbol$version ]($style)"
+
+[python]
+symbol           = " "
+style            = "bg:#585b70 fg:#f9e2af"
+format           = "[ $symbol$version ]($style)"
+pyenv_version_name = false
+
+[c]
+symbol = " "
+style  = "bg:#585b70 fg:#89b4fa"
+format = "[ $symbol$version ]($style)"
+
+[nodejs]
+symbol = " "
+style  = "bg:#585b70 fg:#a6e3a1"
+format = "[ $symbol$version ]($style)"
+
+[package]
+disabled = true
+
+[aws]
+disabled = true
+
+[gcloud]
+disabled = true

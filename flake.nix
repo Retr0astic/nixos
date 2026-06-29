@@ -79,7 +79,7 @@
             imports = [
               ./home.nix
               ./modules/hyprland/hyprland.nix
-              ./modules/starship.nix
+              ./modules/starship/starship.nix
             ];
           };
           #        nixpkgs.overlays = [ inputs.millennium.overlays.default ];
