@@ -32,6 +32,9 @@
       protonup-qt
       nextcloud-client
       qbittorrent
+      libreoffice-qt6-fresh
+      hunspell
+      hunspellDicts.en-us-large
     ];
   };
 
