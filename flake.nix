@@ -78,6 +78,8 @@
           home-manager.users.sree = {
             imports = [
               ./home.nix
+              ./modules/hyprland/hyprland.nix
+              ./modules/starship.nix
             ];
           };
           #        nixpkgs.overlays = [ inputs.millennium.overlays.default ];

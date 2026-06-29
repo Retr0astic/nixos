@@ -35,12 +35,12 @@
       libreoffice-qt6-fresh
       hunspell
       hunspellDicts.en-us-large
-      kdePackages.okular
+      #      kdePackages.okular
     ];
   };
 
   imports = [
-    ./modules/hyprland/hyprland.nix
+    #    ./modules/hyprland/hyprland.nix
     inputs.spicetify-nix.homeManagerModules.default
   ];
 
@@ -88,9 +88,14 @@
     enable = true;
     enableBashIntegration = true;
   };
-  programs.starship = {
+
+  programs.zathura = {
     enable = true;
-    enableBashIntegration = true;
+    options = {
+      selection-clipboard = "clipboard";
+      adjust-open = "width";
+      recolor = true; # dark mode recolor
+    };
   };
 
   programs.spicetify = let
