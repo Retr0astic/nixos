@@ -154,11 +154,13 @@
     ];
   };
   programs.gamescope.enable = true;
+
   programs.gamemode = {
+    enable = true;
     settings = {
       cpu = {
-        governor = "performance"; # applied on game start
-        desiredgov = "power"; # same, alternative key some versions use
+        apply_governors = 1;
+        desiredgov = "performance";
       };
     };
   };
@@ -216,7 +218,7 @@
   ];
 
   nixpkgs.config.permittedInsecurePackages = [
-    "electron-39.8.10"
+    "pnpm-10.29.2"
   ];
 
   environment.sessionVariables = {

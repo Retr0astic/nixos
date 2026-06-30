@@ -21,14 +21,16 @@
 
     hyprland = {
       url = "github:hyprwm/Hyprland/v0.54.3-b";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     noctalia = {
       url = "github:noctalia-dev/noctalia";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     lucidglyph = {
-      url = "github:maximilionus/lucidglyph/v0.14.0";
+      url = "github:maximilionus/lucidglyph";
       flake = false;
     };
     zenBrowser = {
@@ -40,8 +42,14 @@
       url = "github:uiriansan/SilentSDDM";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nvf.url = "github:notashelf/nvf";
-    spicetify-nix.url = "github:Gerg-L/spicetify-nix";
+    nvf = {
+      url = "github:notashelf/nvf";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    spicetify-nix = {
+      url = "github:Gerg-L/spicetify-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
   outputs = inputs @ {
     self,
