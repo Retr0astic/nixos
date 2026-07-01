@@ -608,7 +608,6 @@
         "nvf": "nvf",
         "silentSDDM": "silentSDDM",
         "spicetify-nix": "spicetify-nix",
-        "vds-src": "vds-src",
         "zenBrowser": "zenBrowser"
       }
     },
@@ -695,22 +694,6 @@
       "original": {
         "owner": "nix-systems",
         "repo": "default",
-        "type": "github"
-      }
-    },
-    "vds-src": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1782041879,
-        "narHash": "sha256-y4R8CoWZZoofqQ/eOoUjMijOzUpg9iAh+kt6uraWMQY=",
-        "owner": "hurryman2212",
-        "repo": "vds",
-        "rev": "1448bb8ef98c65b8962223889ea9441f921393a2",
-        "type": "github"
-      },
-      "original": {
-        "owner": "hurryman2212",
-        "repo": "vds",
         "type": "github"
       }
     },

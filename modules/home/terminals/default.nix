@@ -1,10 +1,4 @@
-{pkgs, ...}: {
-  home.packages = with pkgs; [
-    kitty
-    wezterm
-    ghostty
-  ];
-
+{...}: {
   programs.kitty = {
     enable = true;
     settings = {

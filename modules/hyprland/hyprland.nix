@@ -234,8 +234,6 @@
       };
     };
   };
-  xdg.configFile."hypr/hyprland.lua".source = ./hyprland.lua;
-
   services.hypridle = {
     enable = true;
     settings = {
@@ -258,7 +256,6 @@
     };
   };
   systemd.user.sessionVariables = {
-    WAYLAND_DISPLAY = "$WAYLAND_DISPLAY";
     XDG_CURRENT_DESKTOP = "Hyprland";
     XDG_SESSION_TYPE = "wayland";
   };

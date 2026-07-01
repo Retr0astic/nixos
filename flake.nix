@@ -56,11 +56,6 @@
       url = "github:Gerg-L/spicetify-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    vds-src = {
-      url = "github:hurryman2212/vds";
-      flake = false;
-    };
   };
 
   outputs = inputs @ {
