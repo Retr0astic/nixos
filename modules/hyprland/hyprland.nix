@@ -4,6 +4,12 @@
   config,
   ...
 }: {
+  home.packages = with pkgs; [
+    hyprshot
+    cliphist
+    wlsunset
+  ];
+
   wayland.windowManager.hyprland = {
     enable = true;
     package = null;
