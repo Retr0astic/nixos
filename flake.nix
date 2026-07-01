@@ -1,96 +1,75 @@
 {
-  description = "NixOS configuration with Noctalia";
+  description = "Sree's dendritic NixOS configuration";
 
   nixConfig = {
-    extra-substituters = [ "https://noctalia.cachix.org" ];
+    extra-substituters = [
+      "https://nvf.cachix.org"
+      "https://noctalia.cachix.org"
+    ];
     extra-trusted-public-keys = [
+      "nvf.cachix.org-1:dSDpAzmzDzAlG7yL9T7nL+iX070q4LzY21CycL7/aOk="
       "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
     ];
   };
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/549bd84d6279f9852cae6225e372cc67fb91a4c1";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
     flake-parts.url = "github:hercules-ci/flake-parts";
-    import-tree.url = "github:vic/import-tree";
-
-    wrapper-modules.url = "github:BirdeeHub/nix-wrapper-modules";
 
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    noctalia = {
-      url = "github:noctalia-dev/noctalia-shell/v4.7.6";
+    hyprland = {
+      url = "github:hyprwm/Hyprland/v0.54.3-b";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-   
+
+    noctalia = {
+      url = "github:noctalia-dev/noctalia";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    lucidglyph = {
+      url = "github:maximilionus/lucidglyph";
+      flake = false;
+    };
+
     zenBrowser = {
       url = "github:youwen5/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    
+
     silentSDDM = {
       url = "github:uiriansan/SilentSDDM";
       inputs.nixpkgs.follows = "nixpkgs";
-<<<<<<< Updated upstream
-   };
-
-  };
-    outputs = inputs@{ self, nixpkgs, home-manager, flake-parts.lib.mkFlake, ... }: {
-      { inherit inputs; }
-      (inputs.import-tree ./modules);
-      home-manager.nixosModules.home-manager
-=======
     };
-    nvf.url = "github:notashelf/nvf";
-    spicetify-nix.url = "github:Gerg-L/spicetify-nix";
+
+    nvf = {
+      url = "github:notashelf/nvf";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    spicetify-nix = {
+      url = "github:Gerg-L/spicetify-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     vds-src = {
       url = "github:hurryman2212/vds";
       flake = false;
     };
   };
-  outputs = inputs @ {
-    self,
-    nixpkgs,
-    home-manager,
-    hyprland,
-    zenBrowser,
-    nvf,
-    lucidglyph,
-    vds-src,
-    ...
-  }: {
-    packages."x86_64-linux".nvf =
-      (nvf.lib.neovimConfiguration {
-        pkgs = nixpkgs.legacyPackages."x86_64-linux";
-        modules = [./modules/nvf.nix];
-      }).neovim;
 
-    nixosConfigurations.chapel = nixpkgs.lib.nixosSystem {
-      specialArgs = {inherit inputs;};
-      modules = [
-        {nixpkgs.hostPlatform = "x86_64-linux";}
-        ./configuration.nix
-        ./modules/noctalia/noctalia.nix
-        ./modules/zen.nix
-        ./modules/lucidglyph.nix
-        ./modules/vds.nix
-        home-manager.nixosModules.home-manager
->>>>>>> Stashed changes
-        {
-          home-manager.useGlobalPkgs = true;
-	  home-manager.backupFileExtension = "backup";
-          home-manager.useUserPackages = true;
-          home-manager.extraSpecialArgs = { 
-		inherit inputs;
-		system = "x86_64-linux"; 
-	 };
-          home-manager.users.sree = import ./home.nix;
-#        nixpkgs.overlays = [ inputs.millennium.overlays.default ];
-        }
-      ];
+  outputs = inputs @ {
+    flake-parts,
+    nixpkgs,
+    ...
+  }:
+    flake-parts.lib.mkFlake {inherit inputs;} {
+      imports = (import ./lib/treeimport.nix {lib = nixpkgs.lib;}) ./flake;
+      systems = ["x86_64-linux"];
     };
-  };
 }

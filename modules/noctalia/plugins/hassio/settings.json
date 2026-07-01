@@ -1,0 +1,10 @@
+{
+  "haUrl": "https://ha.retr0astic.com",
+  "haToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJiOGM4YjdmMTA0ZWU0MWE5YTE2ZTgxNjgwMTc5YWUzOCIsImlhdCI6MTc3OTI3MTg4OCwiZXhwIjoyMDk0NjMxODg4fQ.2uU20YDVbgKIPNWu6kfgG_KbRPpwQ_JjEbIS3mBSNFo",
+  "entities": [
+    "light.srees_wled_main_2",
+    "sensor.srees_iphone_battery_state",
+    "sensor.living_room_weather_station_bme680_temperature",
+    "climate.bmpsensor_supergeneral_ac"
+  ]
+}
