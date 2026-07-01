@@ -238,8 +238,10 @@ password_style = "random"
 polkit_agent = true
 settings_show_advanced = true
 
+    [shell.launcher]
+    session_search = true
+
     [shell.panel]
-    launcher_session_search = true
     open_near_click_control_center = true
     open_near_click_session = true
     open_near_click_wallpaper = true
