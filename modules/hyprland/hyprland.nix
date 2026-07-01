@@ -183,8 +183,15 @@
         "$mainMod SHIFT, 9, movetoworkspace, 9"
         "$mainMod SHIFT, 0, movetoworkspace, 10"
 
-        "$mainMod, S, togglespecialworkspace, magic"
-        "$mainMod SHIFT, S, movetoworkspace, special:magic"
+        "$mainMod, S, togglespecialworkspace, scratch"
+        "$mainMod SHIFT, S, movetoworkspace, special:scratch"
+        "$mainMod, A, togglespecialworkspace, chat"
+        "$mainMod SHIFT, A, movetoworkspace, special:chat"
+        "$mainMod, M, togglespecialworkspace, media"
+        "$mainMod SHIFT, M, movetoworkspace, special:media"
+
+        "$mainMod CTRL, A, exec, vesktop"
+        "$mainMod CTRL, M, exec, spotify"
 
         "$mainMod, mouse_down, workspace, e+1"
         "$mainMod, mouse_up,   workspace, e-1"
@@ -219,7 +226,11 @@
       ];
 
       windowrule = [
-        "match:class = cs2,immediate = yes"
+        "match:class cs2, immediate yes"
+        "match:class (vesktop|Vesktop), workspace special:chat silent"
+        "match:class (Spotify|spotify), workspace special:media silent"
+        "match:class (Spotify|spotify), idle_inhibit focus"
+        "match:class mpv, idle_inhibit focus"
         "match:class xdg-desktop-portal-gtk, float on"
         "match:class imv, float on"
       ];
