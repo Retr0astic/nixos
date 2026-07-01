@@ -46,7 +46,7 @@
             };
             home-manager.users.sree.imports =
               [
-                ../home.nix
+                ../modules/home
                 ../modules/starship/starship.nix
                 desktopModules.home
                 themeModules.home

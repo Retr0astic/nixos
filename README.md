@@ -46,7 +46,6 @@ modules/home/                 Reusable Home Manager modules
 modules/hyprland/             Hyprland Home Manager config
 modules/noctalia/             Noctalia config and plugins linked into ~/.config/noctalia
 modules/starship/             Starship Home Manager module and TOML config
-home.nix                      Small Home Manager entrypoint
 configuration.nix             Compatibility shim importing hosts/chapel
 ```
 
@@ -85,7 +84,7 @@ System-wide NixOS config goes in `modules/nixos/`:
 - `modules/nixos/services/`: services such as PipeWire, SDDM, OpenRGB, libvirt.
 - `modules/nixos/users/`: user account declarations.
 
-Home Manager config goes in `modules/home/`:
+Base Home Manager config starts at `modules/home/default.nix` and is imported directly by `flake/hosts.nix`. Home Manager config goes in `modules/home/`:
 
 - `modules/home/packages/`: general user packages that should exist regardless of desktop or theme.
 - `modules/home/shell/`: shell, aliases, zoxide, fzf, yazi.
