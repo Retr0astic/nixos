@@ -22,6 +22,7 @@
       hunspell
       hunspellDicts.en-us-large
       codex
+      vscode
     ];
   };
 }

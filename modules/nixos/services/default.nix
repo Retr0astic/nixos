@@ -19,6 +19,11 @@
       pulse.enable = true;
     };
 
+    openssh = {
+      enable = true;
+      openFirewall = true;
+    };
+
     displayManager.sddm = {
       enable = true;
       wayland.enable = true;
