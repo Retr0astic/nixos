@@ -40,7 +40,11 @@
     mpv
     imv
     kdePackages.dolphin
+    kdePackages.ark
+    kdePackages.kio-extras
     btop
+    p7zip
+    bubblewrap
   ];
 
   environment.sessionVariables = {

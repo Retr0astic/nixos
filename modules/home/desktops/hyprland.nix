@@ -1,9 +1,4 @@
-{
-  lib,
-  pkgs,
-  config,
-  ...
-}: {
+{pkgs, ...}: {
   home.packages = with pkgs; [
     hyprshot
     cliphist
@@ -28,6 +23,7 @@
 
       exec-once = [
         "noctalia"
+        "systemctl --user start openrgb.service"
       ];
 
       env = [

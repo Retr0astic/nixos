@@ -9,7 +9,6 @@
       vesktop
       jq
       gamescope-wsi
-      gamescope
       mangohud
       libsecret
       ludusavi

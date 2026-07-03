@@ -14,7 +14,7 @@ flake.nix
       -> hosts/chapel
       -> modules/nixos/*
       -> modules/home/*
-      -> modules/hyprland
+      -> modules/home/desktops
       -> modules/home/themes/noctalia.nix
 ```
 
@@ -53,7 +53,7 @@ flake.nix
 ├── modules/
 │   ├── nixos/                 # reusable NixOS modules
 │   ├── home/                  # reusable Home Manager modules
-│   ├── hyprland/              # Hyprland Home Manager config
+│   ├── home/desktops/         # Desktop-specific Home Manager config
 │   ├── noctalia/              # Noctalia config and plugins
 │   ├── starship/              # Starship config
 │   ├── lucidglyph.nix         # font rendering config
@@ -100,7 +100,7 @@ chapel = mkHost {
 | GTK/Qt/cursor user styling | `modules/home/appearance/default.nix` |
 | Home Manager app modules | `modules/home/programs/` |
 | XDG MIME apps and user dirs | `modules/home/xdg/default.nix` |
-| Hyprland-only user packages/settings | `modules/hyprland/hyprland.nix` |
+| Hyprland-only user packages/settings | `modules/home/desktops/hyprland.nix` |
 | Noctalia theme integration | `modules/home/themes/noctalia.nix` |
 | Font rendering and Lucidglyph | `modules/lucidglyph.nix` |
 
@@ -145,7 +145,7 @@ modules/nixos/desktops/niri.nix
 2. Create the Home Manager module:
 
 ```text
-modules/niri/niri.nix
+modules/home/desktops/niri.nix
 ```
 
 3. Register the desktop in `flake/hosts.nix`:
@@ -154,12 +154,12 @@ modules/niri/niri.nix
 desktops = {
   hyprland = {
     system = ../modules/nixos/desktops/hyprland.nix;
-    home = ../modules/hyprland/hyprland.nix;
+    home = ../modules/home/desktops/hyprland.nix;
   };
 
   niri = {
     system = ../modules/nixos/desktops/niri.nix;
-    home = ../modules/niri/niri.nix;
+    home = ../modules/home/desktops/niri.nix;
   };
 };
 ```

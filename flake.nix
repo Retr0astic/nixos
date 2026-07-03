@@ -64,7 +64,7 @@
     ...
   }:
     flake-parts.lib.mkFlake {inherit inputs;} {
-      imports = (import ./lib/treeimport.nix {lib = nixpkgs.lib;}) ./flake;
+      imports = (import ./lib/treeimport.nix {inherit (nixpkgs) lib;}) ./flake;
       systems = ["x86_64-linux"];
     };
 }

@@ -1,8 +1,4 @@
-{
-  pkgs,
-  lib,
-  ...
-}: {
+_: {
   vim = {
     # ── Editor behaviour ──────────────────────────────────────
     viAlias = true;

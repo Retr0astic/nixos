@@ -1,5 +1,9 @@
-{ inputs, pkgs, lib,...}:
-let
+{
+  inputs,
+  pkgs,
+  lib,
+  ...
+}: let
   extension = shortId: guid: {
     name = guid;
     value = {
@@ -22,17 +26,17 @@ let
     (extension "ublock-origin" "uBlock0@raymondhill.net")
     # ...
   ];
-
-in
-{
+in {
   environment.systemPackages = [
-    (pkgs.wrapFirefox
+    (
+      pkgs.wrapFirefox
       inputs.zenBrowser.packages.${pkgs.stdenv.hostPlatform.system}.zen-browser-unwrapped
       {
         extraPrefs = lib.concatLines (
           lib.mapAttrsToList (
             name: value: ''lockPref(${lib.strings.toJSON name}, ${lib.strings.toJSON value});''
-          ) prefs
+          )
+          prefs
         );
 
         extraPolicies = {

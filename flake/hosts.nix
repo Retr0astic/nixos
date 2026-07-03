@@ -6,7 +6,7 @@
   desktops = {
     hyprland = {
       system = ../modules/nixos/desktops/hyprland.nix;
-      home = ../modules/hyprland/hyprland.nix;
+      home = ../modules/home/desktops/hyprland.nix;
     };
   };
 
@@ -38,20 +38,22 @@
           desktopModules.system
           inputs.home-manager.nixosModules.home-manager
           {
-            home-manager.useGlobalPkgs = true;
-            home-manager.backupFileExtension = "backup";
-            home-manager.useUserPackages = true;
-            home-manager.extraSpecialArgs = {
-              inherit inputs self system;
+            home-manager = {
+              useGlobalPkgs = true;
+              backupFileExtension = "backup";
+              useUserPackages = true;
+              extraSpecialArgs = {
+                inherit inputs self system;
+              };
+              users.sree.imports =
+                [
+                  ../modules/home
+                  ../modules/starship/starship.nix
+                  desktopModules.home
+                  themeModules.home
+                ]
+                ++ extraHomeModules;
             };
-            home-manager.users.sree.imports =
-              [
-                ../modules/home
-                ../modules/starship/starship.nix
-                desktopModules.home
-                themeModules.home
-              ]
-              ++ extraHomeModules;
           }
         ]
         ++ extraModules;
