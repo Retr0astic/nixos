@@ -18,11 +18,10 @@
       "$fileManager" = "dolphin";
       "$menu" = "$ipc panel-toggle launcher";
       monitor = [
-        "DP-2, highresxmaxwidth@highrr,0x0, 1, cm, auto, bitdepth, 10, sdrsaturation, 1, sdrbrightness, 1.0"
+        "desc:Samsung Electric Company LS49AG95 HNTTA00029, 5120x1440@239.76, 0x0, 1, cm, auto, bitdepth, 10, sdrsaturation, 1, sdrbrightness, 1.0"
       ];
 
       exec-once = [
-        "noctalia"
         "systemctl --user start openrgb.service"
       ];
 
