@@ -8,7 +8,7 @@
 
   programs.noctalia = {
     enable = true;
-    systemd.enable = true;
+    systemd.enable = false;
   };
 
   home.file.".config/noctalia" = {

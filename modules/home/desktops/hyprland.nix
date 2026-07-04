@@ -22,6 +22,7 @@
       ];
 
       exec-once = [
+        "noctalia"
         "systemctl --user start openrgb.service"
       ];
 
