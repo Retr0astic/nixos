@@ -1,4 +1,5 @@
 {pkgs, ...}: {
+  services.logind.settings.Login.HandlePowerKey = "suspend";
   services = {
     avahi = {
       enable = true;
