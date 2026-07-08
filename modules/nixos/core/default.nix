@@ -45,6 +45,7 @@
     btop
     p7zip
     bubblewrap
+    unrar
   ];
 
   environment.sessionVariables = {
