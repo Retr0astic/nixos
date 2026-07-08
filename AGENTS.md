@@ -45,7 +45,7 @@ Run the narrowest useful check after edits:
 nix flake check
 ```
 
-For system-level changes, also build the Chapel toplevel when practical:
+Do not run heavier builds when `nix flake check` already evaluates the affected output enough for the change. For system-level changes that are not sufficiently covered by `nix flake check`, build the Chapel toplevel when practical:
 
 ```bash
 nix build .#nixosConfigurations.chapel.config.system.build.toplevel
