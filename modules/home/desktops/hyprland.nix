@@ -35,6 +35,11 @@ in {
     portalPackage = null;
     configType = "lua";
     systemd.enable = false;
+    extraConfig = ''
+      local hm_xdg_config_home = os.getenv("XDG_CONFIG_HOME") or os.getenv("HOME") .. "/.config"
+      package.path = hm_xdg_config_home .. "/hypr/?.lua;" .. hm_xdg_config_home .. "/hypr/?/init.lua;" .. package.path
+      require("noctalia").apply_theme()
+    '';
     settings = {
       ipc._var = "noctalia msg";
       mainMod._var = "SUPER";
