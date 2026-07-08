@@ -1,133 +1,135 @@
-# ~/.config/starship.toml
-
 "$schema" = 'https://starship.rs/config-schema.json'
 
+add_newline = true
+command_timeout = 1000
+
 format = """
-[](fg:#1e1e2e)\
-$os\
-$username\
-[](fg:#1e1e2e bg:#313244)\
 $directory\
-[](fg:#313244 bg:#45475a)\
 $git_branch\
 $git_status\
-[](fg:#45475a bg:none)\
-$c\
-$rust\
-$python\
-$nix_shell\
-$nodejs\
 $fill\
 $cmd_duration\
-[](fg:#313244)\
-$time\
-[](fg:#313244)\
-\n$character"""
+$time
+$character
+"""
 
-
-[os]
-disabled = false
-style = "bg:#1e1e2e fg:#cba6f7"
-
-[os.symbols]
-NixOS = "󱄅 "
-Fedora = " "
-Linux = " "
-
-[username]
-show_always = true
-style_user  = "bg:#1e1e2e fg:#cba6f7"
-style_root  = "bg:#1e1e2e fg:#f38ba8"
-format      = "[ $user ]($style)"
+################################################################################
+# Directory
+################################################################################
 
 [directory]
-style            = "bg:#313244 fg:#89b4fa"
-format           = "[ $path ]($style)"
 truncation_length = 3
 truncate_to_repo = true
-truncation_symbol = "…/"
+fish_style_pwd_dir_length = 1
+style = "black bold bg:blue"
+format = "[](blue)[ $path]($style)[ ](blue)"
+read_only = ""
 
-[directory.substitutions]
-"~"         = "󱂵"
-"~/nixos"   = "󱄅 nixos"
-"~/dev"     = " dev"
-"~/Documents" = "󰈙 docs"
-"~/Downloads" = " dl"
+################################################################################
+# Git
+################################################################################
 
 [git_branch]
-symbol = " "
-style  = "bg:#45475a fg:#a6e3a1"
-format = "[ $symbol$branch ]($style)"
+symbol = " "
+style = "white bold bg:bright-black"
+format = "[](bright-black)[ $symbol$branch ]($style)[ ](bright-black)"
 
 [git_status]
-style  = "bg:#45475a fg:#f9e2af"
-format = "[$all_status$ahead_behind ]($style)"
-conflicted = "󰩌 "
-ahead      = "⇡${count} "
-behind     = "⇣${count} "
-diverged   = "⇕⇡${ahead_count}⇣${behind_count} "
-untracked  = "󰋗 "
-stashed    = "󰏗 "
-modified   = "! "
-staged     = "󰐕 "
-renamed    = "󰑕 "
-deleted    = " "
+style = "yellow bold bg:black"
+format = "([](black)[ $all_status$ahead_behind ]($style)[ ](black))"
+
+ahead = "⇡"
+behind = "⇣"
+diverged = "⇕"
+modified = "~"
+deleted = "✕"
+staged = "+"
+untracked = "?"
+renamed = "»"
+conflicted = "!"
+
+################################################################################
+# Right side
+################################################################################
 
 [fill]
 symbol = " "
 
 [cmd_duration]
-min_time          = 2000
-style             = "fg:#f9e2af"
-format            = "[󱦟 $duration ]($style)"
+min_time = 1000
+style = "white bg:black"
+format = "[](black)[󱎫 $duration ]($style)[ ](black)"
 
 [time]
-disabled      = false
-time_format   = "%H:%M"
-style         = "bg:#313244 fg:#b4befe"
-format        = "[ 󱑍 $time ]($style)"
+disabled = false
+time_format = "%H:%M"
+style = "white bold bg:magenta"
+format = "[](magenta)[󰥔 $time ]($style)[](magenta)"
+
+################################################################################
+# Prompt
+################################################################################
 
 [character]
-success_symbol = "[❯](bold fg:#a6e3a1)"
-error_symbol   = "[❯](bold fg:#f38ba8)"
-vimcmd_symbol  = "[❮](bold fg:#cba6f7)"
+success_symbol = "[❯](bold green)"
+error_symbol = "[❯](bold red)"
+vimcmd_symbol = "[❮](bold magenta)"
 
-# --- Language modules (only show when in-project) ---
+################################################################################
+# Nix
+################################################################################
 
 [nix_shell]
-symbol   = "󱄅 "
-style    = "fg:#89dceb"
-format   = "[ $symbol$name ]($style)"
-impure_msg    = ""
-pure_msg      = "pure"
-unknown_msg   = "shell"
+disabled = false
+symbol = " "
+style = "black bold bg:green"
+format = "[](green)[ $symbol$name ]($style)[ ](green)"
 
-[rust]
-symbol = " "
-style  = "fg:#fab387"
-format = "[ $symbol$version ]($style)"
+################################################################################
+# Disabled modules
+################################################################################
 
-[python]
-symbol           = " "
-style            = "fg:#f9e2af"
-format           = "[ $symbol$version ]($style)"
-pyenv_version_name = false
+[username]
+disabled = true
 
-[c]
-symbol = " "
-style  = "fg:#89b4fa"
-format = "[ $symbol$version ]($style)"
+[hostname]
+disabled = true
+
+[battery]
+disabled = true
+
+[memory_usage]
+disabled = true
 
 [nodejs]
-symbol = " "
-style  = "fg:#a6e3a1"
-format = "[ $symbol$version ]($style)"
+disabled = true
+
+[python]
+disabled = true
+
+[rust]
+disabled = true
+
+[golang]
+disabled = true
+
+[c]
+disabled = true
 
 [package]
+disabled = true
+
+[docker_context]
+disabled = true
+
+[kubernetes]
 disabled = true
 
 [aws]
 disabled = true
 
 [gcloud]
+disabled = true
+
+[terraform]
 disabled = true

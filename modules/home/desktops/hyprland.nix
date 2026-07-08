@@ -224,10 +224,10 @@ in {
 
           (luaBind (key "print") (exec ''"hyprshot -m window --clipboard-only"''))
           (luaBind ''"print"'' (exec ''"hyprshot -m output --clipboard-only"''))
-          (luaBind ''"shift + print"'' (exec ''"hyprshot -m region --clipboard-only"''))
-          (luaBind ''"ctrl + print"'' (exec ''"hyprshot -m window"''))
-          (luaBind ''"ctrl + " .. mainMod .. " + print"'' (exec ''"hyprshot -m output"''))
-          (luaBind ''"ctrl + shift + print"'' (exec ''"hyprshot -m region"''))
+          (luaBind ''"SHIFT + print"'' (exec ''"hyprshot -m region --clipboard-only"''))
+          (luaBind ''"CTRL + print"'' (exec ''"hyprshot -m window"''))
+          (luaBind ''"CTRL + " .. mainMod .. " + print"'' (exec ''"hyprshot -m output"''))
+          (luaBind ''"CTRL + SHIFT + print"'' (exec ''"hyprshot -m region"''))
 
           (luaBindWith (key "mouse:272") "hl.dsp.window.drag()" {mouse = true;})
           (luaBindWith (key "mouse:273") "hl.dsp.window.resize()" {mouse = true;})
