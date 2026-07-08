@@ -1,4 +1,28 @@
-{pkgs, ...}: {
+{
+  lib,
+  pkgs,
+  ...
+}: let
+  inherit (lib.generators) mkLuaInline;
+
+  luaBind = key: dispatcher: {
+    _args = [
+      (mkLuaInline key)
+      (mkLuaInline dispatcher)
+    ];
+  };
+
+  luaBindWith = key: dispatcher: options: {
+    _args = [
+      (mkLuaInline key)
+      (mkLuaInline dispatcher)
+      options
+    ];
+  };
+
+  key = suffix: ''mainMod .. " + ${suffix}"'';
+  exec = command: ''hl.dsp.exec_cmd(${command})'';
+in {
   home.packages = with pkgs; [
     hyprshot
     cliphist
@@ -9,240 +33,248 @@
     enable = true;
     package = null;
     portalPackage = null;
-    configType = "hyprlang";
+    configType = "lua";
     systemd.enable = false;
     settings = {
-      "$ipc" = "noctalia msg";
-      "$mainMod" = "SUPER";
-      "$terminal" = "kitty";
-      "$fileManager" = "dolphin";
-      "$menu" = "$ipc panel-toggle launcher";
-      monitor = [
-        "desc:Samsung Electric Company LS49AG95 HNTTA00029, 5120x1440@239.76, 0x0, 1, cm, auto, bitdepth, 10, supports_wide_color, 1, supports_hdr, 1, sdr_max_luminance, 250, min_luminance, 0.001, max_luminance, 1015, max_avg_luminance, 604, sdrsaturation, 1.0, sdrbrightness, 1.0"
-      ];
+      ipc._var = "noctalia msg";
+      mainMod._var = "SUPER";
+      terminal._var = "kitty";
+      fileManager._var = "dolphin";
+      menu._var = mkLuaInline ''ipc .. " panel-toggle launcher"'';
 
-      exec-once = [
-        "noctalia"
-        "systemctl --user start openrgb.service"
-        "spotify"
-        "vesktop"
-      ];
+      monitor = {
+        output = "desc:Samsung Electric Company LS49AG95 HNTTA00029";
+        mode = "5120x1440@239.76";
+        position = "0x0";
+        scale = 1;
+        cm = "auto";
+        bitdepth = 10;
+        supports_wide_color = 1;
+        supports_hdr = 1;
+        sdr_max_luminance = 250;
+        min_luminance = 0.001;
+        max_luminance = 1015;
+        max_avg_luminance = 604;
+        sdrsaturation = 1.0;
+        sdrbrightness = 1.0;
+      };
+
+      on = {
+        _args = [
+          "hyprland.start"
+          (mkLuaInline ''
+            function()
+              hl.exec_cmd("noctalia")
+              hl.exec_cmd("systemctl --user start openrgb.service")
+              hl.exec_cmd("spotify")
+              hl.exec_cmd("vesktop")
+            end
+          '')
+        ];
+      };
 
       env = [
-        "XCURSOR_SIZE,24"
-        "HYPRCURSOR_SIZE,24"
-        "GBM_BACKEND,nvidia-drm"
-        "__GLX_VENDOR_LIBRARY_NAME,nvidia"
-        "LIBVA_DRIVER_NAME,nvidia"
-        "NVD_BACKEND,direct"
-        "NIXOS_OZONE_WL,1"
-        "__GL_GSYNC_ALLOWED,1"
-        "__GL_VRR_ALLOWED,0"
+        {_args = ["XCURSOR_SIZE" "24"];}
+        {_args = ["HYPRCURSOR_SIZE" "24"];}
+        {_args = ["GBM_BACKEND" "nvidia-drm"];}
+        {_args = ["__GLX_VENDOR_LIBRARY_NAME" "nvidia"];}
+        {_args = ["LIBVA_DRIVER_NAME" "nvidia"];}
+        {_args = ["NVD_BACKEND" "direct"];}
+        {_args = ["NIXOS_OZONE_WL" "1"];}
+        {_args = ["__GL_GSYNC_ALLOWED" "1"];}
+        {_args = ["__GL_VRR_ALLOWED" "0"];}
       ];
 
-      general = {
-        gaps_in = 3;
-        gaps_out = 5;
-        border_size = 1;
-        resize_on_border = false;
-        allow_tearing = true;
-        layout = "master";
-      };
-
-      decoration = {
-        rounding = 5;
-        rounding_power = 2;
-        active_opacity = 1.0;
-        inactive_opacity = 1.0;
-        dim_special = 0.4;
-        shadow = {
-          enabled = true;
-          range = 4;
-          render_power = 3;
-          color = "rgba(1a1a1aee)";
+      config = {
+        general = {
+          gaps_in = 3;
+          gaps_out = 5;
+          border_size = 1;
+          resize_on_border = false;
+          allow_tearing = true;
+          layout = "master";
         };
-        blur = {
-          enabled = true;
-          size = 3;
-          passes = 2;
-          vibrancy = 0.1696;
-          special = true;
+
+        decoration = {
+          rounding = 5;
+          rounding_power = 2;
+          active_opacity = 1.0;
+          inactive_opacity = 1.0;
+          dim_special = 0.4;
+          shadow = {
+            enabled = true;
+            range = 4;
+            render_power = 3;
+            color = "rgba(1a1a1aee)";
+          };
+          blur = {
+            enabled = true;
+            size = 3;
+            passes = 2;
+            vibrancy = 0.1696;
+            special = true;
+          };
         };
+
+        animations.enabled = true;
+
+        dwindle.preserve_split = true;
+
+        master = {
+          new_status = "inherit";
+          orientation = "center";
+          slave_count_for_center_master = 0;
+        };
+
+        misc = {
+          force_default_wallpaper = -1;
+          disable_hyprland_logo = false;
+          vrr = 2;
+        };
+
+        render = {
+          cm_enabled = true;
+          cm_auto_hdr = 2;
+          direct_scanout = 1;
+          send_content_type = true;
+        };
+
+        input = {
+          kb_layout = "us";
+          follow_mouse = 1;
+          sensitivity = 0;
+          touchpad.natural_scroll = false;
+        };
+
+        cursor.no_hardware_cursors = 0;
       };
 
-      animations = {
-        enabled = true;
+      curve = [
+        {_args = ["linear" {type = "bezier"; points = [[0 0] [1 1]];}];}
+        {_args = ["md3_standard" {type = "bezier"; points = [[0.2 0] [0 1]];}];}
+        {_args = ["md3_decel" {type = "bezier"; points = [[0.05 0.7] [0.1 1]];}];}
+        {_args = ["md3_accel" {type = "bezier"; points = [[0.3 0] [0.8 0.15]];}];}
+        {_args = ["overshot" {type = "bezier"; points = [[0.05 0.9] [0.1 1.1]];}];}
+        {_args = ["crazyshot" {type = "bezier"; points = [[0.1 1.5] [0.76 0.92]];}];}
+        {_args = ["hyprnostretch" {type = "bezier"; points = [[0.05 0.9] [0.1 1.0]];}];}
+        {_args = ["menu_decel" {type = "bezier"; points = [[0.1 1] [0 1]];}];}
+        {_args = ["menu_accel" {type = "bezier"; points = [[0.38 0.04] [1 0.07]];}];}
+        {_args = ["easeInOutCirc" {type = "bezier"; points = [[0.85 0] [0.15 1]];}];}
+        {_args = ["easeOutCirc" {type = "bezier"; points = [[0 0.55] [0.45 1]];}];}
+        {_args = ["easeOutExpo" {type = "bezier"; points = [[0.16 1] [0.3 1]];}];}
+        {_args = ["softAcDecel" {type = "bezier"; points = [[0.26 0.26] [0.15 1]];}];}
+        {_args = ["md2" {type = "bezier"; points = [[0.4 0] [0.2 1]];}];}
+      ];
 
-        bezier = [
-          "linear, 0, 0, 1, 1"
-          "md3_standard, 0.2, 0, 0, 1"
-          "md3_decel, 0.05, 0.7, 0.1, 1"
-          "md3_accel, 0.3, 0, 0.8, 0.15"
-          "overshot, 0.05, 0.9, 0.1, 1.1"
-          "crazyshot, 0.1, 1.5, 0.76, 0.92"
-          "hyprnostretch, 0.05, 0.9, 0.1, 1.0"
-          "menu_decel, 0.1, 1, 0, 1"
-          "menu_accel, 0.38, 0.04, 1, 0.07"
-          "easeInOutCirc, 0.85, 0, 0.15, 1"
-          "easeOutCirc, 0, 0.55, 0.45, 1"
-          "easeOutExpo, 0.16, 1, 0.3, 1"
-          "softAcDecel, 0.26, 0.26, 0.15, 1"
-          "md2, 0.4, 0, 0.2, 1"
-        ];
+      animation = [
+        {leaf = "windows"; enabled = true; speed = 3; bezier = "md3_decel"; style = "popin 60%";}
+        {leaf = "windowsIn"; enabled = true; speed = 3; bezier = "md3_decel"; style = "popin 60%";}
+        {leaf = "windowsOut"; enabled = true; speed = 3; bezier = "md3_accel"; style = "popin 60%";}
+        {leaf = "border"; enabled = true; speed = 10; bezier = "default";}
+        {leaf = "fade"; enabled = true; speed = 3; bezier = "md3_decel";}
+        {leaf = "layersIn"; enabled = true; speed = 3; bezier = "menu_decel"; style = "slide";}
+        {leaf = "layersOut"; enabled = true; speed = 1.6; bezier = "menu_accel";}
+        {leaf = "fadeLayersIn"; enabled = true; speed = 2; bezier = "menu_decel";}
+        {leaf = "fadeLayersOut"; enabled = true; speed = 4.5; bezier = "menu_accel";}
+        {leaf = "workspaces"; enabled = true; speed = 7; bezier = "menu_decel"; style = "slidevert";}
+        {leaf = "specialWorkspace"; enabled = true; speed = 3; bezier = "md3_decel"; style = "slidefadevert, 20%";}
+      ];
 
-        animation = [
-          "windows, 1, 3, md3_decel, popin 60%"
-          "windowsIn, 1, 3, md3_decel, popin 60%"
-          "windowsOut, 1, 3, md3_accel, popin 60%"
-          "border, 1, 10, default"
-          "fade, 1, 3, md3_decel"
-          "layersIn, 1, 3, menu_decel, slide"
-          "layersOut, 1, 1.6, menu_accel"
-          "fadeLayersIn, 1, 2, menu_decel"
-          "fadeLayersOut, 1, 4.5, menu_accel"
-          "workspaces, 1, 7, menu_decel, slidevert"
-          "specialWorkspace, 1, 3, md3_decel, slidefadevert, 20%"
-        ];
+      gesture = {
+        fingers = 3;
+        direction = "horizontal";
+        action = "workspace";
       };
-
-      dwindle = {
-        preserve_split = true;
-      };
-
-      master = {
-        new_status = "inherit";
-        orientation = "center";
-        slave_count_for_center_master = 0;
-      };
-
-      misc = {
-        force_default_wallpaper = -1;
-        disable_hyprland_logo = false;
-        vrr = 2;
-      };
-
-      render = {
-        cm_enabled = true;
-        cm_auto_hdr = 2;
-        direct_scanout = 1;
-        send_content_type = true;
-      };
-
-      input = {
-        kb_layout = "us";
-        follow_mouse = 1;
-        sensitivity = 0;
-        touchpad.natural_scroll = false;
-      };
-
-      gesture = "3, horizontal, workspace";
 
       device = {
         name = "epic-mouse-v1";
         sensitivity = -0.5;
       };
 
-      bind = [
-        "$mainMod, Return, exec, $terminal"
-        "$mainMod, C, killactive"
-        "$mainMod CTRL, Escape, exit"
-        "$mainMod, E, exec, $fileManager"
-        "$mainMod, V, togglefloating"
-        "$mainMod, R, exec, $menu"
-        "$mainMod, P, pseudo"
-        "$mainMod, Z, exec, $ipc panel-toggle control-center"
-        "$mainMod, comma, exec, $ipc settings-toggle"
-        "$mainMod SHIFT, c, exec, $ipc panel-toggle launcher clipboard"
+      bind =
+        [
+          (luaBind (key "Return") (exec "terminal"))
+          (luaBind (key "C") "hl.dsp.window.close()")
+          (luaBind (key "CTRL + Escape") "hl.dsp.exit()")
+          (luaBind (key "E") (exec "fileManager"))
+          (luaBind (key "V") ''hl.dsp.window.float({ action = "toggle" })'')
+          (luaBind (key "R") (exec "menu"))
+          (luaBind (key "P") "hl.dsp.window.pseudo()")
+          (luaBind (key "Z") (exec ''ipc .. " panel-toggle control-center"''))
+          (luaBind (key "comma") (exec ''ipc .. " settings-toggle"''))
+          (luaBind (key "SHIFT + C") (exec ''ipc .. " panel-toggle launcher clipboard"''))
 
-        "$mainMod, left,  movefocus, l"
-        "$mainMod, right, movefocus, r"
-        "$mainMod, up,    movefocus, u"
-        "$mainMod, down,  movefocus, d"
+          (luaBind (key "left") ''hl.dsp.focus({ direction = "left" })'')
+          (luaBind (key "right") ''hl.dsp.focus({ direction = "right" })'')
+          (luaBind (key "up") ''hl.dsp.focus({ direction = "up" })'')
+          (luaBind (key "down") ''hl.dsp.focus({ direction = "down" })'')
 
-        "$mainMod, 1, workspace, 1"
-        "$mainMod, 2, workspace, 2"
-        "$mainMod, 3, workspace, 3"
-        "$mainMod, 4, workspace, 4"
-        "$mainMod, 5, workspace, 5"
-        "$mainMod, 6, workspace, 6"
-        "$mainMod, 7, workspace, 7"
-        "$mainMod, 8, workspace, 8"
-        "$mainMod, 9, workspace, 9"
-        "$mainMod, 0, workspace, 10"
+          (luaBind (key "S") ''hl.dsp.workspace.toggle_special("scratch")'')
+          (luaBind (key "SHIFT + S") ''hl.dsp.window.move({ workspace = "special:scratch" })'')
+          (luaBind (key "A") ''hl.dsp.workspace.toggle_special("chat")'')
+          (luaBind (key "SHIFT + A") ''hl.dsp.window.move({ workspace = "special:chat" })'')
+          (luaBind (key "M") ''hl.dsp.workspace.toggle_special("media")'')
+          (luaBind (key "SHIFT + M") ''hl.dsp.window.move({ workspace = "special:media" })'')
 
-        "$mainMod SHIFT, 1, movetoworkspace, 1"
-        "$mainMod SHIFT, 2, movetoworkspace, 2"
-        "$mainMod SHIFT, 3, movetoworkspace, 3"
-        "$mainMod SHIFT, 4, movetoworkspace, 4"
-        "$mainMod SHIFT, 5, movetoworkspace, 5"
+          (luaBind (key "CTRL + A") (exec ''"vesktop"''))
+          (luaBind (key "CTRL + M") (exec ''"spotify"''))
 
-        "$mainMod SHIFT, 6, movetoworkspace, 6"
-        "$mainMod SHIFT, 7, movetoworkspace, 7"
-        "$mainMod SHIFT, 8, movetoworkspace, 8"
-        "$mainMod SHIFT, 9, movetoworkspace, 9"
-        "$mainMod SHIFT, 0, movetoworkspace, 10"
+          (luaBind (key "mouse_down") ''hl.dsp.focus({ workspace = "e+1" })'')
+          (luaBind (key "mouse_up") ''hl.dsp.focus({ workspace = "e-1" })'')
 
-        "$mainMod, S, togglespecialworkspace, scratch"
-        "$mainMod SHIFT, S, movetoworkspace, special:scratch"
-        "$mainMod, A, togglespecialworkspace, chat"
-        "$mainMod SHIFT, A, movetoworkspace, special:chat"
-        "$mainMod, M, togglespecialworkspace, media"
-        "$mainMod SHIFT, M, movetoworkspace, special:media"
+          (luaBind (key "print") (exec ''"hyprshot -m window --clipboard-only"''))
+          (luaBind ''"print"'' (exec ''"hyprshot -m output --clipboard-only"''))
+          (luaBind ''"shift + print"'' (exec ''"hyprshot -m region --clipboard-only"''))
+          (luaBind ''"ctrl + print"'' (exec ''"hyprshot -m window"''))
+          (luaBind ''"ctrl + " .. mainMod .. " + print"'' (exec ''"hyprshot -m output"''))
+          (luaBind ''"ctrl + shift + print"'' (exec ''"hyprshot -m region"''))
 
-        "$mainMod CTRL, A, exec, vesktop"
-        "$mainMod CTRL, M, exec, spotify"
+          (luaBindWith (key "mouse:272") "hl.dsp.window.drag()" {mouse = true;})
+          (luaBindWith (key "mouse:273") "hl.dsp.window.resize()" {mouse = true;})
 
-        "$mainMod, mouse_down, workspace, e+1"
-        "$mainMod, mouse_up,   workspace, e-1"
+          (luaBindWith ''"XF86AudioRaiseVolume"'' (exec ''"wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"'') {locked = true; repeating = true;})
+          (luaBindWith ''"XF86AudioLowerVolume"'' (exec ''"wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"'') {locked = true; repeating = true;})
+          (luaBindWith ''"XF86AudioMute"'' (exec ''"wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"'') {locked = true; repeating = true;})
+          (luaBindWith ''"XF86AudioMicMute"'' (exec ''"wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"'') {locked = true; repeating = true;})
+          (luaBindWith ''"XF86MonBrightnessUp"'' (exec ''"brightnessctl -e4 -n2 set 5%+"'') {locked = true; repeating = true;})
+          (luaBindWith ''"XF86MonBrightnessDown"'' (exec ''"brightnessctl -e4 -n2 set 5%-"'') {locked = true; repeating = true;})
 
-        "$mainMod, print,       exec, hyprshot -m window --clipboard-only"
-        ", print,               exec, hyprshot -m output --clipboard-only"
-        "shift, print,          exec, hyprshot -m region --clipboard-only"
-        "ctrl, print,           exec, hyprshot -m window"
-        "ctrl $mainMod, print,  exec, hyprshot -m output"
-        "ctrl shift, print,     exec, hyprshot -m region"
+          (luaBindWith ''"XF86AudioNext"'' (exec ''"playerctl next"'') {locked = true;})
+          (luaBindWith ''"XF86AudioPause"'' (exec ''"playerctl play-pause"'') {locked = true;})
+          (luaBindWith ''"XF86AudioPlay"'' (exec ''"playerctl play-pause"'') {locked = true;})
+          (luaBindWith ''"XF86AudioPrev"'' (exec ''"playerctl previous"'') {locked = true;})
+        ]
+        ++ (lib.concatLists (lib.genList (
+            i: let
+              workspace = toString (i + 1);
+              keyNum =
+                if i == 9
+                then "0"
+                else toString (i + 1);
+            in [
+              (luaBind (key keyNum) ''hl.dsp.focus({ workspace = "${workspace}" })'')
+              (luaBind (key "SHIFT + ${keyNum}") ''hl.dsp.window.move({ workspace = "${workspace}" })'')
+            ]
+          )
+          10));
+
+      window_rule = [
+        {match.class = "cs2"; immediate = true;}
+        {match.xdg_tag = "proton-game"; content = "game";}
+        {match.class = "cs2"; content = "game";}
+        {match.class = "(vesktop|Vesktop)"; workspace = "special:chat silent";}
+        {match.class = "(Spotify|spotify)"; workspace = "special:media silent";}
+        {match.class = "(Spotify|spotify)"; idle_inhibit = "focus";}
+        {match.class = "mpv"; idle_inhibit = "focus";}
+        {match.modal = true; float = true;}
+        {match.class = "xdg-desktop-portal-gtk"; float = true;}
+        {match.class = "imv"; float = true;}
+        {match.fullscreen = true; match.content = "game"; tonemap = "off";}
+        {match.fullscreen = true; match.content = "game"; tonemap = "off"; workspace = "9";}
       ];
 
-      bindm = [
-        "$mainMod, mouse:272, movewindow"
-        "$mainMod, mouse:273, resizewindow"
-      ];
-
-      bindel = [
-        ", XF86AudioRaiseVolume,  exec, wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"
-        ", XF86AudioLowerVolume,  exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
-        ", XF86AudioMute,         exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
-        ", XF86AudioMicMute,      exec, wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"
-        ", XF86MonBrightnessUp,   exec, brightnessctl -e4 -n2 set 5%+"
-        ", XF86MonBrightnessDown, exec, brightnessctl -e4 -n2 set 5%-"
-      ];
-
-      bindl = [
-        ", XF86AudioNext,  exec, playerctl next"
-        ", XF86AudioPause, exec, playerctl play-pause"
-        ", XF86AudioPlay,  exec, playerctl play-pause"
-        ", XF86AudioPrev,  exec, playerctl previous"
-      ];
-
-      windowrule = [
-        "match:class cs2, immediate yes"
-        "match:xdg_tag proton-game, content game"
-        "match:class cs2, content game"
-        "match:class (vesktop|Vesktop), workspace special:chat silent"
-        "match:class (Spotify|spotify), workspace special:media silent"
-        "match:class (Spotify|spotify), idle_inhibit focus"
-        "match:class mpv, idle_inhibit focus"
-        "match:modal true, float on"
-        "match:class xdg-desktop-portal-gtk, float on"
-        "match:class imv, float on"
-        "match:fullscreen true, match:content game, tonemap off"
-        "match:fullscreen true, match:content game, tonemap off, workspace 9"
-      ];
-      cursor.no_hardware_cursors = 0;
-
-      layerrule = {
-        name = "noctalia";
-        "match:namespace" = "^noctalia-(bar-.+|notification|dock|panel|attached-panel|osd)$";
+      layer_rule = {
+        match.namespace = "^noctalia-(bar-.+|notification|dock|panel|attached-panel|osd)$";
         ignore_alpha = 0.5;
         blur = true;
         blur_popups = true;
