@@ -150,34 +150,207 @@ in {
       };
 
       curve = [
-        {_args = ["linear" {type = "bezier"; points = [[0 0] [1 1]];}];}
-        {_args = ["md3_standard" {type = "bezier"; points = [[0.2 0] [0 1]];}];}
-        {_args = ["md3_decel" {type = "bezier"; points = [[0.05 0.7] [0.1 1]];}];}
-        {_args = ["md3_accel" {type = "bezier"; points = [[0.3 0] [0.8 0.15]];}];}
-        {_args = ["overshot" {type = "bezier"; points = [[0.05 0.9] [0.1 1.1]];}];}
-        {_args = ["crazyshot" {type = "bezier"; points = [[0.1 1.5] [0.76 0.92]];}];}
-        {_args = ["hyprnostretch" {type = "bezier"; points = [[0.05 0.9] [0.1 1.0]];}];}
-        {_args = ["menu_decel" {type = "bezier"; points = [[0.1 1] [0 1]];}];}
-        {_args = ["menu_accel" {type = "bezier"; points = [[0.38 0.04] [1 0.07]];}];}
-        {_args = ["easeInOutCirc" {type = "bezier"; points = [[0.85 0] [0.15 1]];}];}
-        {_args = ["easeOutCirc" {type = "bezier"; points = [[0 0.55] [0.45 1]];}];}
-        {_args = ["easeOutExpo" {type = "bezier"; points = [[0.16 1] [0.3 1]];}];}
-        {_args = ["softAcDecel" {type = "bezier"; points = [[0.26 0.26] [0.15 1]];}];}
-        {_args = ["md2" {type = "bezier"; points = [[0.4 0] [0.2 1]];}];}
+        {
+          _args = [
+            "linear"
+            {
+              type = "bezier";
+              points = [[0 0] [1 1]];
+            }
+          ];
+        }
+        {
+          _args = [
+            "md3_standard"
+            {
+              type = "bezier";
+              points = [[0.2 0] [0 1]];
+            }
+          ];
+        }
+        {
+          _args = [
+            "md3_decel"
+            {
+              type = "bezier";
+              points = [[0.05 0.7] [0.1 1]];
+            }
+          ];
+        }
+        {
+          _args = [
+            "md3_accel"
+            {
+              type = "bezier";
+              points = [[0.3 0] [0.8 0.15]];
+            }
+          ];
+        }
+        {
+          _args = [
+            "overshot"
+            {
+              type = "bezier";
+              points = [[0.05 0.9] [0.1 1.1]];
+            }
+          ];
+        }
+        {
+          _args = [
+            "crazyshot"
+            {
+              type = "bezier";
+              points = [[0.1 1.5] [0.76 0.92]];
+            }
+          ];
+        }
+        {
+          _args = [
+            "hyprnostretch"
+            {
+              type = "bezier";
+              points = [[0.05 0.9] [0.1 1.0]];
+            }
+          ];
+        }
+        {
+          _args = [
+            "menu_decel"
+            {
+              type = "bezier";
+              points = [[0.1 1] [0 1]];
+            }
+          ];
+        }
+        {
+          _args = [
+            "menu_accel"
+            {
+              type = "bezier";
+              points = [[0.38 0.04] [1 0.07]];
+            }
+          ];
+        }
+        {
+          _args = [
+            "easeInOutCirc"
+            {
+              type = "bezier";
+              points = [[0.85 0] [0.15 1]];
+            }
+          ];
+        }
+        {
+          _args = [
+            "easeOutCirc"
+            {
+              type = "bezier";
+              points = [[0 0.55] [0.45 1]];
+            }
+          ];
+        }
+        {
+          _args = [
+            "easeOutExpo"
+            {
+              type = "bezier";
+              points = [[0.16 1] [0.3 1]];
+            }
+          ];
+        }
+        {
+          _args = [
+            "softAcDecel"
+            {
+              type = "bezier";
+              points = [[0.26 0.26] [0.15 1]];
+            }
+          ];
+        }
+        {
+          _args = [
+            "md2"
+            {
+              type = "bezier";
+              points = [[0.4 0] [0.2 1]];
+            }
+          ];
+        }
       ];
 
       animation = [
-        {leaf = "windows"; enabled = true; speed = 3; bezier = "md3_decel"; style = "popin 60%";}
-        {leaf = "windowsIn"; enabled = true; speed = 3; bezier = "md3_decel"; style = "popin 60%";}
-        {leaf = "windowsOut"; enabled = true; speed = 3; bezier = "md3_accel"; style = "popin 60%";}
-        {leaf = "border"; enabled = true; speed = 10; bezier = "default";}
-        {leaf = "fade"; enabled = true; speed = 3; bezier = "md3_decel";}
-        {leaf = "layersIn"; enabled = true; speed = 3; bezier = "menu_decel"; style = "slide";}
-        {leaf = "layersOut"; enabled = true; speed = 1.6; bezier = "menu_accel";}
-        {leaf = "fadeLayersIn"; enabled = true; speed = 2; bezier = "menu_decel";}
-        {leaf = "fadeLayersOut"; enabled = true; speed = 4.5; bezier = "menu_accel";}
-        {leaf = "workspaces"; enabled = true; speed = 7; bezier = "menu_decel"; style = "slidevert";}
-        {leaf = "specialWorkspace"; enabled = true; speed = 3; bezier = "md3_decel"; style = "slidefadevert, 20%";}
+        {
+          leaf = "windows";
+          enabled = true;
+          speed = 3;
+          bezier = "md3_decel";
+          style = "popin 60%";
+        }
+        {
+          leaf = "windowsIn";
+          enabled = true;
+          speed = 3;
+          bezier = "md3_decel";
+          style = "popin 60%";
+        }
+        {
+          leaf = "windowsOut";
+          enabled = true;
+          speed = 3;
+          bezier = "md3_accel";
+          style = "popin 60%";
+        }
+        {
+          leaf = "border";
+          enabled = true;
+          speed = 10;
+          bezier = "default";
+        }
+        {
+          leaf = "fade";
+          enabled = true;
+          speed = 3;
+          bezier = "md3_decel";
+        }
+        {
+          leaf = "layersIn";
+          enabled = true;
+          speed = 3;
+          bezier = "menu_decel";
+          style = "slide";
+        }
+        {
+          leaf = "layersOut";
+          enabled = true;
+          speed = 1.6;
+          bezier = "menu_accel";
+        }
+        {
+          leaf = "fadeLayersIn";
+          enabled = true;
+          speed = 2;
+          bezier = "menu_decel";
+        }
+        {
+          leaf = "fadeLayersOut";
+          enabled = true;
+          speed = 4.5;
+          bezier = "menu_accel";
+        }
+        {
+          leaf = "workspaces";
+          enabled = true;
+          speed = 7;
+          bezier = "menu_decel";
+          style = "slidevert";
+        }
+        {
+          leaf = "specialWorkspace";
+          enabled = true;
+          speed = 3;
+          bezier = "md3_decel";
+          style = "slidefadevert, 20%";
+        }
       ];
 
       gesture = {
@@ -232,12 +405,30 @@ in {
           (luaBindWith (key "mouse:272") "hl.dsp.window.drag()" {mouse = true;})
           (luaBindWith (key "mouse:273") "hl.dsp.window.resize()" {mouse = true;})
 
-          (luaBindWith ''"XF86AudioRaiseVolume"'' (exec ''"wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"'') {locked = true; repeating = true;})
-          (luaBindWith ''"XF86AudioLowerVolume"'' (exec ''"wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"'') {locked = true; repeating = true;})
-          (luaBindWith ''"XF86AudioMute"'' (exec ''"wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"'') {locked = true; repeating = true;})
-          (luaBindWith ''"XF86AudioMicMute"'' (exec ''"wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"'') {locked = true; repeating = true;})
-          (luaBindWith ''"XF86MonBrightnessUp"'' (exec ''"brightnessctl -e4 -n2 set 5%+"'') {locked = true; repeating = true;})
-          (luaBindWith ''"XF86MonBrightnessDown"'' (exec ''"brightnessctl -e4 -n2 set 5%-"'') {locked = true; repeating = true;})
+          (luaBindWith ''"XF86AudioRaiseVolume"'' (exec ''"wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"'') {
+            locked = true;
+            repeating = true;
+          })
+          (luaBindWith ''"XF86AudioLowerVolume"'' (exec ''"wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"'') {
+            locked = true;
+            repeating = true;
+          })
+          (luaBindWith ''"XF86AudioMute"'' (exec ''"wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"'') {
+            locked = true;
+            repeating = true;
+          })
+          (luaBindWith ''"XF86AudioMicMute"'' (exec ''"wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"'') {
+            locked = true;
+            repeating = true;
+          })
+          (luaBindWith ''"XF86MonBrightnessUp"'' (exec ''"brightnessctl -e4 -n2 set 5%+"'') {
+            locked = true;
+            repeating = true;
+          })
+          (luaBindWith ''"XF86MonBrightnessDown"'' (exec ''"brightnessctl -e4 -n2 set 5%-"'') {
+            locked = true;
+            repeating = true;
+          })
 
           (luaBindWith ''"XF86AudioNext"'' (exec ''"playerctl next"'') {locked = true;})
           (luaBindWith ''"XF86AudioPause"'' (exec ''"playerctl play-pause"'') {locked = true;})
@@ -259,18 +450,57 @@ in {
           10));
 
       window_rule = [
-        {match.class = "cs2"; immediate = true;}
-        {match.xdg_tag = "proton-game"; content = "game";}
-        {match.class = "cs2"; content = "game";}
-        {match.class = "(vesktop|Vesktop)"; workspace = "special:chat silent";}
-        {match.class = "(Spotify|spotify)"; workspace = "special:media silent";}
-        {match.class = "(Spotify|spotify)"; idle_inhibit = "focus";}
-        {match.class = "mpv"; idle_inhibit = "focus";}
-        {match.modal = true; float = true;}
-        {match.class = "xdg-desktop-portal-gtk"; float = true;}
-        {match.class = "imv"; float = true;}
-        {match.fullscreen = true; match.content = "game"; tonemap = "off";}
-        {match.fullscreen = true; match.content = "game"; tonemap = "off"; workspace = "9";}
+        {
+          match.class = "cs2";
+          immediate = true;
+        }
+        {
+          match.xdg_tag = "proton-game";
+          content = "game";
+        }
+        {
+          match.class = "cs2";
+          content = "game";
+        }
+        {
+          match.class = "(vesktop|Vesktop)";
+          workspace = "special:chat silent";
+        }
+        {
+          match.class = "(Spotify|spotify)";
+          workspace = "special:media silent";
+        }
+        {
+          match.class = "(Spotify|spotify)";
+          idle_inhibit = "focus";
+        }
+        {
+          match.class = "mpv";
+          idle_inhibit = "focus";
+        }
+        {
+          match.modal = true;
+          float = true;
+        }
+        {
+          match.class = "xdg-desktop-portal-gtk";
+          float = true;
+        }
+        {
+          match.class = "imv";
+          float = true;
+        }
+        {
+          match.fullscreen = true;
+          match.content = "game";
+          tonemap = "off";
+        }
+        {
+          match.fullscreen = true;
+          match.content = "game";
+          tonemap = "off";
+          workspace = "9";
+        }
       ];
 
       layer_rule = {
