@@ -14,6 +14,35 @@ This repository is Sree's NixOS flake. Treat it as a machine configuration first
 - `modules/noctalia/` contains Noctalia config and plugin files.
 - `configuration.nix` is only a compatibility shim importing `hosts/chapel`.
 
+## Token and Context Discipline
+
+- Read only the files needed for the task. Do not scan the whole repo unless the task requires architecture-level understanding.
+- Prefer `rg`, `fd`, `git grep`, and targeted file reads over broad recursive dumps.
+- When inspecting files, summarize findings instead of pasting large blocks back into chat.
+- Before opening many files, identify likely entry points from `flake.nix`, nearest `default.nix`, or the relevant module path.
+- Keep responses concise: state what changed, why, validation status, and any risks.
+- Do not repeat unchanged config in replies. Show only patches, commands, or small relevant snippets.
+- For large refactors, work in phases and keep each phase narrowly scoped.
+
+## Subagent Workflow
+
+Use subagents mainly for inspection and review, not parallel editing.
+
+Recommended flow:
+1. Explorer subagent maps relevant files and dependencies.
+2. Specialist subagent inspects the specific area being changed.
+3. Main agent proposes an exact file-level change plan.
+4. Only one implementer edits files.
+5. Reviewer subagent checks the diff for Nix syntax, duplicate options, misplaced config, and risky rebuild issues.
+
+Rules:
+- Do not let multiple subagents edit the same files concurrently.
+- Prefer read-only subagents for discovery.
+- Use a single editing agent for actual patches.
+- Before editing, list the exact files expected to change.
+- After editing, summarize the diff and validation result.
+- For risky NixOS, Hyprland, NVIDIA, UWSM, boot, kernel, LUKS, filesystem, or hardware changes, inspect first and explain the planned edits before modifying files.
+
 ## Change Placement
 
 - Put host-only boot, LUKS, hostname, kernel, and generated hardware settings in `hosts/chapel/`.

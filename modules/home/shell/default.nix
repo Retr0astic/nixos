@@ -1,6 +1,6 @@
 _: {
   programs = {
-    bash = {
+    fish = {
       enable = true;
       shellAliases = {
         rebuild = "sudo nixos-rebuild switch --flake ~/nixos";
@@ -8,19 +8,27 @@ _: {
         cd = "z";
         noctalia-config = "noctalia config export > ~/nixos/modules/noctalia/config.toml";
         cat = "bat";
+        grep = "rg";
+        ls = "eza";
+        ll = "eza -lh --git";
+        la = "eza -lah --git";
+        tree = "eza --tree";
       };
     };
 
-    zoxide.enable = true;
+    zoxide = {
+      enable = true;
+      enableFishIntegration = true;
+    };
 
     fzf = {
       enable = true;
-      enableBashIntegration = true;
+      enableFishIntegration = true;
     };
 
     yazi = {
       enable = true;
-      enableBashIntegration = true;
+      enableFishIntegration = true;
     };
   };
 }

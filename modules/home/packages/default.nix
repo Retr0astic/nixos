@@ -5,7 +5,10 @@
     stateVersion = "26.05";
     packages = with pkgs; [
       fastfetch
+      fd
       htop
+      ripgrep
+      eza
       vesktop
       jq
       gamescope-wsi

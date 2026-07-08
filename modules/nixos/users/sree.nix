@@ -1,4 +1,6 @@
 {pkgs, ...}: {
+  programs.fish.enable = true;
+
   users.users.sree = {
     isNormalUser = true;
     description = "Sree";
@@ -10,7 +12,7 @@
       "libvirtd"
       "render"
     ];
-    shell = pkgs.bash;
+    shell = pkgs.fish;
     home = "/home/sree";
   };
 }

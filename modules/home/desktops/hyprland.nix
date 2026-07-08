@@ -18,12 +18,14 @@
       "$fileManager" = "dolphin";
       "$menu" = "$ipc panel-toggle launcher";
       monitor = [
-        "desc:Samsung Electric Company LS49AG95 HNTTA00029, 5120x1440@239.76, 0x0, 1, cm, auto, bitdepth, 10, sdrsaturation, 1, sdrbrightness, 1.0"
+        "desc:Samsung Electric Company LS49AG95 HNTTA00029, 5120x1440@239.76, 0x0, 1, cm, auto, bitdepth, 10, supports_wide_color, 1, supports_hdr, 1, sdr_max_luminance, 250, min_luminance, 0.001, max_luminance, 1015, max_avg_luminance, 604, sdrsaturation, 1.0, sdrbrightness, 1.0"
       ];
 
       exec-once = [
         "noctalia"
         "systemctl --user start openrgb.service"
+        "spotify"
+        "vesktop"
       ];
 
       env = [
@@ -121,8 +123,9 @@
 
       render = {
         cm_enabled = true;
-        cm_auto_hdr = true;
-        direct_scanout = true;
+        cm_auto_hdr = 2;
+        direct_scanout = 1;
+        send_content_type = true;
       };
 
       input = {
@@ -223,14 +226,19 @@
 
       windowrule = [
         "match:class cs2, immediate yes"
+        "match:xdg_tag proton-game, content game"
+        "match:class cs2, content game"
         "match:class (vesktop|Vesktop), workspace special:chat silent"
         "match:class (Spotify|spotify), workspace special:media silent"
         "match:class (Spotify|spotify), idle_inhibit focus"
         "match:class mpv, idle_inhibit focus"
+        "match:modal true, float on"
         "match:class xdg-desktop-portal-gtk, float on"
         "match:class imv, float on"
+        "match:fullscreen true, match:content game, tonemap off"
+        "match:fullscreen true, match:content game, tonemap off, workspace 9"
       ];
-      cursor = ["no_hardware_cursors = 2"];
+      cursor.no_hardware_cursors = 0;
 
       layerrule = {
         name = "noctalia";
