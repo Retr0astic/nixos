@@ -6,6 +6,7 @@
 }: {
   imports = [
     ./hardware-configuration.nix
+    ./mounts.nix
     ../../modules/nixos/core
     ../../modules/nixos/hardware/nvidia.nix
     ../../modules/nixos/programs/gaming.nix
