@@ -9,4 +9,8 @@
     home = ../modules/home/desktops/hyprland.nix;
     compatibleShells = ["noctalia"];
   };
+  config.retr0astic.integrations.hyprland-noctalia = {
+    desktop = "hyprland"; shell = "noctalia";
+    home = {};
+  };
 }

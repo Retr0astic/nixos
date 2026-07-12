@@ -10,8 +10,9 @@ those modules; they are never recursively imported as flake-parts modules.
 `flake.nix` only declares inputs, systems, and the recursive import. The
 declared `retr0astic` schema contains typed, lazy registries for:
 
-- `nixosModules` and `homeModules` (`deferredModule` values);
-- `hosts`, `desktops`, `shells`, `themes`, and `users`;
+- open-string registries for `hosts`, `configurations`, `aliases`, `desktops`,
+  `shells`, `themes`, `users`, and top-level `features`;
+- pair-specific desktop/shell `integrations` with explicit compatibility;
 - generated `nixosConfigurations`.
 
 The public outputs also include `packages.x86_64-linux.nvf` and
@@ -41,7 +42,9 @@ chapel-hyprland-noctalia
 ```
 
 Both currently select Chapel + Hyprland + the Noctalia graphical shell and
-theme. To add a variant, register its typed desktop, shell, or theme under
+theme. Physical hosts live in `retr0astic.hosts`; variants live in
+`retr0astic.configurations`; aliases point at variants. To add a variant,
+register its desktop, shell, theme, pair integration, or feature under
 `flake/`, then add explicit data to `flake/hosts/chapel.nix`. Keep host-only boot,
 LUKS, filesystem, kernel, and generated hardware settings in `hosts/chapel`.
 
@@ -67,8 +70,8 @@ push, and deployment are intentionally outside this migration.
 
 - Add a host or variant in `flake/hosts/`; select `hostname`, `desktop`,
   `shell`, `theme`, and `users`. The host leaf stays in `hosts/<name>/`.
-- Add a desktop registration in `flake/desktops.nix` with `system`,
-  `home`, `integrations`, and `compatibleShells`.
+- Add a desktop registration in `flake/desktops.nix` with `system`, `home`,
+  and `compatibleShells`, then add pair-specific integration data.
 - Add a graphical shell in `flake/shells.nix`; shells are independent of
   desktops and may provide integrations.
 - Add a theme in `flake/themes.nix`; keep styling separate from shell
@@ -77,6 +80,8 @@ push, and deployment are intentionally outside this migration.
   Home Manager modules.
 - Keep reusable raw modules and assets outside `flake/`; only
   flake-parts modules belong inside the recursive boundary.
+- Niri or AGS support should add registry declarations and configuration data
+  (plus pair integrations); it must not require schema or generator changes.
 
 ## Repository map
 
