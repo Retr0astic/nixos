@@ -5,7 +5,7 @@
 [![Home Manager](https://img.shields.io/badge/Home%20Manager-enabled-0EA5E9)](https://github.com/nix-community/home-manager)
 [![Default](https://img.shields.io/badge/default-chapel%20%3D%20hyprland%20%2B%20noctalia-F59E0B)](#outputs)
 
-A dendritic NixOS configuration built around small composable modules. The default host is `chapel`, currently composed as `hyprland + noctalia`.
+A dendritic-inspired, hybrid NixOS configuration built around small composable modules. Recursive discovery is used only for the flake-parts modules under `flake/`; NixOS and Home Manager modules are imported explicitly. The default host is `chapel`, currently composed as `hyprland + noctalia`.
 
 ```text
 flake.nix
@@ -64,7 +64,9 @@ flake.nix
 
 ## How It Works
 
-`flake.nix` does not manually assemble every output. It calls `flake-parts.lib.mkFlake` and imports every module under `flake/` through `lib/treeimport.nix`.
+`flake.nix` does not manually assemble every flake-parts output. It calls `flake-parts.lib.mkFlake` and recursively imports modules under `flake/` through `lib/treeimport.nix`. That recursive discovery boundary does not extend to NixOS or Home Manager modules: those are composed through explicit `imports` lists and explicit host composition in `flake/hosts.nix`.
+
+This is therefore a hybrid rather than a fully recursive dendritic layout. Keep flake-parts modules under `flake/` when they should be discovered recursively; do not add arbitrary files there expecting them to become NixOS or Home Manager modules.
 
 `flake/hosts.nix` defines the composition layer:
 
@@ -100,7 +102,7 @@ chapel = mkHost {
 | GTK/Qt/cursor user styling | `modules/home/appearance/default.nix` |
 | Home Manager app modules | `modules/home/programs/` |
 | XDG MIME apps and user dirs | `modules/home/xdg/default.nix` |
-| Hyprland-only user packages/settings | `modules/home/desktops/hyprland.nix` |
+| Hyprland-only user packages/settings | `modules/home/desktops/hyprland/` (facade: `hyprland.nix`) |
 | Noctalia theme integration | `modules/home/themes/noctalia.nix` |
 | Font rendering and Lucidglyph | `modules/lucidglyph.nix` |
 
@@ -131,6 +133,20 @@ Import it from `modules/home/programs/default.nix`:
   ];
 }
 ```
+
+### Hyprland layout
+
+The Hyprland Home Manager facade at `modules/home/desktops/hyprland.nix` imports focused modules from `modules/home/desktops/hyprland/`:
+
+| File | Contents |
+| --- | --- |
+| `settings.nix` | Packages and general display/input settings |
+| `animations.nix` | Curves, animations, and gestures |
+| `bindings.nix` | Keyboard, mouse, media, and workspace bindings |
+| `rules.nix` | Window and layer rules |
+| `session.nix` | Session startup, Hypridle, and session variables |
+
+Keep this split focused: the facade is the module registered by `flake/hosts.nix`, and the child files are explicit imports rather than recursively discovered modules.
 
 ## Adding A Desktop Variant
 
