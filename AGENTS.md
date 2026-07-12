@@ -1,162 +1,388 @@
 # Agent Guide
 
 This repository is Sree's NixOS flake. Treat it as a machine configuration
-first: keep changes small, validate with Nix, and do not rewrite hardware- or
-host-specific settings unless the user explicitly asks.
+first: keep changes small, validate with Nix, preserve unrelated worktree
+changes, and do not modify host- or hardware-specific settings without a clear
+task requirement.
 
-## Repository Shape
+## Repository Structure
 
-* `flake.nix` is the flake-parts entrypoint. It imports modules under `flake/`
-  through `lib/treeimport.nix`.
-* `flake/hosts.nix` owns host composition. Add desktops, themes, host aliases,
-  and `mkHost` changes there.
-* `hosts/chapel/` contains Chapel-specific NixOS configuration and generated
-  hardware configuration.
-* `modules/nixos/` contains reusable system modules.
+* `flake.nix` is the flake-parts entrypoint.
+* `flake/` contains flake-parts modules and host composition.
+* `flake/hosts.nix` owns host construction, desktop and theme composition, and
+  host aliases.
+* `hosts/chapel/` contains Chapel-specific NixOS and generated hardware
+  configuration.
+* `modules/nixos/` contains reusable NixOS modules.
 * `modules/home/` contains reusable Home Manager modules for user `sree`.
-* `modules/home/desktops/` contains desktop-specific Home Manager settings.
+* `modules/home/desktops/` contains desktop-specific Home Manager configuration.
 * `modules/home/themes/` contains theme integrations.
 * `modules/noctalia/` contains Noctalia configuration and plugin files.
 * `configuration.nix` is only a compatibility shim importing `hosts/chapel`.
 
 ## Start Every Task
 
+Before inspecting or changing the repository:
+
 1. Read all applicable `AGENTS.md` files.
 2. Run `git status --short`.
-3. Preserve unrelated and pre-existing worktree changes.
-4. Identify the narrowest relevant entrypoints before opening files broadly.
-5. Inspect existing implementation and conventions before proposing changes.
-6. Do not commit, push, deploy, switch the live system, delete data, or perform
-   irreversible operations unless explicitly requested.
+3. Identify pre-existing and unrelated worktree changes.
+4. Preserve all unrelated user changes.
+5. Identify the narrowest relevant repository entrypoints.
+6. Inspect existing conventions before proposing or implementing changes.
 
-A request to inspect, diagnose, review, or explain does not authorize edits.
+A request to inspect, diagnose, explain, plan, or review does not authorize
+repository edits.
+
+Do not commit, push, deploy, activate the system, delete data, or perform an
+irreversible operation unless the user explicitly requests that operation.
+
+## Task Classification
+
+Classify every request before taking substantive action.
+
+### Read-only task
+
+A task is read-only when it asks only for:
+
+* explanation;
+* diagnosis;
+* architecture assessment;
+* repository exploration;
+* code review;
+* plan creation;
+* command suggestions;
+* documentation of existing behavior;
+* verification that does not modify tracked files.
+
+Read-only tasks do not require the full implementation workflow.
+
+Use a read-only subagent when targeted repository exploration or independent
+review would materially improve the answer.
+
+### Trivial edit
+
+A task is trivial only when all of the following are true:
+
+* exactly one obvious file is affected;
+* the change is localized and mechanically clear;
+* no runtime behavior changes;
+* no module graph, service, package, option, dependency, flake output, host
+  output, test, deployment, or system behavior changes;
+* no security, privacy, data integrity, recovery, hardware, boot, storage,
+  networking, or authentication implications exist;
+* validation is straightforward and narrowly scoped.
+
+Examples include a spelling correction, comment correction, or formatting-only
+change.
+
+The primary thread may perform a trivial edit directly.
+
+When uncertain whether a change is trivial, classify it as non-trivial.
+
+### Non-trivial implementation task
+
+A task is non-trivial when it involves one or more of the following:
+
+* changes more than one file;
+* changes runtime or user-visible behavior;
+* adds or changes a module, service, package, option, dependency, test, script,
+  plugin, flake output, host output, desktop integration, theme integration, or
+  deployment path;
+* requires repository exploration beyond one obvious file;
+* fixes a behavioral bug or regression;
+* introduces a new abstraction or changes architecture;
+* modifies NixOS, Home Manager, Hyprland, Noctalia, NVIDIA, UWSM, boot, kernel,
+  storage, filesystem, LUKS, networking, authentication, permissions, security,
+  hardware, recovery, or data handling;
+* can affect startup, login, graphics, networking, storage, recovery, system
+  activation, or data integrity.
+
+Every non-trivial implementation task must use the required subagent workflow.
+
+## Editing Authority
+
+For non-trivial implementation tasks, the primary thread is
+orchestration-only.
+
+The primary thread may:
+
+* classify the task;
+* inspect repository status;
+* provide context to subagents;
+* reconcile findings;
+* monitor progress;
+* summarize results;
+* request corrections;
+* report validation and risks.
+
+The primary thread must not:
+
+* edit repository files;
+* apply patches;
+* perform implementation work assigned to `implementer`;
+* silently replace a failed delegation attempt with direct editing;
+* claim a subagent was used when no subagent thread was created.
+
+All non-trivial repository edits must be performed by the configured
+`implementer` subagent.
+
+## Required Subagent Workflow
+
+For every non-trivial implementation task, the primary thread must
+automatically execute this workflow without waiting for the user to request
+delegation.
+
+Commit-only exception: when the user explicitly requests only a commit of
+already-authorized current changes, use the `implementer` only. The implementer
+handles staging and commit, and the planner, reviewer, corrections, and
+final-review stages are skipped unless the user explicitly requests them.
+
+### 1. Planner
+
+Spawn the configured `planner` agent before any repository edit.
+
+Provide the planner with:
+
+* the original user request;
+* applicable repository instructions;
+* current `git status --short`;
+* known unrelated worktree changes;
+* relevant prior findings;
+* any explicit user constraints.
+
+The planner must return a decision-complete plan containing:
+
+* task classification and rationale;
+* relevant files and execution paths;
+* affected modules, options, functions, or symbols;
+* ordered implementation steps;
+* risks and edge cases;
+* rollback or recovery considerations when applicable;
+* acceptance criteria;
+* exact verification commands.
+
+The planner is read-only.
+
+Wait for the planner to finish before continuing.
+
+### 2. Plan assessment
+
+The primary thread must inspect the planner's result before implementation.
+
+Resolve:
+
+* contradictions with the user request;
+* conflicts with applicable `AGENTS.md` files;
+* unsafe or unnecessarily broad changes;
+* missing validation;
+* incorrect file placement;
+* conflicts with pre-existing worktree changes.
+
+Tell the user which files are expected to change before the first edit.
+
+Do not implement the plan in the primary thread.
+
+### 3. Implementer
+
+Spawn the configured `implementer` agent.
+
+Provide it with:
+
+* the original user request;
+* the complete planner output;
+* any corrections made during plan assessment;
+* applicable `AGENTS.md` instructions;
+* current worktree status;
+* known unrelated user changes;
+* required validation commands.
+
+Only `implementer` may edit files for a non-trivial task.
+
+The implementer must:
+
+* follow the approved plan;
+* inspect local conventions before editing;
+* preserve unrelated worktree changes;
+* make focused changes;
+* update tests and documentation when required;
+* run the required validation;
+* report files changed;
+* report behavior implemented;
+* report commands and tests run;
+* report failures, warnings, and skipped checks;
+* report deviations from the plan;
+* report remaining concerns.
+
+Wait for the implementer to finish.
+
+### 4. Reviewer (unless skipped by the commit-only exception)
+
+After implementation, spawn the configured `reviewer` agent.
+
+Provide it with:
+
+* the original user request;
+* the approved plan;
+* the implementer's report;
+* the actual repository diff;
+* validation output;
+* applicable repository instructions.
+
+The reviewer must inspect:
+
+* the actual diff;
+* relevant surrounding code;
+* compliance with the original request;
+* compliance with the approved plan;
+* compliance with applicable `AGENTS.md` files;
+* correctness;
+* regressions;
+* security and privacy;
+* data integrity;
+* recovery and rollback implications;
+* error handling;
+* test coverage;
+* validation quality;
+* unnecessary scope or churn.
+
+The reviewer is read-only.
+
+Findings must include:
+
+* severity;
+* concrete file path and location;
+* failure mode or impact;
+* evidence;
+* recommended correction.
+
+Wait for the reviewer to finish.
+
+### 5. Corrections (when a reviewer was used)
+
+When the reviewer reports material findings:
+
+1. Reuse or spawn `implementer` with the reviewer findings.
+2. Require focused corrections only.
+3. Require repeated relevant validation.
+4. Preserve unrelated worktree changes.
+5. Wait for implementation to finish.
+
+The primary thread must not apply reviewer corrections directly.
+
+### 6. Final review (when a reviewer was used)
+
+After corrections, spawn `reviewer` again.
+
+The final reviewer must verify:
+
+* all material findings were resolved;
+* no regressions were introduced;
+* validation is sufficient;
+* the final diff still matches the approved scope.
+
+For tasks using the reviewer workflow, do not declare the task complete until
+the final review finishes or a concrete tool or configuration error prevents
+review. Commit-only tasks may complete after the implementer reports the
+commit and required validation.
+
+## Delegation Failure Handling
+
+Do not infer that subagents are unavailable merely because delegation was not
+attempted automatically.
+
+Before using any sequential fallback:
+
+1. Attempt to spawn the required configured subagent.
+2. Confirm an actual tool, runtime, configuration, or model error occurred.
+3. Report the exact failure.
+
+When a configured custom agent fails to spawn, attempt an appropriate built-in
+agent when available:
+
+* use a read-only explorer or reviewer for planning and inspection;
+* use a writable worker for implementation only when its permissions and scope
+  are appropriate.
+
+If no subagent runtime is genuinely available:
+
+* state this clearly;
+* do not claim that subagents were used;
+* preserve the same planning, implementation, and review separation;
+* request explicit user approval before the primary thread performs a
+  non-trivial edit.
+
+## Subagent Boundaries
+
+* `planner` is read-only.
+* `reviewer` is read-only.
+* `implementer` owns all non-trivial repository edits.
+* Subagents must not spawn additional subagents.
+* The primary thread must orchestrate all transitions.
+* Never allow multiple agents to edit concurrently.
+* Subagents must return concrete file paths, relevant symbols or options,
+  repository evidence, validation results, and unresolved risks.
+* The primary thread must reconcile conflicting findings before implementation
+  continues.
+* Do not delegate secrets, credentials, private keys, destructive commands,
+  live system switches, or irreversible operations.
+* Do not send credentials or secret values in subagent prompts.
 
 ## Token and Context Discipline
 
 * Read only files needed for the task.
-* Do not scan the entire repository unless architecture-level understanding is
-  genuinely required.
+* Do not scan the whole repository unless architecture-level understanding is
+  required.
 * Prefer `rg`, `fd`, `git grep`, and targeted reads over recursive dumps.
-* Before opening many files, identify likely entrypoints from `flake.nix`, the
-  nearest `default.nix`, or the relevant module path.
-* Summarize inspected code instead of pasting large blocks into the response.
+* Identify likely entrypoints from `flake.nix`, the nearest `default.nix`, or
+  the relevant module path before opening many files.
+* Summarize inspected code instead of pasting large blocks.
 * Do not repeat unchanged configuration.
 * Show only patches, commands, or small relevant excerpts.
-* For large changes, work in narrowly scoped phases.
-* Keep final responses focused on:
+* Keep delegated tasks narrowly scoped.
+* Do not ask multiple subagents to repeat the same broad repository scan.
+* Pass concrete planner findings to the implementer instead of requiring the
+  implementer to rediscover the entire architecture.
+* Pass the actual diff and focused surrounding context to the reviewer.
 
-  * what changed;
-  * why it changed;
-  * validation performed;
-  * failures or warnings;
-  * deviations from the plan;
-  * remaining risks.
+## Shell and Command Compatibility
 
-## Required Subagent Workflow
+* The user's interactive shell is Fish.
+* Prefer commands that work unchanged in Fish and POSIX-like shells.
+* Use Fish syntax when editing Fish configuration, functions, abbreviations, or
+  interactive shell behavior.
+* Do not assume Bash-only syntax such as:
 
-For every non-trivial code or configuration change, the primary agent must
-automatically use the configured subagents without waiting for the user to
-request delegation.
+  * `VAR=value command`;
+  * `export VAR=value`;
+  * `$(command)`;
+  * `[[ ... ]]`;
+  * Bash arrays;
+  * process substitution.
+* Prefer `env VAR=value command` for command-scoped environment variables.
+* When shell-specific syntax is necessary, invoke the shell explicitly:
 
-Required sequence:
-
-1. Run `git status --short`.
-2. Spawn `planner` before any edit.
-3. Wait for a decision-complete plan containing:
-
-   * task classification and rationale;
-   * relevant files and execution paths;
-   * ordered implementation steps;
-   * risks and edge cases;
-   * acceptance criteria;
-   * exact verification commands.
-4. Tell the user which files are expected to change before the first edit.
-5. Spawn `implementer` with:
-
-   * the original user request;
-   * the planner's completed plan;
-   * applicable repository instructions;
-   * known worktree constraints.
-6. Wait for implementation and validation to finish.
-7. Spawn `reviewer` to inspect:
-
-   * the actual diff;
-   * relevant surrounding code;
-   * the original request;
-   * the planner's plan;
-   * applicable `AGENTS.md` instructions;
-   * tests and validation output.
-8. Send all material reviewer findings back to `implementer`.
-9. Wait for focused corrections and repeated validation.
-10. Spawn `reviewer` again for final verification.
-11. The primary agent must reconcile the results and report:
-
-    * files changed;
-    * behavior implemented;
-    * commands and tests run;
-    * review status;
-    * deviations from the plan;
-    * failures or warnings;
-    * unresolved risks.
-
-The primary agent must orchestrate every transition. Subagents must not spawn
-other subagents.
-
-Never allow multiple agents to edit concurrently.
-
-### Mandatory Delegation
-
-The workflow is mandatory when a task:
-
-* changes more than one file;
-* changes runtime or user-visible behavior;
-* adds or changes a module, service, package, test, flake output, host output,
-  desktop integration, theme integration, or deployment behavior;
-* requires repository exploration beyond one obvious file;
-* fixes a non-obvious bug or regression;
-* changes NixOS, Home Manager, Hyprland, Noctalia, NVIDIA, UWSM, boot, kernel,
-  storage, filesystems, LUKS, networking, authentication, permissions, security,
-  or hardware behavior;
-* could affect system startup, login, graphics, networking, storage, recovery,
-  or data integrity.
-
-### Direct Work Exceptions
-
-The primary agent may work directly only for:
-
-* factual questions with no repository changes;
-* read-only inspection or explanation;
-* trivial spelling, comment, or formatting corrections confined to one file;
-* one obvious line change with no behavioral, deployment, security, hardware,
-  or recovery impact;
-* tasks where the user explicitly requests no delegation.
-
-When uncertain whether a change is trivial, use the subagent workflow.
-
-### Subagent Boundaries
-
-* `planner` is read-only and must not edit files.
-* `reviewer` is read-only and must not edit files.
-* Only `implementer` may edit files unless the user explicitly requests another
-  arrangement.
-* Subagents must return concrete file paths, relevant symbols or options,
-  repository evidence, verification results, and unresolved risks.
-* The primary agent must resolve conflicting findings before further edits.
-* Do not delegate secrets, credentials, destructive commands, live system
-  switches, or irreversible operations.
-* Do not claim a subagent was used unless a real subagent thread was created.
-* If subagents are unavailable, state that plainly and perform the same planning,
-  implementation, and review stages sequentially in the primary thread.
+  * `fish -lc '...'` for Fish;
+  * `bash -lc '...'` for Bash.
+* Do not rely on interactive aliases, abbreviations, or functions during
+  validation.
+* Prefer executable scripts with an appropriate shebang for complex multi-line
+  shell logic.
+* Commands shown to the user should be Fish-compatible unless explicitly
+  labeled for another shell.
 
 ## Worktree Safety
 
 * Preserve all unrelated user changes.
-* Do not revert, overwrite, stage, or commit changes that were not created for
-  the current task.
+* Never revert, overwrite, stage, or commit changes unrelated to the task.
 * Do not use destructive Git commands to clean the worktree.
-* Review `git diff` and `git status --short` before and after editing.
-* Stage or commit files only when explicitly requested.
-* Do not push unless separately requested.
+* Run `git status --short` before delegation, before editing, and after editing.
+* Review the final diff before completion.
+* Stage, commit, or push only when explicitly requested.
+* Do not modify untracked files unless the task requires them.
+* Do not assume an untracked file is disposable.
+* Do not overwrite a user-modified file without first inspecting its current
+  contents.
 
 ## Change Placement
 
@@ -178,19 +404,18 @@ When uncertain whether a change is trivial, use the subagent workflow.
   `modules/home/desktops/hyprland.nix`.
 * Put Noctalia Home Manager integration in
   `modules/home/themes/noctalia.nix`.
-* Keep Noctalia plugin manifests, settings, QML entrypoints, scripts, images,
-  JSON, and translation files synchronized when changing a plugin.
+* Keep Noctalia plugin manifests, settings, QML entrypoints, shell scripts,
+  images, JSON, and translation files synchronized.
 
 ## Nix Style
 
 * Follow the existing compact Nix style.
 * Use two-space indentation.
 * Prefer grouped option sets and short modules.
-* Prefer explicit imports from the nearest `default.nix` for
-  `modules/home/*` and `modules/nixos/*`.
-* For new desktop or theme variants, register them in `flake/hosts.nix` before
-  adding host outputs.
-* Keep package lists alphabetized only when the surrounding list is already
+* Prefer explicit imports from the nearest `default.nix`.
+* Register new desktop or theme variants in `flake/hosts.nix` before adding
+  host outputs.
+* Alphabetize package lists only when the surrounding list is already
   alphabetized.
 * Otherwise preserve local ordering and minimize churn.
 * Use `with pkgs; [ ... ]` consistently where the surrounding module already
@@ -198,29 +423,46 @@ When uncertain whether a change is trivial, use the subagent workflow.
 * Avoid unnecessary abstractions for configuration used only once.
 * Do not change `system.stateVersion` or `home.stateVersion` unless explicitly
   requested.
-* Do not edit `flake.lock` unless updating inputs is part of the task.
+* Do not edit `flake.lock` unless input updates are part of the task.
 * Do not rewrite generated hardware configuration unless explicitly requested.
 
-## Risk-Specific Requirements
+## High-Risk Changes
 
-For NixOS, Hyprland, NVIDIA, UWSM, boot, kernel, LUKS, filesystem, storage, or
-hardware changes:
+The following areas always require the full subagent workflow:
 
-* inspect the current configuration and relevant execution path before editing;
-* identify rollback or recovery considerations in the plan;
-* avoid removing known-working fallback configurations without approval;
-* require an independent post-change review;
-* prefer evaluation and build validation before any live activation;
-* never perform a live switch unless the user explicitly asks.
+* boot;
+* kernel;
+* initrd;
+* LUKS;
+* storage;
+* filesystems;
+* hardware configuration;
+* NVIDIA;
+* graphics and display startup;
+* Hyprland session startup;
+* UWSM;
+* authentication;
+* permissions;
+* networking;
+* firewall;
+* secrets;
+* recovery;
+* destructive migrations;
+* system activation behavior.
 
-For boot, storage, encryption, filesystem, or recovery-related changes, the plan
-must explicitly address:
+For these changes, the planner must explicitly address:
 
-* failure mode;
-* rollback path;
+* current execution path;
+* expected failure modes;
+* rollback procedure;
+* recovery procedure;
 * data-loss risk;
-* recovery environment requirements;
-* whether rebooting is required.
+* login or boot-loss risk;
+* whether a reboot is required;
+* whether a test activation is possible;
+* which known-working fallback must remain available.
+
+Do not remove a known-working fallback without explicit approval.
 
 ## Validation
 
@@ -232,7 +474,7 @@ Start with:
 nix flake check
 ```
 
-Do not run a heavier build when `nix flake check` sufficiently evaluates the
+Do not run heavier builds when `nix flake check` sufficiently evaluates the
 affected output.
 
 For system-level changes not sufficiently covered by `nix flake check`, build
@@ -242,72 +484,75 @@ the Chapel toplevel when practical:
 nix build .#nixosConfigurations.chapel.config.system.build.toplevel
 ```
 
-Before suggesting a live switch, prefer a test activation:
+Before suggesting a persistent switch, prefer a test activation:
 
 ```bash
 sudo nixos-rebuild test --flake .#chapel
 ```
 
-Use a persistent live switch only when explicitly requested:
+Use a persistent switch only when explicitly requested:
 
 ```bash
 sudo nixos-rebuild switch --flake .#chapel
 ```
 
-Additional validation rules:
+Additional validation requirements:
 
-* Run `git diff --check` after edits.
-* Use targeted evaluation or tests when available.
-* Do not claim validation succeeded when a command was not run.
-* If a check cannot be run, state:
-
-  * which check was skipped;
-  * why it could not run;
-  * what remains unverified.
-* Report warnings and failures honestly.
-* Do not hide a failed check behind successful unrelated checks.
+* run `git diff --check`;
+* use targeted evaluation or tests when available;
+* do not claim a command succeeded when it was not run;
+* do not hide failed validation behind successful unrelated checks;
+* report warnings and failures;
+* report skipped checks and why they were skipped;
+* identify what remains unverified;
+* do not perform a live switch merely to validate configuration.
 
 ## Documentation
 
 * Keep README command examples aligned with actual flake outputs.
-* Update documentation when operator-visible commands or behavior change.
-* Do not add large generated output or diagnostic dumps to documentation.
-* Keep examples safe to copy and consistent with the repository's real host and
-  output names.
+* Update documentation when operator-visible behavior or commands change.
+* Keep examples safe to copy.
+* Do not add large generated logs or diagnostic dumps.
+* Ensure Noctalia manifests, settings, entrypoints, and documentation remain
+  consistent when plugin behavior changes.
 
-## Workflow Notes
+## Repository Notes
 
 * The default host is `chapel`.
 * `chapel-hyprland-noctalia` is an alias for the same host.
-* The active branch workflow in `README.md` references `testing`; do not assume
-  commits belong on another branch.
-* Prefer small, reviewable diffs over broad rewrites.
-* Do not modify unrelated formatting merely because a file is open.
+* The branch workflow in `README.md` references `testing`; do not assume changes
+  belong on another branch.
+* Prefer small, reviewable diffs.
+* Do not reformat unrelated code.
 * Do not introduce a new dependency when an existing repository mechanism is
   sufficient.
-* Do not add credentials, tokens, machine secrets, private keys, or environment
-  values to tracked files.
+* Do not add tokens, passwords, credentials, private keys, or machine secrets to
+  tracked files.
 
 ## Final Handoff
 
-Before completing an implementation task:
+Before completing any implementation task:
 
-1. Review `git status --short`.
+1. Run `git status --short`.
 2. Review the actual diff.
 3. Confirm only intended files changed.
-4. Confirm unrelated worktree changes remain untouched.
-5. Run the required validation.
-6. Confirm reviewer findings were resolved or clearly documented.
-7. Report:
+4. Confirm unrelated worktree changes remain intact.
+5. Confirm required validation was run.
+6. Confirm the final reviewer completed, unless the commit-only exception
+   applies.
+7. Resolve or explicitly document every material finding, when a reviewer was
+   used.
+8. Report:
 
-   * expected and actual files changed;
+   * planned files;
+   * actual files changed;
    * behavior implemented;
    * validation commands and results;
    * review outcome;
-   * warnings or failures;
+   * failures or warnings;
+   * deviations from the plan;
    * remaining risks;
-   * whether a live switch or reboot is still required.
+   * whether activation or reboot is still required.
 
-Do not commit, push, deploy, or activate the configuration unless explicitly
-requested.
-
+Do not commit, push, deploy, activate, reboot, or perform an irreversible action
+unless explicitly requested.

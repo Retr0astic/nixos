@@ -1,4 +1,17 @@
+# .codex/config.toml
+
 [agents]
 max_threads = 4
 max_depth = 1
 
+[agents.planner]
+description = "Plans non-trivial implementation work before edits."
+config_file = "./agents/planner.toml"
+
+[agents.implementer]
+description = "Implements an approved plan and runs validation."
+config_file = "./agents/implementer.toml"
+
+[agents.reviewer]
+description = "Independently reviews the resulting diff."
+config_file = "./agents/reviewer.toml"
