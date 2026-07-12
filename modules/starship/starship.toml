@@ -8,6 +8,7 @@ format = """
 $directory\
 $git_branch\
 $git_status\
+$nix_shell\
 $fill\
 $cmd_duration\
 $time
@@ -64,7 +65,7 @@ format = "[](black)[󱎫 $duration ]($style)[ ](black)"
 [time]
 disabled = false
 time_format = "%H:%M"
-style = "white bold bg:magenta"
+style = "black bold bg:magenta"
 format = "[](magenta)[󰥔 $time ]($style)[](magenta)"
 
 ################################################################################
