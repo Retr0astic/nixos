@@ -1,13 +1,16 @@
 {lib, ...}: let
   inherit (lib) mkOption types;
   name = types.str;
+  # Registrations hold deferred modules so references stay lazy until a selected
+  # configuration is composed. Names remain strings: registries are extensible
+  # without editing this schema, while resolve/validatePair checks selections
+  # during configuration generation with actionable errors.
   module = types.deferredModule;
   modules = types.lazyAttrsOf module;
   desktop = types.submodule {
     options = {
       system = mkOption {type = module;};
       home = mkOption {type = module;};
-      compatibleShells = mkOption {type = types.listOf name; default = [];};
     };
   };
   shell = types.submodule {
@@ -36,6 +39,9 @@
       features = mkOption {type = types.listOf name; default = [];};
       extraModules = mkOption {type = types.listOf module; default = [];};
   };};
+  # Pair records are the sole compatibility registry. Keeping compatibility
+  # here avoids a second desktop whitelist and prevents circular registry
+  # dependencies; only the selected pair is forced by the generator.
   integration = types.submodule {options = { desktop = mkOption {type = name;}; shell = mkOption {type = name;}; home = mkOption {type = module;}; system = mkOption {type = module; default = {};};};};
 in {
   options.retr0astic = mkOption {

@@ -1,32 +1,35 @@
-# Dendritic flake-parts migration
+# Dendritic architecture
 
-The flake uses `lib/treeimport.nix` to discover every Nix file under `flake/`.
-Those discovered files are flake-parts modules only. Typed registrations live
-under `flake/modules/` and are consumed through `config.flake`.
+The flake-parts entrypoint imports the registration tree under `flake/` with
+`lib/treeimport.nix`. Every discovered `.nix` file is a flake-parts module.
+Directories beginning with `_` are private implementation trees: their files
+are imported explicitly by one owning registration and are never discovered
+independently. Generated hardware and physical host leaves under `hosts/` are
+kept outside that boundary.
 
-## Registry conventions
+The typed `retr0astic` schema uses lazy registries and `types.deferredModule`.
+Hosts are physical machines; configurations are rebuildable compositions of a
+host, desktop, graphical shell, theme, users, features, and a desktop-shell
+integration. Names are strings so adding a registry entry does not require
+schema or generator edits. `flake/configurations.nix` resolves and validates
+those names only for selected outputs, preserving laziness and avoiding
+cross-registry circular dependencies.
 
-- `flake.modules.nixos.<name>` contains reusable NixOS modules.
-- `flake.modules.homeManager.<name>` contains reusable Home Manager modules.
-- Desktop and theme implementations are typed entries such as
-  `flake.modules.nixos.desktop-hyprland`,
-  `flake.modules.homeManager.desktop-hyprland`, and
-  `flake.modules.homeManager.theme-noctalia`.
-- `flake.modules.nixos.<host>` owns reusable host imports; host leaf files
-  retain hardware, boot, storage, identity, and other machine-specific state.
+The integration registry is the single compatibility whitelist. Each supported
+desktop-shell pair has a record, even when its `system` and `home` modules are
+empty. Unsupported pairs report the configuration selections, supported pairs,
+and how to add the required integration.
 
-`flake/modules/desktops.nix` and `themes.nix` contain typed registrations only.
-`flake/hosts.nix` assembles and exports the public selection metadata
-`flake.lib.desktops` and `flake.lib.themes` from those registrations, defines
-`mkHost`, and exports `flake.lib.mkHost` in the same `flake.lib` definition.
-It also owns host outputs and aliases.
+`retr0astic.configurations` automatically generates
+`flake.nixosConfigurations`; aliases resolve to existing declarations. The
+`chapel` alias points to `chapel-hyprland-noctalia`.
 
-Raw NixOS and Home Manager leaf modules remain under `modules/` and are not
-discovered as flake-parts modules. Noctalia assets remain unchanged.
+Home Manager is composed from the selected user, common home registrations,
+desktop, shell, theme, and pair integration. External inputs are captured by
+their owning feature or registration. To add a desktop, shell, theme, user, or
+feature, add a registration and, where needed, a pair record; do not edit the
+schema, generator, or a central import list.
 
-## Verification
-
-Run `git diff --check`, evaluate the registry and Chapel outputs, then run
-`nix flake check`. When practical, build
-`.#nixosConfigurations.chapel.config.system.build.toplevel`. Do not activate
-or deploy the result as part of this migration.
+Validate with `git diff --check`, `nix flake show`, `nix flake check`, targeted
+`nix eval` commands, and no-link builds of both Chapel configurations. Do not
+activate or deploy as part of the migration.

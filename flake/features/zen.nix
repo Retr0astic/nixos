@@ -1,8 +1,5 @@
 {inputs, ...}: {
   config.retr0astic.features.zen = {
-    imports = [
-      {_module.args.zenBrowser = inputs.zenBrowser;}
-      ../../modules/zen.nix
-    ];
+    imports = [({lib, pkgs, ...}: import ./_modules/zen-module.nix {inherit lib pkgs; zenBrowser = inputs.zenBrowser;})];
   };
 }

@@ -48,7 +48,7 @@ This script will:
 
 If you are on NixOS, manual udev rule installation via `scripts/setup_rules.sh` will not work.
 
-The plugin will automatically try to use `pkexec` to prompt for your password when you change colors. However, for a seamless experience without password prompts, add the following to your `configuration.nix`:
+The plugin will automatically try to use `pkexec` to prompt for your password when you change colors. However, for a seamless experience without password prompts, add the following to your NixOS configuration:
 
 ```nix
 services.udev.extraRules = ''

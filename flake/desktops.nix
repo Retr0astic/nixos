@@ -2,12 +2,18 @@
   config.retr0astic.desktops.hyprland = {
     system = {
       imports = [
-        {_module.args.hyprland = inputs.hyprland;}
-        ../modules/nixos/desktops/hyprland.nix
+        ({pkgs, ...}: import ./desktops/_hyprland/system.nix {inherit inputs pkgs;})
       ];
     };
-    home = ../modules/home/desktops/hyprland.nix;
-    compatibleShells = ["noctalia"];
+    home = {
+      imports = [
+        ./desktops/_hyprland/animations.nix
+        ./desktops/_hyprland/bindings.nix
+        ./desktops/_hyprland/rules.nix
+        ./desktops/_hyprland/session.nix
+        ./desktops/_hyprland/settings.nix
+      ];
+    };
   };
   config.retr0astic.integrations.hyprland-noctalia = {
     desktop = "hyprland"; shell = "noctalia";

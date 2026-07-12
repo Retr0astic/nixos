@@ -1,8 +1,10 @@
 {
-  hyprland,
+  inputs,
   pkgs,
   ...
-}: {
+}: let
+  hyprland = inputs.hyprland;
+in {
   programs.hyprland = {
     enable = true;
     withUWSM = true;

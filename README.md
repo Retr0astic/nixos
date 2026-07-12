@@ -1,9 +1,10 @@
 # Retr0astic's NixOS Flake
 
-This is a flake-parts NixOS configuration for Chapel. The flake has one
-recursive module tree: every `.nix` file under `flake/` is a flake-parts
-module. Raw NixOS, Home Manager, and NVF functions remain values assigned by
-those modules; they are never recursively imported as flake-parts modules.
+This is a dendritic flake-parts NixOS configuration. The recursive importer
+discovers registration modules under `flake/`; underscore-prefixed directories
+are private implementation trees and are imported only by their owning
+registration. Generated hardware and physical host leaves under `hosts/` are
+also deliberate exceptions.
 
 ## Architecture
 
@@ -19,7 +20,7 @@ The public outputs also include `packages.x86_64-linux.nvf` and
 `devShells.x86_64-linux.default`; both are registered as flake-parts modules
 under `flake/`.
 
-Feature files self-register their modules. A host variant explicitly selects
+Feature files self-register deferred modules. A host variant explicitly selects
 its hostname, desktop, graphical shell, theme, and users. Home Manager remains
 a NixOS module and composes the base user configuration with those selections.
 The desktop is the compositor/session implementation (currently Hyprland);
@@ -70,18 +71,38 @@ push, and deployment are intentionally outside this migration.
 
 - Add a host or variant in `flake/hosts/`; select `hostname`, `desktop`,
   `shell`, `theme`, and `users`. The host leaf stays in `hosts/<name>/`.
-- Add a desktop registration in `flake/desktops.nix` with `system`, `home`,
-  and `compatibleShells`, then add pair-specific integration data.
+- Add a new physical host by registering its hostname, system, and module in
+  `flake/hosts/<name>.nix`; keep boot, storage, hardware, and identity in
+  `hosts/<name>/`.
+- Add a desktop registration in `flake/desktops.nix` with `system` and `home`,
+  then add one explicit pair record in `flake/desktops.nix` under
+  `retr0astic.integrations` for every supported shell.
 - Add a graphical shell in `flake/shells.nix`; shells are independent of
-  desktops and may provide integrations.
+  desktops. A new desktop or shell changes only its registration and pair
+  records, not this schema, the generator, or a central import list.
+- Add a desktop-shell pairing by adding an integration record with matching
+  `desktop` and `shell`; its `system` and `home` modules may be `{}`.
 - Add a theme in `flake/themes.nix`; keep styling separate from shell
   services and launcher/panel behavior.
 - Add a user registration under `flake/users/` with independent system and
-  Home Manager modules.
-- Keep reusable raw modules and assets outside `flake/`; only
-  flake-parts modules belong inside the recursive boundary.
-- Niri or AGS support should add registry declarations and configuration data
-  (plus pair integrations); it must not require schema or generator changes.
+  Home Manager modules; private user helpers belong under `flake/users/_<name>/`.
+- Add a reusable feature as one coherent registration under `flake/features/`.
+  Keep sizeable private implementation leaves under an underscore directory
+  owned by that feature and capture only the external inputs it needs.
+- Keep private implementation leaves in underscore-prefixed directories under
+  `flake/`; only registration modules are discovered by flake-parts.
+
+The integration registry is the authoritative compatibility whitelist (Policy
+A). Unsupported pairs fail with the selected names, available pairs, and the
+required corrective action. Every declaration under `retr0astic.configurations`
+automatically produces the same-named `flake.nixosConfigurations` output.
+`retr0astic.aliases` resolves to an existing configuration declaration; the
+public `chapel` alias therefore reuses `chapel-hyprland-noctalia`.
+
+Home Manager is composed in `flake/configurations.nix` from the selected user,
+common home registrations, desktop, shell, theme, and pair integration. Inputs
+such as Noctalia, Spicetify, Hyprland, and SilentSDDM are captured by the
+registration that owns them rather than exposed to every module.
 
 ## Repository map
 
@@ -89,8 +110,10 @@ push, and deployment are intentionally outside this migration.
 flake.nix                 flake-parts entrypoint
 flake/                    recursive registrations, schema, and variants
 hosts/chapel/             Chapel leaf and generated hardware exception
-modules/nixos/             reusable NixOS modules
-modules/home/              reusable Home Manager modules
+flake/home/                Home Manager registrations and private modules
+flake/desktops/            desktop registrations and private helpers
+flake/features/            reusable feature registrations and private helpers
+flake/users/               reusable user registrations and private helpers
 modules/noctalia/          Noctalia settings and plugins
-configuration.nix          compatibility import for Chapel
+hosts/chapel/hardware-configuration.nix  generated hardware exception
 ```

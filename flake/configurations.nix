@@ -11,17 +11,15 @@
   validatePair = desktopName: shellName: desktop: integrations: let
     pairName = "${desktopName}-${shellName}";
   in
-    if !(builtins.elem shellName desktop.compatibleShells)
+    if !(builtins.hasAttr pairName integrations)
     then {
       ok = false;
-      error = "retr0astic: incompatible desktop/shell pair '${pairName}'; compatible shells for '${desktopName}': ${builtins.concatStringsSep ", " desktop.compatibleShells}";
-    }
-    else if !(builtins.hasAttr pairName integrations)
-    then {
-      ok = false;
-      error = "retr0astic: missing desktop/shell integration '${pairName}'; available values: ${builtins.concatStringsSep ", " (builtins.attrNames integrations)}";
+      error = "retr0astic: unsupported desktop/shell pair '${pairName}'; add an explicit compatibility record to retr0astic.integrations; supported pairs: ${builtins.concatStringsSep ", " (builtins.attrNames integrations)}";
     }
     else {ok = true; value = integrations.${pairName};};
+  # Resolve string selections only while generating outputs. Deferred modules
+  # preserve laziness for unselected variants and keep registries independent;
+  # validation happens before nixosSystem is built.
   mkHost = name: spec: let
     host = require (resolve "host" spec.host r.hosts);
     desktop = require (resolve "desktop" spec.desktop r.desktops);
@@ -35,7 +33,12 @@
       if pair.desktop == spec.desktop && pair.shell == spec.shell
       then true
       else throw "retr0astic: integration '${pairName}' declares desktop='${pair.desktop}', shell='${pair.shell}', expected desktop='${spec.desktop}', shell='${spec.shell}'";
-    userHomes = (map (user: user.home) users) ++ [r.homeModules.base r.homeModules.spicetify r.homeModules.starship desktop.home shell.home theme.home pair.home];
+    userHomes = (map (user: user.home) users) ++ [
+      r.homeModules.appearance r.homeModules.packages r.homeModules.programs
+      r.homeModules.services r.homeModules.shell r.homeModules.terminals
+      r.homeModules.xdg r.homeModules.starship desktop.home shell.home
+      theme.home pair.home
+    ];
     userSystems = map (user: user.system) users;
   in assert integrationIdentity; inputs.nixpkgs.lib.nixosSystem {
     inherit (host) system;

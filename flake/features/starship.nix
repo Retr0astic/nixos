@@ -1,1 +1,1 @@
-{...}: {config.retr0astic.homeModules.starship = ../../modules/starship/starship.nix;}
+{...}: {config.retr0astic.homeModules.starship = ./_modules/starship-module.nix;}

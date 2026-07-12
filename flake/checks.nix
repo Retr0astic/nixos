@@ -12,7 +12,7 @@
       unknownUser = available "user" "missing-user" r.users;
       unknownFeature = available "feature" "missing-feature" r.features;
       incompatible = failure (r.validation.validatePair "hyprland" "missing-shell" r.desktops.hyprland r.integrations);
-      missingIntegration = failure (r.validation.validatePair "hyprland" "synthetic-shell" {compatibleShells = ["synthetic-shell"];} r.integrations);
+      missingIntegration = failure (r.validation.validatePair "hyprland" "synthetic-shell" r.desktops.hyprland r.integrations);
       badAlias = available "configuration" "missing-configuration" config.retr0astic.configurations;
     in pkgs.runCommand "retr0astic-registry-failure-contract" {} ''
       test "${unknownHost}" = "retr0astic: invalid host 'missing-host'; available values: chapel"
@@ -21,8 +21,8 @@
       test "${unknownTheme}" = "retr0astic: invalid theme 'missing-theme'; available values: noctalia"
       test "${unknownUser}" = "retr0astic: invalid user 'missing-user'; available values: sree"
       test "${unknownFeature}" = "retr0astic: invalid feature 'missing-feature'; available values: core, fonts, gaming, graphics, services, zen"
-      test "${incompatible}" = "retr0astic: incompatible desktop/shell pair 'hyprland-missing-shell'; compatible shells for 'hyprland': noctalia"
-      test "${missingIntegration}" = "retr0astic: missing desktop/shell integration 'hyprland-synthetic-shell'; available values: hyprland-noctalia"
+      test "${incompatible}" = "retr0astic: unsupported desktop/shell pair 'hyprland-missing-shell'; add an explicit compatibility record to retr0astic.integrations; supported pairs: hyprland-noctalia"
+      test "${missingIntegration}" = "retr0astic: unsupported desktop/shell pair 'hyprland-synthetic-shell'; add an explicit compatibility record to retr0astic.integrations; supported pairs: hyprland-noctalia"
       test "${badAlias}" = "retr0astic: invalid configuration 'missing-configuration'; available values: chapel-hyprland-noctalia"
       test "${incompatible}" != "${missingIntegration}"
       touch $out

@@ -3,7 +3,7 @@
     home = {
       imports = [
         inputs.noctalia.homeModules.default
-        ../modules/home/shells/noctalia.nix
+        (import ./_shell/noctalia.nix {})
       ];
     };
   };

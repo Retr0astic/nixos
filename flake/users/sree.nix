@@ -1,6 +1,6 @@
 {...}: {
   config.retr0astic.users.sree = {
-    system = ../../modules/nixos/users/sree.nix;
+    system = ./_sree/system.nix;
     home = {};
   };
 }

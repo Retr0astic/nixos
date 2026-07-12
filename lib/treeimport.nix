@@ -8,7 +8,10 @@
       lib.filter
       (name: entries.${name} == "regular" && lib.hasSuffix ".nix" name && name != "default.nix")
       names;
-    childDirs = lib.filter (name: entries.${name} == "directory") names;
+    # Underscore directories are private implementation trees. Their files are
+    # imported explicitly by the owning registration and must not become
+    # independent flake-parts modules.
+    childDirs = lib.filter (name: entries.${name} == "directory" && !(lib.hasPrefix "_" name)) names;
     defaultModule = lib.optional (pathExists (path + "/default.nix")) (path + "/default.nix");
   in
     defaultModule

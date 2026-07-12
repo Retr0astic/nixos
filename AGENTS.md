@@ -9,23 +9,20 @@ task requirement.
 
 * `flake.nix` is the flake-parts entrypoint.
 * `flake/` contains flake-parts modules and host composition.
-* `flake/hosts.nix` owns host construction and aliases; typed reusable module
-  registrations live under `flake/modules/`.
+* `flake/hosts/` owns host registrations, configurations, and aliases; typed
+  reusable feature registrations live in the top-level `flake/` tree.
 * `hosts/chapel/` contains Chapel-specific NixOS and generated hardware
   configuration.
-* `modules/nixos/` contains reusable NixOS modules.
-* `modules/home/` contains reusable Home Manager modules for user `sree`.
-* `modules/home/desktops/` contains desktop-specific Home Manager configuration.
-* `modules/home/themes/` contains theme integrations.
+* `flake/features/`, `flake/desktops/`, `flake/home/`, and `flake/users/`
+  contain coherent dendritic feature registrations.
+* Underscore-prefixed directories beneath `flake/` contain private helper
+  modules and assets imported only by their owning registration.
 * `modules/noctalia/` contains Noctalia configuration and plugin files.
-* `configuration.nix` is only a compatibility shim importing `hosts/chapel`.
 
-Every discovered Nix file under `flake/` is a flake-parts module. Reusable
-NixOS modules are registered as `flake.modules.nixos.<name>`, Home Manager
-modules as `flake.modules.homeManager.<name>`. Desktop/theme selection metadata
-is assembled and exported by `flake/hosts.nix` as `flake.lib.desktops` and
-`flake.lib.themes`. Host-specific leaf settings remain in `hosts/` and raw
-reusable modules remain under `modules/`.
+Every discovered Nix file under `flake/` is a flake-parts registration module;
+`lib/treeimport.nix` excludes underscore-prefixed helper directories. Typed
+`retr0astic` registries hold deferred NixOS and Home Manager modules. Host-only
+leaf settings remain in `hosts/`, including generated hardware configuration.
 
 ## Start Every Task
 
@@ -395,22 +392,15 @@ If no subagent runtime is genuinely available:
 
 * Put host-only boot, LUKS, hostname, kernel, and generated hardware settings in
   `hosts/chapel/`.
-* Put common NixOS packages and Nix settings in
-  `modules/nixos/core/default.nix`.
-* Put system services in `modules/nixos/services/default.nix`.
-* Put user packages in `modules/home/packages/default.nix`.
-* Put shell aliases and CLI integrations in
-  `modules/home/shell/default.nix`.
-* Put terminal packages and configuration in
-  `modules/home/terminals/default.nix`.
-* Put Home Manager application modules under `modules/home/programs/` and
-  import them from `modules/home/programs/default.nix`.
-* Put XDG MIME and user-directory settings in
-  `modules/home/xdg/default.nix`.
-* Put Hyprland user settings in
-  `modules/home/desktops/hyprland.nix`.
-* Put Noctalia Home Manager integration in
-  `modules/home/themes/noctalia.nix`.
+* Put common NixOS packages and Nix settings in the owning feature under
+  `flake/features/`.
+* Put system services in `flake/features/services.nix`.
+* Put user packages, shell, terminals, applications, and XDG settings in the
+  corresponding registrations under `flake/home/`.
+* Put Hyprland user settings in the private helpers owned by
+  `flake/desktops.nix`.
+* Put Noctalia shell and theme integrations in `flake/shells.nix` and
+  `flake/themes.nix`, with private helpers under underscore directories.
 * Keep Noctalia plugin manifests, settings, QML entrypoints, shell scripts,
   images, JSON, and translation files synchronized.
 
@@ -419,14 +409,12 @@ If no subagent runtime is genuinely available:
 * Follow the existing compact Nix style.
 * Use two-space indentation.
 * Prefer grouped option sets and short modules.
-* Prefer explicit imports from the nearest `default.nix`.
-* Register desktop implementations as typed entries under
-  `flake.modules.nixos`/`flake.modules.homeManager` in
-  `flake/modules/desktops.nix`. Assemble and export public selection metadata
-  as `flake.lib.desktops` from `flake/hosts.nix`. Register themes similarly in
-  `flake/modules/themes.nix`, and assemble and export `flake.lib.themes` from
-  `flake/hosts.nix`. Consume both through `config.flake`; do not use
-  `self.modules` or arbitrary `flake.modules.desktop`/`theme` records.
+* Prefer explicit imports from the owning registration; private helpers belong
+  under underscore-prefixed directories and are never discovered directly.
+* Register desktop implementations in `flake/desktops.nix` and themes in
+  `flake/themes.nix` through the typed `retr0astic` registries. Pair-specific
+  compatibility belongs in `retr0astic.integrations`; do not use parallel
+  compatibility records or arbitrary `self.modules` entries.
 * Alphabetize package lists only when the surrounding list is already
   alphabetized.
 * Otherwise preserve local ordering and minimize churn.
