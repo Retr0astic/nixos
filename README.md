@@ -1,257 +1,91 @@
 # Retr0astic's NixOS Flake
 
-[![NixOS](https://img.shields.io/badge/NixOS-unstable-5277C3?logo=nixos&logoColor=white)](https://nixos.org)
-[![flake-parts](https://img.shields.io/badge/flake--parts-enabled-7C3AED)](https://flake.parts)
-[![Home Manager](https://img.shields.io/badge/Home%20Manager-enabled-0EA5E9)](https://github.com/nix-community/home-manager)
-[![Default](https://img.shields.io/badge/default-chapel%20%3D%20hyprland%20%2B%20noctalia-F59E0B)](#outputs)
+This is a flake-parts NixOS configuration for Chapel. The flake has one
+recursive module tree: every `.nix` file under `flake/` is a flake-parts
+module. Raw NixOS, Home Manager, and NVF functions remain values assigned by
+those modules; they are never recursively imported as flake-parts modules.
 
-A dendritic-inspired, hybrid NixOS configuration built around small composable modules. Recursive discovery is used only for the flake-parts modules under `flake/`; NixOS and Home Manager modules are imported explicitly. The default host is `chapel`, currently composed as `hyprland + noctalia`.
+## Architecture
+
+`flake.nix` only declares inputs, systems, and the recursive import. The
+declared `retr0astic` schema contains typed, lazy registries for:
+
+- `nixosModules` and `homeModules` (`deferredModule` values);
+- `hosts`, `desktops`, `shells`, `themes`, and `users`;
+- generated `nixosConfigurations`.
+
+The public outputs also include `packages.x86_64-linux.nvf` and
+`devShells.x86_64-linux.default`; both are registered as flake-parts modules
+under `flake/`.
+
+Feature files self-register their modules. A host variant explicitly selects
+its hostname, desktop, graphical shell, theme, and users. Home Manager remains
+a NixOS module and composes the base user configuration with those selections.
+The desktop is the compositor/session implementation (currently Hyprland);
+the graphical shell is a separate selectable module (currently Noctalia), and
+the theme is independently selectable. This keeps variants explicit without
+hardcoding Hyprland or Noctalia in the host leaf.
+
+Generated hardware configuration and `flake.lock` are deliberate exceptions:
+the former is host-generated and the latter is input state. Noctalia assets
+and plugin files remain under `modules/noctalia` and are linked by its Home
+Manager integration.
+
+## Variants
+
+The available Chapel variants are:
 
 ```text
-flake.nix
-  -> flake-parts
-    -> flake/hosts.nix
-      -> flake/modules (typed module registrations)
-      -> hosts/chapel
-      -> modules/nixos/*
-      -> modules/home/*
-      -> modules/home/desktops
-      -> modules/home/themes/noctalia.nix
+chapel
+chapel-hyprland-noctalia
 ```
+
+Both currently select Chapel + Hyprland + the Noctalia graphical shell and
+theme. To add a variant, register its typed desktop, shell, or theme under
+`flake/`, then add explicit data to `flake/hosts/chapel.nix`. Keep host-only boot,
+LUKS, filesystem, kernel, and generated hardware settings in `hosts/chapel`.
 
 ## Commands
 
-| Task | Command |
-| --- | --- |
-| Switch to default Chapel | `sudo nixos-rebuild switch --flake ~/nixos#chapel` |
-| Test without making boot default | `sudo nixos-rebuild test --flake ~/nixos#chapel` |
-| Build only | `nix build ~/nixos#nixosConfigurations.chapel.config.system.build.toplevel` |
-| Check flake | `nix flake check` |
-| Run NVF package | `nix run ~/nixos#nvf` |
-| Update inputs and switch | `cd ~/nixos && nix flake update && sudo nixos-rebuild switch --flake .#chapel` |
-
-## Outputs
-
-| Output | Purpose |
-| --- | --- |
-| `chapel` | Default system, currently `hyprland + noctalia` |
-| `chapel-hyprland-noctalia` | Explicit alias for the current default variant |
-| `packages.x86_64-linux.nvf` | Neovim package built from `modules/nvf.nix` |
-
-## Repository Map
-
-```text
-.
-├── flake.nix                  # inputs and flake-parts entrypoint
-├── flake.lock                 # pinned input revisions
-├── flake/                     # flake-parts modules
-│   ├── hosts.nix              # host/desktop/theme composition
-│   └── packages.nix           # package outputs
-├── hosts/
-│   └── chapel/                # Chapel-specific system config
-├── lib/
-│   └── treeimport.nix         # recursive importer for flake/*
-├── modules/
-│   ├── nixos/                 # reusable NixOS modules
-│   ├── home/                  # reusable Home Manager modules
-│   ├── home/desktops/         # Desktop-specific Home Manager config
-│   ├── noctalia/              # Noctalia config and plugins
-│   ├── starship/              # Starship config
-│   ├── lucidglyph.nix         # font rendering config
-│   ├── nvf.nix                # NVF config
-│   └── zen.nix                # Zen Browser wrapper
-└── configuration.nix          # compatibility shim importing hosts/chapel
-```
-
-## How It Works
-
-`flake.nix` calls `flake-parts.lib.mkFlake` and recursively imports modules under `flake/` through `lib/treeimport.nix`. Every discovered file is a flake-parts module. Typed reusable modules are registered under `config.flake.modules.nixos` and `config.flake.modules.homeManager`; `flake/hosts.nix` assembles and exports the public `flake.lib.desktops`, `flake.lib.themes`, and `flake.lib.mkHost` metadata once.
-
-This is therefore a hybrid rather than a fully recursive dendritic layout. Keep flake-parts modules under `flake/` when they should be discovered recursively; do not add arbitrary files there expecting them to become NixOS or Home Manager modules.
-
-`flake/hosts.nix` defines the composition layer:
-
-| Name | Role |
-| --- | --- |
-| `desktops` | Public desktop selection metadata assembled by `flake/hosts.nix` |
-| `themes` | Public theme selection metadata assembled by `flake/hosts.nix` |
-| `mkHost` | Combines host, desktop, theme, and optional extra modules |
-
-The default host is declared like this:
-
-```nix
-chapel = mkHost {
-  hostname = "chapel";
-  desktop = "hyprland";
-  theme = "noctalia";
-};
-```
-
-## Where To Put Things
-
-| Change | File or directory |
-| --- | --- |
-| Hostname, boot, LUKS, host-only kernel settings | `hosts/chapel/default.nix` |
-| Filesystems and generated hardware scan | `hosts/chapel/hardware-configuration.nix` |
-| Common system packages and Nix settings | `modules/nixos/core/default.nix` |
-| System services such as PipeWire, SDDM, OpenRGB daemon support | `modules/nixos/services/default.nix` |
-| NVIDIA settings | `modules/nixos/hardware/nvidia.nix` |
-| Steam, gamescope, gamemode, Heroic | `modules/nixos/programs/gaming.nix` |
-| General user packages | `modules/home/packages/default.nix` |
-| Shell aliases and CLI integrations | `modules/home/shell/default.nix` |
-| Terminal packages and terminal config | `modules/home/terminals/default.nix` |
-| GTK/Qt/cursor user styling | `modules/home/appearance/default.nix` |
-| Home Manager app modules | `modules/home/programs/` |
-| XDG MIME apps and user dirs | `modules/home/xdg/default.nix` |
-| Hyprland-only user packages/settings | `modules/home/desktops/hyprland/` (facade: `hyprland.nix`) |
-| Noctalia theme integration | `modules/home/themes/noctalia.nix` |
-| Font rendering and Lucidglyph | `modules/lucidglyph.nix` |
-
-## Adding A Home Manager Module
-
-Example: add Git user config.
-
-Create `modules/home/programs/git.nix`:
-
-```nix
-{...}: {
-  programs.git = {
-    enable = true;
-    userName = "Retr0astic";
-    userEmail = "you@example.com";
-  };
-}
-```
-
-Import it from `modules/home/programs/default.nix`:
-
-```nix
-{...}: {
-  imports = [
-    ./documents.nix
-    ./git.nix
-    ./spicetify.nix
-  ];
-}
-```
-
-### Hyprland layout
-
-The Hyprland Home Manager facade at `modules/home/desktops/hyprland.nix` imports focused modules from `modules/home/desktops/hyprland/`:
-
-| File | Contents |
-| --- | --- |
-| `settings.nix` | Packages and general display/input settings |
-| `animations.nix` | Curves, animations, and gestures |
-| `bindings.nix` | Keyboard, mouse, media, and workspace bindings |
-| `rules.nix` | Window and layer rules |
-| `session.nix` | Session startup, Hypridle, and session variables |
-
-Keep this split focused: the facade is registered in `flake/modules/desktops.nix`, and the child files are explicit imports rather than recursively discovered modules.
-
-## Adding A Desktop Variant
-
-To add `niri + noctalia`:
-
-1. Create the system module:
-
-```text
-modules/nixos/desktops/niri.nix
-```
-
-2. Create the Home Manager module:
-
-```text
-modules/home/desktops/niri.nix
-```
-
-3. Register the typed modules in `flake/modules/desktops.nix`, then add the
-   corresponding public selection record in `flake/hosts.nix`:
-
-```nix
-flake.modules = {
-  nixos.desktop-niri = ../../modules/nixos/desktops/niri.nix;
-  homeManager.desktop-niri = ../../modules/home/desktops/niri.nix;
-};
-
-desktops = {
-  hyprland = {
-    system = config.flake.modules.nixos.desktop-hyprland;
-    home = config.flake.modules.homeManager.desktop-hyprland;
-  };
-  niri = {
-    system = config.flake.modules.nixos.desktop-niri;
-    home = config.flake.modules.homeManager.desktop-niri;
-  };
-};
-
-flake.lib = { inherit desktops themes mkHost; };
-```
-
-4. Add the output:
-
-```nix
-chapel-niri-noctalia = mkHost {
-  hostname = "chapel";
-  desktop = "niri";
-  theme = "noctalia";
-};
-```
-
-5. Evaluate or build it:
-
 ```bash
-nix eval .#nixosConfigurations.chapel-niri-noctalia.config.networking.hostName
-nix build .#nixosConfigurations.chapel-niri-noctalia.config.system.build.toplevel
-```
-
-## Adding A Theme Variant
-
-To add `hyprland + caelestia`:
-
-1. Create `modules/home/themes/caelestia.nix`.
-
-2. Register the typed module in `flake/modules/themes.nix`, then add its
-   selection record in `flake/hosts.nix`:
-
-```nix
-flake.modules.homeManager.theme-caelestia = ../../modules/home/themes/caelestia.nix;
-themes.caelestia = {
-  home = config.flake.modules.homeManager.theme-caelestia;
-};
-```
-
-3. Add the output:
-
-```nix
-chapel-hyprland-caelestia = mkHost {
-  hostname = "chapel";
-  desktop = "hyprland";
-  theme = "caelestia";
-};
-```
-
-4. Build it:
-
-```bash
-sudo nixos-rebuild switch --flake ~/nixos#chapel-hyprland-caelestia
-```
-
-## Notes
-
-- `nix run .#nvf` works because `nvf` is a package output.
-- NixOS systems are not run with `nix run`; use `nixos-rebuild --flake .#chapel`.
-- Hyprland settings are Home Manager modules, not runnable apps.
-- Lucidglyph is imported by Chapel and contributes fontconfig snippets plus Freetype environment variables.
-
-## Branch Workflow
-
-This refactor lives on `testing` until it is proven on the machine.
-
-```bash
-git status --short --branch
+nix flake show
 nix flake check
+nix eval .#nixosConfigurations.chapel.config.networking.hostName
+nix eval .#nixosConfigurations.chapel-hyprland-noctalia.config.networking.hostName
+nix eval .#packages.x86_64-linux.nvf.drvPath
+nix eval .#devShells.x86_64-linux.default.drvPath
+nix eval --json .#nixosConfigurations --apply builtins.attrNames
+nix build .#nixosConfigurations.chapel.config.system.build.toplevel --no-link
+nix build .#nixosConfigurations.chapel-hyprland-noctalia.config.system.build.toplevel --no-link
 sudo nixos-rebuild test --flake .#chapel
-git commit -m "Describe the change"
-git push github testing
+```
+
+Use `nixos-rebuild test` before a persistent switch. A switch, reboot, commit,
+push, and deployment are intentionally outside this migration.
+
+## Extending the configuration
+
+- Add a host or variant in `flake/hosts/`; select `hostname`, `desktop`,
+  `shell`, `theme`, and `users`. The host leaf stays in `hosts/<name>/`.
+- Add a desktop registration in `flake/desktops.nix` with `system`,
+  `home`, `integrations`, and `compatibleShells`.
+- Add a graphical shell in `flake/shells.nix`; shells are independent of
+  desktops and may provide integrations.
+- Add a theme in `flake/themes.nix`; keep styling separate from shell
+  services and launcher/panel behavior.
+- Add a user registration under `flake/users/` with independent system and
+  Home Manager modules.
+- Keep reusable raw modules and assets outside `flake/`; only
+  flake-parts modules belong inside the recursive boundary.
+
+## Repository map
+
+```text
+flake.nix                 flake-parts entrypoint
+flake/                    recursive registrations, schema, and variants
+hosts/chapel/             Chapel leaf and generated hardware exception
+modules/nixos/             reusable NixOS modules
+modules/home/              reusable Home Manager modules
+modules/noctalia/          Noctalia settings and plugins
+configuration.nix          compatibility import for Chapel
 ```

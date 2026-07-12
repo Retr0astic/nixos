@@ -1,6 +1,5 @@
 {
   config,
-  inputs,
   pkgs,
   ...
 }: {
@@ -42,7 +41,6 @@
   environment.systemPackages = with pkgs; [
     qemu
     quickemu
-    inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.nvf
   ];
 
   services.displayManager.defaultSession = "hyprland";

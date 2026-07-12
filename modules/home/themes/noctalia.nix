@@ -1,16 +1,8 @@
 {
   config,
-  inputs,
   lib,
   ...
 }: {
-  imports = [inputs.noctalia.homeModules.default];
-
-  programs.noctalia = {
-    enable = true;
-    systemd.enable = false;
-  };
-
   home.file.".config/noctalia" = {
     source = config.lib.file.mkOutOfStoreSymlink "/home/sree/nixos/modules/noctalia";
     recursive = true;

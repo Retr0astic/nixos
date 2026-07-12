@@ -1,12 +1,12 @@
 {
-  inputs,
+  hyprland,
   pkgs,
   ...
 }: {
   programs.hyprland = {
     enable = true;
     withUWSM = true;
-    package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
+    package = hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
     xwayland.enable = true;
   };
 
