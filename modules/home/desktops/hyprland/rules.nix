@@ -18,11 +18,6 @@
         workspace = "special:chat silent";
       }
       {
-        match.class = "zen";
-        match.title = ".*WhatsApp.*";
-        workspace = "special:chat silent";
-      }
-      {
         match.class = "(Spotify|spotify)";
         workspace = "special:media silent";
       }
