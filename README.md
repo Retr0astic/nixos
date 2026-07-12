@@ -11,6 +11,7 @@ A dendritic-inspired, hybrid NixOS configuration built around small composable m
 flake.nix
   -> flake-parts
     -> flake/hosts.nix
+      -> flake/modules (typed module registrations)
       -> hosts/chapel
       -> modules/nixos/*
       -> modules/home/*
@@ -64,7 +65,7 @@ flake.nix
 
 ## How It Works
 
-`flake.nix` does not manually assemble every flake-parts output. It calls `flake-parts.lib.mkFlake` and recursively imports modules under `flake/` through `lib/treeimport.nix`. That recursive discovery boundary does not extend to NixOS or Home Manager modules: those are composed through explicit `imports` lists and explicit host composition in `flake/hosts.nix`.
+`flake.nix` calls `flake-parts.lib.mkFlake` and recursively imports modules under `flake/` through `lib/treeimport.nix`. Every discovered file is a flake-parts module. Typed reusable modules are registered under `config.flake.modules.nixos` and `config.flake.modules.homeManager`; `flake/hosts.nix` assembles and exports the public `flake.lib.desktops`, `flake.lib.themes`, and `flake.lib.mkHost` metadata once.
 
 This is therefore a hybrid rather than a fully recursive dendritic layout. Keep flake-parts modules under `flake/` when they should be discovered recursively; do not add arbitrary files there expecting them to become NixOS or Home Manager modules.
 
@@ -72,8 +73,8 @@ This is therefore a hybrid rather than a fully recursive dendritic layout. Keep 
 
 | Name | Role |
 | --- | --- |
-| `desktops` | Maps desktop names to system and Home Manager modules |
-| `themes` | Maps theme names to Home Manager theme modules |
+| `desktops` | Public desktop selection metadata assembled by `flake/hosts.nix` |
+| `themes` | Public theme selection metadata assembled by `flake/hosts.nix` |
 | `mkHost` | Combines host, desktop, theme, and optional extra modules |
 
 The default host is declared like this:
@@ -146,7 +147,7 @@ The Hyprland Home Manager facade at `modules/home/desktops/hyprland.nix` imports
 | `rules.nix` | Window and layer rules |
 | `session.nix` | Session startup, Hypridle, and session variables |
 
-Keep this split focused: the facade is the module registered by `flake/hosts.nix`, and the child files are explicit imports rather than recursively discovered modules.
+Keep this split focused: the facade is registered in `flake/modules/desktops.nix`, and the child files are explicit imports rather than recursively discovered modules.
 
 ## Adding A Desktop Variant
 
@@ -164,20 +165,27 @@ modules/nixos/desktops/niri.nix
 modules/home/desktops/niri.nix
 ```
 
-3. Register the desktop in `flake/hosts.nix`:
+3. Register the typed modules in `flake/modules/desktops.nix`, then add the
+   corresponding public selection record in `flake/hosts.nix`:
 
 ```nix
+flake.modules = {
+  nixos.desktop-niri = ../../modules/nixos/desktops/niri.nix;
+  homeManager.desktop-niri = ../../modules/home/desktops/niri.nix;
+};
+
 desktops = {
   hyprland = {
-    system = ../modules/nixos/desktops/hyprland.nix;
-    home = ../modules/home/desktops/hyprland.nix;
+    system = config.flake.modules.nixos.desktop-hyprland;
+    home = config.flake.modules.homeManager.desktop-hyprland;
   };
-
   niri = {
-    system = ../modules/nixos/desktops/niri.nix;
-    home = ../modules/home/desktops/niri.nix;
+    system = config.flake.modules.nixos.desktop-niri;
+    home = config.flake.modules.homeManager.desktop-niri;
   };
 };
+
+flake.lib = { inherit desktops themes mkHost; };
 ```
 
 4. Add the output:
@@ -190,10 +198,11 @@ chapel-niri-noctalia = mkHost {
 };
 ```
 
-5. Build it:
+5. Evaluate or build it:
 
 ```bash
-sudo nixos-rebuild switch --flake ~/nixos#chapel-niri-noctalia
+nix eval .#nixosConfigurations.chapel-niri-noctalia.config.networking.hostName
+nix build .#nixosConfigurations.chapel-niri-noctalia.config.system.build.toplevel
 ```
 
 ## Adding A Theme Variant
@@ -202,17 +211,13 @@ To add `hyprland + caelestia`:
 
 1. Create `modules/home/themes/caelestia.nix`.
 
-2. Register the theme in `flake/hosts.nix`:
+2. Register the typed module in `flake/modules/themes.nix`, then add its
+   selection record in `flake/hosts.nix`:
 
 ```nix
-themes = {
-  noctalia = {
-    home = ../modules/home/themes/noctalia.nix;
-  };
-
-  caelestia = {
-    home = ../modules/home/themes/caelestia.nix;
-  };
+flake.modules.homeManager.theme-caelestia = ../../modules/home/themes/caelestia.nix;
+themes.caelestia = {
+  home = config.flake.modules.homeManager.theme-caelestia;
 };
 ```
 

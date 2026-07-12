@@ -1,21 +1,20 @@
 {
+  config,
   inputs,
   self,
   ...
 }: let
   desktops = {
     hyprland = {
-      system = ../modules/nixos/desktops/hyprland.nix;
-      home = ../modules/home/desktops/hyprland.nix;
+      system = config.flake.modules.nixos.desktop-hyprland;
+      home = config.flake.modules.homeManager.desktop-hyprland;
     };
   };
-
   themes = {
     noctalia = {
-      home = ../modules/home/themes/noctalia.nix;
+      home = config.flake.modules.homeManager.theme-noctalia;
     };
   };
-
   mkHost = {
     hostname,
     system ? "x86_64-linux",
@@ -35,6 +34,7 @@
       modules =
         [
           ../hosts/${hostname}
+          config.flake.modules.nixos.${hostname}
           desktopModules.system
           inputs.home-manager.nixosModules.home-manager
           {
@@ -47,8 +47,8 @@
               };
               users.sree.imports =
                 [
-                  ../modules/home
-                  ../modules/starship/starship.nix
+                  config.flake.modules.homeManager.base
+                  config.flake.modules.homeManager.starship
                   desktopModules.home
                   themeModules.home
                 ]
@@ -60,7 +60,7 @@
     };
 in {
   flake.lib = {
-    inherit desktops mkHost themes;
+    inherit desktops themes mkHost;
   };
 
   flake.nixosConfigurations = {

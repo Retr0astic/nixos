@@ -7,14 +7,6 @@
   imports = [
     ./hardware-configuration.nix
     ./mounts.nix
-    ../../modules/nixos/core
-    ../../modules/nixos/hardware/nvidia.nix
-    ../../modules/nixos/programs/gaming.nix
-    ../../modules/nixos/programs/zen.nix
-    ../../modules/nixos/services
-    ../../modules/nixos/users/sree.nix
-    ../../modules/lucidglyph.nix
-    inputs.silentSDDM.nixosModules.default
   ];
 
   networking.hostName = "chapel";

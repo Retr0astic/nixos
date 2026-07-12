@@ -9,8 +9,8 @@ task requirement.
 
 * `flake.nix` is the flake-parts entrypoint.
 * `flake/` contains flake-parts modules and host composition.
-* `flake/hosts.nix` owns host construction, desktop and theme composition, and
-  host aliases.
+* `flake/hosts.nix` owns host construction and aliases; typed reusable module
+  registrations live under `flake/modules/`.
 * `hosts/chapel/` contains Chapel-specific NixOS and generated hardware
   configuration.
 * `modules/nixos/` contains reusable NixOS modules.
@@ -19,6 +19,13 @@ task requirement.
 * `modules/home/themes/` contains theme integrations.
 * `modules/noctalia/` contains Noctalia configuration and plugin files.
 * `configuration.nix` is only a compatibility shim importing `hosts/chapel`.
+
+Every discovered Nix file under `flake/` is a flake-parts module. Reusable
+NixOS modules are registered as `flake.modules.nixos.<name>`, Home Manager
+modules as `flake.modules.homeManager.<name>`. Desktop/theme selection metadata
+is assembled and exported by `flake/hosts.nix` as `flake.lib.desktops` and
+`flake.lib.themes`. Host-specific leaf settings remain in `hosts/` and raw
+reusable modules remain under `modules/`.
 
 ## Start Every Task
 
@@ -413,8 +420,13 @@ If no subagent runtime is genuinely available:
 * Use two-space indentation.
 * Prefer grouped option sets and short modules.
 * Prefer explicit imports from the nearest `default.nix`.
-* Register new desktop or theme variants in `flake/hosts.nix` before adding
-  host outputs.
+* Register desktop implementations as typed entries under
+  `flake.modules.nixos`/`flake.modules.homeManager` in
+  `flake/modules/desktops.nix`. Assemble and export public selection metadata
+  as `flake.lib.desktops` from `flake/hosts.nix`. Register themes similarly in
+  `flake/modules/themes.nix`, and assemble and export `flake.lib.themes` from
+  `flake/hosts.nix`. Consume both through `config.flake`; do not use
+  `self.modules` or arbitrary `flake.modules.desktop`/`theme` records.
 * Alphabetize package lists only when the surrounding list is already
   alphabetized.
 * Otherwise preserve local ordering and minimize churn.
