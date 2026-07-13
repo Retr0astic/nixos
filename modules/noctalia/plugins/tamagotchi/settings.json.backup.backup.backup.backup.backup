@@ -1,0 +1,10 @@
+{
+  "hunger": 94,
+  "happiness": 94,
+  "cleanliness": 94,
+  "energy": 94,
+  "volume": 0.5,
+  "difficulty": 50,
+  "showDebug": false,
+  "showPercentage": false
+}

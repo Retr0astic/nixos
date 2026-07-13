@@ -1,123 +1,313 @@
-# Retr0astic's NixOS Flake
+<div align="center">
 
-This is a dendritic flake-parts NixOS configuration. Every `.nix` file under
-`modules/` is recursively imported and must be a self-registering flake-parts
-module. Private helpers such as `modules/packages/_nvf/package.nix` are
-excluded by the underscore path convention. Generated/host-specific leaves remain under `hosts/chapel/`;
-Noctalia assets and other non-Nix assets are not imported.
+# ❄️ Retr0astic NixOS
 
-## Architecture
+**A personal, dendritic NixOS configuration for composing hosts, desktops, shells, themes, users, and features.**
 
-`flake.nix` only declares inputs, systems, and the recursive import. The
-declared `retr0astic` schema contains typed, lazy registries for:
+[![NixOS](https://img.shields.io/badge/NixOS-unstable-5277C3?logo=nixos&logoColor=white)](https://nixos.org/)
+[![Nix flakes](https://img.shields.io/badge/Nix-flakes-7EBAE4?logo=nixos&logoColor=111827)](https://nixos.wiki/wiki/Flakes)
+[![flake-parts](https://img.shields.io/badge/flake--parts-composable-6E56CF)](https://github.com/hercules-ci/flake-parts)
+[![Home Manager](https://img.shields.io/badge/Home_Manager-integrated-5277C3?logo=nixos&logoColor=white)](https://github.com/nix-community/home-manager)
 
-- open-string registries for `hosts`, `configurations`, `configurationAliases`, `desktops`,
-  `shells`, `themes`, `users`, and top-level `features`;
-- pair-specific desktop/shell `integrations` with explicit compatibility;
-- generated `nixosConfigurations`.
+`NixOS Unstable` · `flake-parts` · `Home Manager` · `Hyprland` · `Noctalia`
 
-The public outputs also include `packages.x86_64-linux.nvf` and
-`devShells.x86_64-linux.default`; both are registered as flake-parts modules
-under `modules/`.
+*Sree’s personal machine configuration — useful as a reference, not a turnkey distribution.*
 
-Feature files self-register deferred modules. A host variant explicitly selects
-its hostname, desktop, graphical shell, theme, and users. Home Manager remains
-a NixOS module and composes the base user configuration with those selections.
-The desktop is the compositor/session implementation (currently Hyprland);
-the graphical shell is a separate selectable module (currently Noctalia), and
-the theme is independently selectable. This keeps variants explicit without
-hardcoding Hyprland or Noctalia in the host leaf.
+</div>
 
-Generated hardware configuration under `hosts/chapel/` and `flake.lock` are
-deliberate exceptions: the former is host-generated and the latter is input
-state. Noctalia assets and plugin files remain under `modules/noctalia` and are
-linked by their self-registering Home Manager module.
+---
 
-## Variants
+## ✨ Overview
 
-The available Chapel variants are:
+This repository declares a complete NixOS system as a small set of named,
+composable choices. A recursive flake-parts module graph discovers registrations
+for the physical Chapel host, a rebuildable configuration, Hyprland, Noctalia,
+the Noctalia theme, the Sree user, and reusable system/Home Manager features.
 
-```text
-chapel
-chapel-hyprland-noctalia
+The physical host and the user-facing configuration are separate layers. That
+keeps Chapel-specific boot, storage, NVIDIA, monitor, and hardware policy in
+`hosts/chapel/` or explicitly named Chapel features, while desktop and graphical
+shell behavior remain independently registered. Home Manager is composed for
+each selected user by the configuration generator.
+
+## 🌿 Highlights
+
+| Capability | What it means here |
+| --- | --- |
+| Dendritic self-registration | Public `.nix` files under `modules/` register themselves; no central import list grows over time. |
+| Typed deferred modules | Registries use lazy string-keyed options and deferred NixOS/Home Manager module values. |
+| Rebuild-time composition | A configuration selects its host, desktop, shell, theme, users, and features by name. |
+| Explicit compatibility | `retr0astic.integrations` is the authoritative desktop–shell pairing registry. |
+| Per-user Home Manager isolation | Each user receives their own personal home module plus shared selected modules. |
+| Feature-local ownership | A selected feature contributes both `feature.system` and `feature.home` automatically. |
+| Generated outputs | Configuration declarations become same-named `nixosConfigurations`; aliases reuse canonical objects. |
+| Chapel graphics policy | NVIDIA, monitor, HDR, and OpenRGB behavior is kept in Chapel-specific registrations. |
+| Reproducible Noctalia assets | Repository-owned assets are installed from an immutable `builtins.path` source. |
+| NVF package | The flake exposes a configured `packages.x86_64-linux.nvf` output. |
+
+## 🧭 Architecture
+
+```mermaid
+flowchart LR
+    F[flake.nix] --> M[Recursive modules/default.nix]
+    M --> R[Typed retr0astic registries]
+    R --> C[Configuration declaration]
+
+    C --> H[Physical host]
+    C --> U[Selected users]
+    C --> D[Desktop]
+    C --> S[Graphical shell]
+    C --> T[Theme]
+    C --> I[Desktop–shell integration]
+    C --> X[Reusable features]
+
+    H & U & D & S & T & I & X --> N[nixosConfigurations]
 ```
 
-Both currently select Chapel + Hyprland + the Noctalia graphical shell and
-theme. Physical hosts live in `retr0astic.hosts`; variants live in
-`retr0astic.configurations`; aliases point at variants. To add a variant,
-register its desktop, shell, theme, pair integration, or feature under
-`modules/`, then add explicit data to `modules/hosts/chapel.nix`. Keep host-only boot,
-LUKS, filesystem, kernel, and generated hardware settings in `hosts/chapel`.
+## 🌱 Dendritic design
 
-## Commands
+The repository is dendritic in the practical sense that its public module
+registrations are top-level flake-parts modules. `flake.nix` declares inputs,
+the supported system, and one import: `modules/default.nix`. That importer
+recursively discovers `.nix` registrations under `modules/`.
+
+The schema defines open string-keyed registries for hosts, configurations,
+aliases, desktops, shells, themes, users, features, and integrations. Names
+are resolved and validated only when configurations are generated. Lower-level
+implementations travel as typed, lazy `deferredModule` values, so unselected
+choices remain lazy and new names do not require schema enums or a central
+configuration generator edit.
+
+There are deliberate exceptions: underscore-prefixed private helpers such as
+`modules/packages/_nvf/package.nix` are excluded, generated Chapel hardware
+stays under `hosts/chapel/`, and non-Nix Noctalia assets are ordinary data.
+
+<details>
+<summary>How selection becomes a system</summary>
+
+`modules/configurations.nix` resolves the named host, desktop, shell, theme,
+users, and features. It adds each feature’s deferred `system` and `home` side,
+then composes the selected desktop, shell, theme, and integration. Home Manager
+receives a per-user import list: that user’s personal module followed by the
+shared selected modules. Finally, the configuration record becomes a
+`nixosConfigurations` entry and aliases are resolved to existing entries.
+
+</details>
+
+## 🧩 Composition model
+
+| Concept | Meaning |
+| --- | --- |
+| Host | A physical machine and its host-owned system policy. |
+| Configuration | A rebuildable composition of named selections. |
+| Desktop | The compositor or desktop session; currently Hyprland. |
+| Shell | The graphical UI stack; currently Noctalia. |
+| Theme | Reusable styling and theme assets; currently Noctalia. |
+| User | A system account and its personal Home Manager module. |
+| Feature | A reusable capability with `system` and `home` sides. |
+| Integration | An explicitly supported desktop–shell pair. |
+| Alias | An alternate name resolving to a canonical configuration. |
+
+The current composition is:
+
+```text
+chapel + hyprland + noctalia + noctalia theme + sree
+```
+
+`chapel` is the public alias for `chapel-hyprland-noctalia`; both resolve to
+the same canonical configuration object.
+
+## 📦 Available outputs
+
+Confirmed flake outputs include:
+
+```text
+nixosConfigurations.chapel
+nixosConfigurations.chapel-hyprland-noctalia
+packages.x86_64-linux.nvf
+devShells.x86_64-linux.default
+```
+
+The flake also exposes these checks for `x86_64-linux`:
+
+```text
+checks.x86_64-linux.composition-contract
+checks.x86_64-linux.registry-contract
+checks.x86_64-linux.registry-failure-contract
+```
+
+## 🖼️ Desktop
+
+> Screenshots will be added after the configuration lands on the main branch.
+
+## 🗂️ Repository layout
+
+```text
+.
+├── flake.nix                         # flake-parts entrypoint and inputs
+├── modules/
+│   ├── default.nix                   # recursive registration importer
+│   ├── schema.nix                    # typed retr0astic registries
+│   ├── configurations.nix            # composition and output generation
+│   ├── checks.nix                    # contract checks
+│   ├── hosts/                        # host and configuration registrations
+│   ├── desktops/                     # desktop registrations
+│   ├── shells/                       # graphical-shell registrations
+│   ├── themes/                       # theme registrations
+│   ├── integrations/                 # supported desktop–shell pairs
+│   ├── features/                     # reusable system/home capabilities
+│   ├── users/                        # user registrations
+│   ├── packages/                     # package outputs and private helpers
+│   └── noctalia/                     # repository-owned Noctalia assets
+├── hosts/
+│   └── chapel/                       # Chapel hardware, boot, and storage
+└── docs/                             # architecture migration record
+```
+
+## 🔧 Rebuild
+
+This configuration is written for Chapel. Audit the host and hardware modules
+before adapting it to another machine; it is not expected to rebuild unchanged
+on arbitrary hardware.
+
+Test a configuration first:
+
+```bash
+sudo nixos-rebuild test --flake .#chapel
+
+sudo nixos-rebuild test \
+  --flake .#chapel-hyprland-noctalia
+```
+
+After confirming the test activation behaves as expected, a persistent switch
+can be used deliberately:
+
+```bash
+sudo nixos-rebuild switch --flake .#chapel
+```
+
+## ✅ Validate
 
 ```bash
 nix flake show
 nix flake check
-nix eval .#nixosConfigurations.chapel.config.networking.hostName
-nix eval .#nixosConfigurations.chapel-hyprland-noctalia.config.networking.hostName
-nix eval .#packages.x86_64-linux.nvf.drvPath
-nix eval .#devShells.x86_64-linux.default.drvPath
-nix eval --json .#nixosConfigurations --apply builtins.attrNames
-nix build .#nixosConfigurations.chapel.config.system.build.toplevel --no-link
-nix build .#nixosConfigurations.chapel-hyprland-noctalia.config.system.build.toplevel --no-link
-sudo nixos-rebuild test --flake .#chapel
+
+nix build \
+  .#nixosConfigurations.chapel.config.system.build.toplevel \
+  --no-link
 ```
 
-Use `nixos-rebuild test` before a persistent switch. A switch, reboot, commit,
-push, and deployment are intentionally outside this migration.
+Use `nix flake show` to inspect the current output surface and
+`nix flake check` to run the repository’s composition and registry contracts.
 
-## Extending the configuration
+## 🛠️ Extend the configuration
 
-- Add a host or variant in `modules/hosts/`; select `hostname`, `desktop`,
-  `shell`, `theme`, and `users`. The host leaf stays in `hosts/<name>/`.
-- Add a new physical host by registering its hostname, system, and module in
-  `modules/hosts/<name>.nix`; keep boot, storage, hardware, and identity in
-  `hosts/<name>/`.
-- Add a self-registering desktop module under `modules/desktops/` with `system`
-  and `home`, then add one explicit pair record in
-  `modules/integrations/<desktop>-<shell>.nix` under
-  `retr0astic.integrations` for every supported shell.
-- Add a self-registering graphical shell module under `modules/shells/`; shells are independent of
-  desktops. A new desktop or shell changes only its registration and pair
-  records, not this schema, the generator, or a central import list.
-- Add a desktop-shell pairing by adding an integration record with matching
-  `desktop` and `shell`; its `system` and `home` modules may be `{}`.
-- Add a self-registering theme module under `modules/themes/`; keep styling separate from shell
-  services and launcher/panel behavior.
-- Add a self-registering user module under `modules/users/` with independent
-  system and Home Manager deferred values.
-- Add a reusable feature as one self-registering module under `modules/features/`.
-  Ordinary NixOS/Home Manager bodies belong in that module’s typed deferred
-  value, not in hidden helper files or owner imports.
-- Every ordinary `.nix` under the owning `modules/` domain directories is a
-  flake-parts module and assigns typed deferred values directly. Private helper
-  paths with a component beginning with `_` are excluded from discovery.
+Additions are registrations, not edits to a central list. The small examples
+below show the shape of the public API; adapt module bodies to the relevant
+NixOS or Home Manager options.
 
-The integration registry is the authoritative compatibility whitelist (Policy
-A). Unsupported pairs fail with the selected names, available pairs, and the
-required corrective action. Every declaration under `retr0astic.configurations`
-automatically produces the same-named `flake.nixosConfigurations` output.
-`retr0astic.configurationAliases` resolves to an existing configuration declaration; the
-public `chapel` alias therefore reuses `chapel-hyprland-noctalia`.
+### Add a host or configuration variant
 
-Home Manager is composed in `modules/configurations.nix` from the selected user,
-common home registrations, desktop, shell, theme, and pair integration. Inputs
-such as Noctalia, Spicetify, Hyprland, and SilentSDDM are captured by the
-registration that owns them rather than exposed to every module.
+Register a host with a hostname, system, and host module, then declare a
+configuration that selects it:
 
-## Repository map
+```nix
+config.retr0astic.hosts.lantern = {
+  hostname = "lantern";
+  system = "x86_64-linux";
+  module = ./lantern/host.module.nix;
+};
 
-```text
-flake.nix                 flake-parts entrypoint
-modules/                  recursive registrations, schema, and variants
-hosts/chapel/             Chapel leaf and generated hardware exception
-modules/desktops/         desktop registration modules
-modules/features/         feature registration modules
-modules/packages/          package registrations and private helpers
-modules/shells/            shell registration modules
-modules/themes/            theme registration modules
-modules/users/             user registration modules
-modules/noctalia/          Noctalia settings and plugins
-hosts/chapel/hardware-configuration.nix  generated hardware exception
+config.retr0astic.configurations.lantern-hyprland-noctalia = {
+  host = "lantern";
+  desktop = "hyprland";
+  shell = "noctalia";
+  theme = "noctalia";
+  users = ["sree"];
+  features = ["core"];
+};
 ```
+
+Every declaration generates a same-named `nixosConfigurations` output. Add an
+alias only when a second public name is useful:
+
+```nix
+config.retr0astic.configurationAliases.lantern =
+  "lantern-hyprland-noctalia";
+```
+
+### Add a desktop, shell, theme, user, feature, or integration
+
+Each public module belongs under its owning directory and self-registers:
+
+```nix
+config.retr0astic.desktops.niri = {
+  system = {programs.niri.enable = true;};
+  home = {wayland.windowManager.niri.enable = true;};
+};
+
+config.retr0astic.integrations.niri-noctalia = {
+  desktop = "niri";
+  shell = "noctalia";
+  system = {};
+  home = {};
+};
+```
+
+Graphical-shell pairings are explicit: a new desktop or shell is not available
+in a configuration until its integration record exists. A feature exposes
+`system` and `home` values and is selected by name; its name is not added to
+the configuration generator. A user exposes separate system and personal home
+values, and personal home modules are applied only to that user. Themes and
+shells remain separate from pair-specific behavior.
+
+Adding any of these registrations does not require editing `flake.nix`, the
+schema’s list of names, the recursive importer, or a hardcoded feature-home
+list.
+
+<details>
+<summary>Validation behavior</summary>
+
+Unknown names fail with the available values. Unsupported desktop–shell pairs
+fail with the selected pair, supported pairs, and the required corrective
+action: add an explicit record to `retr0astic.integrations`.
+
+</details>
+
+## 🖥️ Current Chapel stack
+
+| Layer | Current choice |
+| --- | --- |
+| System | NixOS unstable on `x86_64-linux` |
+| Desktop | Hyprland with UWSM and XWayland |
+| Graphical shell | Noctalia |
+| Theme | Noctalia configuration and assets |
+| Home management | Home Manager |
+| Graphics | NVIDIA, with Chapel-specific monitor/HDR policy |
+| Login | SDDM with SilentSDDM integration |
+| Shell | Fish with Starship |
+| Editor package | NVF |
+
+## ⚠️ Caveats
+
+- This is Sree’s personal configuration, not a general-purpose distribution.
+- Boot, LUKS, filesystems, storage, generated hardware, NVIDIA, monitors, HDR,
+  and OpenRGB settings are Chapel-specific.
+- No secrets are expected to be committed; inspect every module before reuse.
+- Noctalia assets are repository-owned and installed reproducibly from the
+  flake source tree.
+- Runtime behavior can change with the repository’s current unstable inputs.
+
+## 🙏 Acknowledgements
+
+This configuration builds on [NixOS](https://github.com/NixOS/nixpkgs),
+[flake-parts](https://github.com/hercules-ci/flake-parts),
+[Home Manager](https://github.com/nix-community/home-manager),
+[Hyprland](https://github.com/hyprwm/Hyprland),
+[Noctalia](https://github.com/noctalia-dev/noctalia),
+[NVF](https://github.com/NotAShelf/nvf), and
+[SilentSDDM](https://github.com/uiriansan/SilentSDDM).
+
+## License
+
+No license has been added yet.
