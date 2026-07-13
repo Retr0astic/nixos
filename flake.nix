@@ -58,14 +58,9 @@
     };
   };
 
-  outputs = inputs @ {
-    flake-parts,
-    nixpkgs,
-    ...
-  }:
+  outputs = inputs @ {flake-parts, ...}:
     flake-parts.lib.mkFlake {inherit inputs;} {
-      imports = [flake-parts.flakeModules.modules]
-        ++ (import ./lib/treeimport.nix {inherit (nixpkgs) lib;}) ./flake;
+      imports = [./modules/default.nix];
       systems = ["x86_64-linux"];
     };
 }

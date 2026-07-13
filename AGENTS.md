@@ -8,21 +8,22 @@ task requirement.
 ## Repository Structure
 
 * `flake.nix` is the flake-parts entrypoint.
-* `flake/` contains flake-parts modules and host composition.
-* `flake/hosts/` owns host registrations, configurations, and aliases; typed
-  reusable feature registrations live in the top-level `flake/` tree.
+* `modules/` contains the recursively imported self-registering flake-parts
+  modules and host composition.
+* `modules/hosts/` owns host registrations, configurations, and aliases; typed
+  reusable feature registrations live throughout the `modules/` tree.
 * `hosts/chapel/` contains Chapel-specific NixOS and generated hardware
   configuration.
-* `flake/features/`, `flake/desktops/`, `flake/home/`, and `flake/users/`
-  contain coherent dendritic feature registrations.
-* Underscore-prefixed directories beneath `flake/` contain private helper
-  modules and assets imported only by their owning registration.
+* `modules/features/`, `modules/desktops/`, `modules/home/`, and
+  `modules/users/` contain coherent self-registering dendritic modules.
 * `modules/noctalia/` contains Noctalia configuration and plugin files.
 
-Every discovered Nix file under `flake/` is a flake-parts registration module;
-`lib/treeimport.nix` excludes underscore-prefixed helper directories. Typed
-`retr0astic` registries hold deferred NixOS and Home Manager modules. Host-only
-leaf settings remain in `hosts/`, including generated hardware configuration.
+Every `.nix` file under `modules/` is recursively imported and must be a
+flake-parts registration module. The sole current exception is
+`modules/features/nvf-package.nix`, a package helper. Typed `retr0astic`
+registries hold deferred NixOS and Home Manager modules. Host-only leaves
+remain in `hosts/chapel/`, including generated hardware configuration; non-Nix
+assets are not imported.
 
 ## Start Every Task
 
@@ -393,14 +394,14 @@ If no subagent runtime is genuinely available:
 * Put host-only boot, LUKS, hostname, kernel, and generated hardware settings in
   `hosts/chapel/`.
 * Put common NixOS packages and Nix settings in the owning feature under
-  `flake/features/`.
-* Put system services in `flake/features/services.nix`.
+  `modules/features/`.
+* Put system services in `modules/features/` self-registering service modules.
 * Put user packages, shell, terminals, applications, and XDG settings in the
-  corresponding registrations under `flake/home/`.
-* Put Hyprland user settings in the private helpers owned by
-  `flake/desktops.nix`.
-* Put Noctalia shell and theme integrations in `flake/shells.nix` and
-  `flake/themes.nix`, with private helpers under underscore directories.
+  corresponding self-registering modules under `modules/home/`.
+* Put Hyprland user settings in self-registering modules under
+  `modules/desktops/`.
+* Put Noctalia shell and theme integrations in self-registering modules under
+  `modules/shells/` and `modules/themes/`.
 * Keep Noctalia plugin manifests, settings, QML entrypoints, shell scripts,
   images, JSON, and translation files synchronized.
 
@@ -409,10 +410,10 @@ If no subagent runtime is genuinely available:
 * Follow the existing compact Nix style.
 * Use two-space indentation.
 * Prefer grouped option sets and short modules.
-* Prefer explicit imports from the owning registration; private helpers belong
-  under underscore-prefixed directories and are never discovered directly.
-* Register desktop implementations in `flake/desktops.nix` and themes in
-  `flake/themes.nix` through the typed `retr0astic` registries. Pair-specific
+* Do not import ordinary local NixOS/Home Manager modules from another module;
+  make each `.nix` file under `modules/` self-register its typed deferred value.
+* Register desktop implementations under `modules/desktops/` and themes under
+  `modules/themes/` through the typed `retr0astic` registries. Pair-specific
   compatibility belongs in `retr0astic.integrations`; do not use parallel
   compatibility records or arbitrary `self.modules` entries.
 * Alphabetize package lists only when the surrounding list is already
