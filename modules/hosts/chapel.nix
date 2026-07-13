@@ -14,7 +14,11 @@
       shell = "noctalia";
       theme = "noctalia";
       users = ["sree"];
-      features = ["core" "services" "graphics" "gaming" "zen" "fonts"];
+      features = [
+        "core" "services" "graphics" "gaming" "zen" "fonts"
+        "appearance" "packages" "programs" "services-home" "shell"
+        "terminals" "xdg" "starship"
+      ];
     };
     aliases.chapel = "chapel-hyprland-noctalia";
   };

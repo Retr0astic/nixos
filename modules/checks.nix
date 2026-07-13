@@ -27,6 +27,22 @@
       test "${incompatible}" != "${missingIntegration}"
       touch $out
     '';
+    checks.composition-contract = let
+      composeUserHomes = config.retr0astic.validation.composeUserHomes;
+      homes = composeUserHomes [
+        {name = "alice"; home = ["alice-home"];}
+        {name = "bob"; home = ["bob-home"];}
+      ] ["shared-home"];
+      duplicateFeature = builtins.tryEval (config.retr0astic.validation.rejectDuplicates "feature" ["synthetic" "synthetic"]);
+      duplicateUser = builtins.tryEval (config.retr0astic.validation.rejectDuplicates "user" ["alice" "alice"]);
+    in pkgs.runCommand "retr0astic-composition-contract" {} ''
+      test "${builtins.concatStringsSep "," homes.alice}" = "alice-home,shared-home"
+      test "${builtins.concatStringsSep "," homes.bob}" = "bob-home,shared-home"
+      test "${builtins.concatStringsSep "," homes.alice}" != "${builtins.concatStringsSep "," homes.bob}"
+      test "${if duplicateFeature.success then "unexpected-success" else "rejected"}" = rejected
+      test "${if duplicateUser.success then "unexpected-success" else "rejected"}" = rejected
+      touch $out
+    '';
     checks.registry-contract = pkgs.runCommand "retr0astic-registry-contract" {} ''
       test "${config.retr0astic.hosts.chapel.hostname}" = chapel
       test "${config.retr0astic.configurations.chapel-hyprland-noctalia.host}" = chapel

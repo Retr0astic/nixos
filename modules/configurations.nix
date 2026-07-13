@@ -8,6 +8,19 @@
       error = "retr0astic: invalid ${kind} '${name}'; available values: ${builtins.concatStringsSep ", " (builtins.attrNames registry)}";
     };
   require = result: if result.ok then result.value else throw result.error;
+  hasDuplicate = values:
+    if values == []
+    then false
+    else builtins.elem (builtins.head values) (builtins.tail values) || hasDuplicate (builtins.tail values);
+  rejectDuplicates = kind: values:
+    if hasDuplicate values
+    then throw "retr0astic: duplicate ${kind} selection; selections must be unique"
+    else values;
+  composeUserHomes = users: sharedHomes:
+    builtins.listToAttrs (map (user: {
+      name = user.name;
+      value = user.home ++ sharedHomes;
+    }) users);
   validatePair = desktopName: shellName: desktop: integrations: let
     pairName = "${desktopName}-${shellName}";
   in
@@ -25,21 +38,25 @@
     desktop = require (resolve "desktop" spec.desktop r.desktops);
     shell = require (resolve "shell" spec.shell r.shells);
     theme = require (resolve "theme" spec.theme r.themes);
-    users = map (user: require (resolve "user" user r.users)) spec.users;
-    featureModules = map (feature: (require (resolve "feature" feature r.features)).system) spec.features;
+    userNames = rejectDuplicates "user" spec.users;
+    featureNames = rejectDuplicates "feature" spec.features;
+    users = map (user: require (resolve "user" user r.users)) userNames;
+    features = map (feature: require (resolve "feature" feature r.features)) featureNames;
+    featureModules = map (feature: feature.system) features;
     pairName = "${spec.desktop}-${spec.shell}";
     pair = require (validatePair spec.desktop spec.shell desktop r.integrations);
     integrationIdentity =
       if pair.desktop == spec.desktop && pair.shell == spec.shell
       then true
       else throw "retr0astic: integration '${pairName}' declares desktop='${pair.desktop}', shell='${pair.shell}', expected desktop='${spec.desktop}', shell='${spec.shell}'";
-    userHomes = (map (user: user.home) users) ++ [
-      r.features.appearance.home r.features.packages.home r.features.programs.home
-      r.features.services-home.home r.features.shell.home r.features.terminals.home
-      r.features.xdg.home r.features.starship.home desktop.home shell.home
-      theme.home pair.home
+    sharedHomes = (map (feature: feature.home) features) ++ [
+      desktop.home shell.home theme.home pair.home
     ];
     userSystems = map (user: user.system) users;
+    userHomes = composeUserHomes (builtins.genList (index: {
+      name = builtins.elemAt userNames index;
+      home = [(builtins.elemAt users index).home];
+    }) (builtins.length users)) sharedHomes;
   in assert integrationIdentity; inputs.nixpkgs.lib.nixosSystem {
     inherit (host) system;
     modules = [
@@ -49,7 +66,7 @@
         useGlobalPkgs = true;
         useUserPackages = true;
         backupFileExtension = "backup";
-        users = builtins.listToAttrs (map (name: {inherit name; value = {imports = userHomes;};}) spec.users);
+        users = builtins.mapAttrs (_: imports: {inherit imports;}) userHomes;
       };
     }] ++ [pair.system] ++ spec.extraModules;
   };
@@ -58,5 +75,7 @@
 in {
   config.retr0astic.validation.resolve = resolve;
   config.retr0astic.validation.validatePair = validatePair;
+  config.retr0astic.validation.rejectDuplicates = rejectDuplicates;
+  config.retr0astic.validation.composeUserHomes = composeUserHomes;
   config.flake.nixosConfigurations = configurations // aliases;
 }

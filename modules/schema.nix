@@ -60,6 +60,8 @@ in {
       integrations = mkOption {type = types.lazyAttrsOf integration; default = {};};
       validation.resolve = mkOption {type = types.raw; readOnly = true;};
       validation.validatePair = mkOption {type = types.raw; readOnly = true;};
+      validation.rejectDuplicates = mkOption {type = types.raw; readOnly = true;};
+      validation.composeUserHomes = mkOption {type = types.raw; readOnly = true;};
       nvf = mkOption {type = types.functionTo types.package;};
     };});
     default = {};
