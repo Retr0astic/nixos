@@ -55,8 +55,29 @@
     programs.fish.shellAliases = {
       rebuild = "sudo nixos-rebuild switch --flake ${checkout}";
       update = "cd ${checkout} && nix flake update && sudo nixos-rebuild switch --flake .";
-      noctalia-config = "noctalia config export > ${checkout}/modules/noctalia/config.toml";
     };
+
+    programs.fish.functions.noctalia-config = ''
+      set -l tmp (mktemp "${checkout}/modules/noctalia/config.toml.XXXXXX")
+      if test $status -ne 0
+        echo "noctalia-config: could not create temporary file" >&2
+        return 1
+      end
+
+      if noctalia config export >$tmp
+        mv -- $tmp ${checkout}/modules/noctalia/config.toml
+        if test $status -eq 0
+          echo "noctalia-config: exported configuration"
+          return 0
+        end
+      end
+
+      rm -f $tmp
+      echo "noctalia-config: export failed; configuration was not replaced" >&2
+      return 1
+    '';
+
+    home.file.".config/noctalia".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/nixos/modules/noctalia";
 
     wayland.windowManager.hyprland.settings.on = lib.mkAfter [
       {

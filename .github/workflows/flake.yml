@@ -19,24 +19,36 @@ jobs:
   check:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
+
     steps:
       - name: Check out repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           persist-credentials: false
 
       - name: Install Nix
-        uses: cachix/install-nix-action@2126ae7fc54c9df00dd18f7f18754393182c73cd # v31.9.1
+        uses: cachix/install-nix-action@2126ae7fc54c9df00dd18f7f18754393182c73cd
+
+      - name: Check formatting
+        run: |
+          nix fmt
+          git diff --exit-code
 
       - name: Check flake
         run: nix flake check --print-build-logs
 
-      - name: Verify Chapel aliases
+      - name: Verify Chapel alias
         shell: bash
         run: |
-          canonical=$(nix eval --raw .#nixosConfigurations.chapel.config.system.build.toplevel.drvPath)
-          alias=$(nix eval --raw .#nixosConfigurations.chapel-hyprland-noctalia.config.system.build.toplevel.drvPath)
+          canonical=$(nix eval --raw \
+            .#nixosConfigurations.chapel-hyprland-noctalia.config.system.build.toplevel.drvPath)
+          alias=$(nix eval --raw \
+            .#nixosConfigurations.chapel.config.system.build.toplevel.drvPath)
           test "$canonical" = "$alias"
 
       - name: Build Chapel toplevel
-        run: nix build .#nixosConfigurations.chapel.config.system.build.toplevel --no-link --print-build-logs
+        run: |
+          nix build \
+            .#nixosConfigurations.chapel.config.system.build.toplevel \
+            --no-link \
+            --print-build-logs
