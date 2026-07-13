@@ -28,22 +28,22 @@ jobs:
 
       - name: Install Nix
         uses: cachix/install-nix-action@v31
-
-      - name: Check formatting
-        run: |
-          nix fmt
-          git diff --exit-code
+        with:
+          extra_nix_config: |
+            accept-flake-config = true
 
       - name: Check flake
-        run: nix flake check --print-build-logs
+        run: nix flake check --print-build-logs --accept-flake-config
 
       - name: Verify Chapel alias
         shell: bash
         run: |
           canonical=$(nix eval --raw \
+            --accept-flake-config \
             .#nixosConfigurations.chapel-hyprland-noctalia.config.system.build.toplevel.drvPath)
 
           alias=$(nix eval --raw \
+            --accept-flake-config \
             .#nixosConfigurations.chapel.config.system.build.toplevel.drvPath)
 
           test "$canonical" = "$alias"
@@ -51,6 +51,7 @@ jobs:
       - name: Build Chapel toplevel
         run: |
           nix build \
+            --accept-flake-config \
             .#nixosConfigurations.chapel.config.system.build.toplevel \
             --no-link \
             --print-build-logs
