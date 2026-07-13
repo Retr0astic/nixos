@@ -14,23 +14,6 @@
         content = "game";
       }
       {
-        match.class = "(vesktop|Vesktop)";
-        workspace = "special:chat silent";
-      }
-      {
-        match.class = "zen";
-        match.title = ".*WhatsApp.*";
-        workspace = "special:chat silent";
-      }
-      {
-        match.class = "(Spotify|spotify)";
-        workspace = "special:media silent";
-      }
-      {
-        match.class = "(Spotify|spotify)";
-        idle_inhibit = "focus";
-      }
-      {
         match.class = "mpv";
         idle_inhibit = "focus";
       }
@@ -59,12 +42,6 @@
       }
     ];
 
-    layer_rule = {
-      match.namespace = "^noctalia-(bar-.+|notification|dock|panel|attached-panel|osd)$";
-      ignore_alpha = 0.5;
-      blur = true;
-      blur_popups = true;
-    };
   };
 }
 ; }

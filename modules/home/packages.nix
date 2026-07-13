@@ -1,33 +1,13 @@
 {config, ...}: { config.retr0astic.features.packages.home = {pkgs, ...}: {
-  home = {
-    username = "sree";
-    homeDirectory = "/home/sree";
-    stateVersion = "26.05";
-    packages = with pkgs; [
+  home.packages = with pkgs; [
       fastfetch
       fd
       htop
       ripgrep
       eza
-      vesktop
       jq
-      gamescope-wsi
-      mangohud
       libsecret
-      ludusavi
       gh
-      bitwarden-desktop
-      nextcloud-client
-      kdePackages.qtwebsockets
-      protonup-qt
-      qbittorrent
-      libreoffice-qt6-fresh
-      hunspell
-      hunspellDicts.en-us-large
-      codex
-      mcp-nixos
-      vscode
-    ];
-  };
+  ];
 }
 ; }

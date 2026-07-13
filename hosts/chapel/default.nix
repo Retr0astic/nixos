@@ -43,6 +43,5 @@
     quickemu
   ];
 
-  services.displayManager.defaultSession = "hyprland";
   system.stateVersion = "25.11";
 }

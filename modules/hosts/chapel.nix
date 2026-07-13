@@ -15,8 +15,8 @@
       theme = "noctalia";
       users = ["sree"];
       features = [
-        "core" "services" "graphics" "gaming" "zen" "fonts"
-        "appearance" "packages" "programs" "services-home" "shell"
+        "core" "services" "graphics" "gaming" "zen" "fonts" "chapel-nvidia" "chapel-monitor" "chapel-openrgb"
+        "appearance" "packages" "programs" "shell"
         "terminals" "xdg" "starship"
       ];
     };

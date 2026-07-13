@@ -1,19 +1,117 @@
-{config, ...}: { config.retr0astic.users.sree.system = {pkgs, ...}: {
-  programs.fish.enable = true;
+{config, inputs, ...}: let
+  spicetifyNix = inputs.spicetify-nix;
+in {
+  config.retr0astic.users.sree.system = {lib, pkgs, ...}: {
+    programs.fish.enable = true;
+    nix.settings.trusted-users = lib.mkAfter ["sree"];
 
-  users.users.sree = {
-    isNormalUser = true;
-    description = "Sree";
-    extraGroups = [
-      "wheel"
-      "video"
-      "input"
-      "networkmanager"
-      "libvirtd"
-      "render"
+    users.users.sree = {
+      isNormalUser = true;
+      description = "Sree";
+      extraGroups = [
+        "wheel"
+        "video"
+        "input"
+        "networkmanager"
+        "libvirtd"
+        "render"
+      ];
+      shell = pkgs.fish;
+      home = "/home/sree";
+    };
+  };
+
+  config.retr0astic.users.sree.home = {config, lib, pkgs, ...}: let
+    inherit (lib.generators) mkLuaInline;
+
+    luaBind = key: dispatcher: {
+      _args = [
+        (mkLuaInline key)
+        (mkLuaInline dispatcher)
+      ];
+    };
+
+    key = suffix: ''mainMod .. " + ${suffix}"'';
+    exec = command: ''hl.dsp.exec_cmd(${command})'';
+    checkout = "${config.home.homeDirectory}/nixos";
+    spicePkgs = spicetifyNix.legacyPackages.${pkgs.stdenv.hostPlatform.system};
+  in {
+    home = {
+      username = "sree";
+      homeDirectory = "/home/sree";
+      stateVersion = "26.05";
+      packages = with pkgs; [
+        vesktop
+        bitwarden-desktop
+        nextcloud-client
+        kdePackages.qtwebsockets
+        qbittorrent
+        libreoffice-qt6-fresh
+        hunspell
+        hunspellDicts.en-us-large
+        codex
+        mcp-nixos
+        vscode
+      ];
+    };
+
+    imports = [spicetifyNix.homeManagerModules.default];
+
+    programs.fish.shellAliases = {
+      rebuild = "sudo nixos-rebuild switch --flake ${checkout}";
+      update = "cd ${checkout} && nix flake update && sudo nixos-rebuild switch --flake .";
+      noctalia-config = "noctalia config export > ${checkout}/modules/noctalia/config.toml";
+    };
+
+    programs.spicetify = {
+      enable = true;
+      enabledExtensions = with spicePkgs.extensions; [adblock hidePodcasts shuffle];
+      enabledCustomApps = with spicePkgs.apps; [newReleases ncsVisualizer];
+      enabledSnippets = with spicePkgs.snippets; [rotatingCoverart pointer];
+      theme = spicePkgs.themes.text;
+    };
+
+    wayland.windowManager.hyprland.settings.on = lib.mkAfter [
+      {
+        _args = [
+          "hyprland.start"
+          (mkLuaInline ''
+            function()
+              hl.exec_cmd("spotify")
+              hl.exec_cmd("vesktop")
+            end
+          '')
+        ];
+      }
     ];
-    shell = pkgs.fish;
-    home = "/home/sree";
+
+    wayland.windowManager.hyprland.settings.bind = lib.mkAfter [
+      (luaBind (key "A") ''hl.dsp.workspace.toggle_special("chat")'')
+      (luaBind (key "SHIFT + A") ''hl.dsp.window.move({ workspace = "special:chat" })'')
+      (luaBind (key "M") ''hl.dsp.workspace.toggle_special("media")'')
+      (luaBind (key "SHIFT + M") ''hl.dsp.window.move({ workspace = "special:media" })'')
+      (luaBind (key "CTRL + A") (exec ''"vesktop"''))
+      (luaBind (key "CTRL + M") (exec ''"spotify"''))
+    ];
+
+    wayland.windowManager.hyprland.settings.window_rule = lib.mkAfter [
+      {
+        match.class = "(vesktop|Vesktop)";
+        workspace = "special:chat silent";
+      }
+      {
+        match.class = "zen";
+        match.title = ".*WhatsApp.*";
+        workspace = "special:chat silent";
+      }
+      {
+        match.class = "(Spotify|spotify)";
+        workspace = "special:media silent";
+      }
+      {
+        match.class = "(Spotify|spotify)";
+        idle_inhibit = "focus";
+      }
+    ];
   };
 }
-; config.retr0astic.users.sree.home = {}; }

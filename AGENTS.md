@@ -17,6 +17,8 @@ task requirement.
 * `modules/features/`, `modules/desktops/`, `modules/home/`, and
   `modules/users/` contain coherent self-registering dendritic modules.
 * `modules/noctalia/` contains Noctalia configuration and plugin files.
+* `docs/dendritic-migration-plan.md` is the authoritative plan and status
+  record for the dendritic architecture migration.
 
 Every `.nix` file under `modules/` is recursively imported and must be a
 flake-parts registration module. The sole current exception is
@@ -35,6 +37,11 @@ Before inspecting or changing the repository:
 4. Preserve all unrelated user changes.
 5. Identify the narrowest relevant repository entrypoints.
 6. Inspect existing conventions before proposing or implementing changes.
+
+For migration work, identify the active phase and checkpoint in
+`docs/dendritic-migration-plan.md` before editing. Treat its ownership map,
+acceptance criteria, and validation commands as authoritative. Do not begin a
+later phase until the document's checkpoint has been explicitly approved.
 
 A request to inspect, diagnose, explain, plan, or review does not authorize
 repository edits.
@@ -554,6 +561,11 @@ Before completing any implementation task:
    * deviations from the plan;
    * remaining risks;
    * whether activation or reboot is still required.
+
+For migration tasks, update `docs/dendritic-migration-plan.md` after the task
+has passed validation and review: record the completed phase, summarize the
+actual files and behavior changed, preserve the next-phase checkpoint as
+pending approval, and keep the document status consistent with the repository.
 
 Do not commit, push, deploy, activate, reboot, or perform an irreversible action
 unless explicitly requested.

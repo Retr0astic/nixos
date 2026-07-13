@@ -1,6 +1,6 @@
 # Final dendritic and modular architecture migration plan
 
-Status: Phase 1 complete; Phase 2 pending explicit approval. This document was
+Status: Phase 4 complete; Phase 5 pending explicit approval. This document was
 prepared from the repository at `28ac4f2` on 2026-07-13. Phase 1 was completed
 after explicit approval; no later phase is authorized by this document.
 
@@ -367,6 +367,16 @@ names. Reviewer checks personal/shared boundary and user leakage.
 
 Checkpoint: Approve Phase 3 — Decouple Hyprland and Noctalia.
 
+Phase 2 completion record: implemented user ownership in `modules/users/
+sree-system.nix`, moved Sree's Home Manager identity, personal applications,
+Spicetify configuration, shell aliases, Hyprland startup, bindings, and window
+rules into the Sree profile, and kept reusable packages, gaming tools, Zathura,
+and generic shell/desktop behavior in shared features. The trusted-user policy
+now keeps `root` in the core feature and adds `sree` from the Sree system
+profile. XDG directories remain derived from Home Manager's configured home
+directory. Validation was run without activation, reboot, commit, deployment,
+or switch; the next phase remains pending explicit approval.
+
 ### Phase 3 — Decouple Hyprland and Noctalia
 
 Objective: ensure base Hyprland has zero Noctalia-specific implementation.
@@ -395,6 +405,17 @@ What must not change: generic Hyprland bindings, animations, HDR policy’s
 eventual owner, or session state versions. Reviewer checks every grep match.
 
 Checkpoint: Approve Phase 4 — Make Chapel desktop-neutral.
+
+Phase 3 completion record: moved Noctalia Lua theme loading, startup, IPC/menu
+variables and bindings, layer rules, and the Starship palette activation into
+`retr0astic.integrations.hyprland-noctalia.home`. Base Hyprland now retains
+generic settings and OpenRGB startup only; startup evaluation confirms the
+ordering Noctalia, OpenRGB, then the Phase 2 Sree Spotify/Vesktop hook. The
+Starship activation is conditional on `programs.starship.enable`. Base desktop
+Noctalia references are absent. `nix flake check`, targeted generated Lua,
+startup, binding, activation, parse, and diff checks passed without activation,
+reboot, commit, deployment, or switch. The next phase remains pending explicit
+approval.
 
 ### Phase 4 — Make Chapel desktop-neutral
 
@@ -427,6 +448,18 @@ Reviewer checks boot/storage diff, GPU ownership, session option, and generated
 hardware integrity.
 
 Checkpoint: Approve Phase 5 — Normalize themes and assets.
+
+Phase 4 completion record: Chapel no longer selects a desktop; Hyprland owns
+`defaultSession`. Chapel-specific NVIDIA, monitor/HDR, and OpenRGB features now
+own the machine policy, while generic graphics, services, and Hyprland remain
+desktop-neutral. I2C and the NVIDIA environment variables are preserved under
+the Chapel feature, and the obsolete `services-home` feature was removed.
+Generated hardware, mounts, boot, and storage remain unchanged. Validation
+included `git diff --check`, path-based `nix flake check`, targeted display
+manager, GPU/OpenRGB, Hyprland environment, and I2C evaluations, both no-link
+Chapel toplevel builds, and the generated hardware SHA-256 hash. No activation,
+reboot, commit, deployment, or switch was performed. Runtime graphics/login
+behavior remains an unverified residual gap.
 
 ### Phase 5 — Normalize themes and assets
 

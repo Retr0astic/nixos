@@ -20,7 +20,7 @@
       test "${unknownShell}" = "retr0astic: invalid shell 'missing-shell'; available values: noctalia"
       test "${unknownTheme}" = "retr0astic: invalid theme 'missing-theme'; available values: noctalia"
       test "${unknownUser}" = "retr0astic: invalid user 'missing-user'; available values: sree"
-      test "${unknownFeature}" = "retr0astic: invalid feature 'missing-feature'; available values: appearance, core, fonts, gaming, graphics, packages, programs, services, services-home, shell, starship, terminals, xdg, zen"
+      test "${unknownFeature}" = "retr0astic: invalid feature 'missing-feature'; available values: appearance, chapel-monitor, chapel-nvidia, chapel-openrgb, core, fonts, gaming, graphics, packages, programs, services, shell, starship, terminals, xdg, zen"
       test "${incompatible}" = "retr0astic: unsupported desktop/shell pair 'hyprland-missing-shell'; add an explicit compatibility record to retr0astic.integrations; supported pairs: hyprland-noctalia"
       test "${missingIntegration}" = "retr0astic: unsupported desktop/shell pair 'hyprland-synthetic-shell'; add an explicit compatibility record to retr0astic.integrations; supported pairs: hyprland-noctalia"
       test "${badAlias}" = "retr0astic: invalid configuration 'missing-configuration'; available values: chapel-hyprland-noctalia"

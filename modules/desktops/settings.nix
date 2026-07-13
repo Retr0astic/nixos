@@ -1,6 +1,4 @@
-{config, ...}: { config.retr0astic.desktops.hyprland.home = {lib, pkgs, ...}: let
-  inherit (lib.generators) mkLuaInline;
-in {
+{config, ...}: { config.retr0astic.desktops.hyprland.home = {pkgs, ...}: {
   home.packages = with pkgs; [
     hyprshot
     cliphist
@@ -8,39 +6,14 @@ in {
   ];
 
   wayland.windowManager.hyprland.settings = {
-    ipc._var = "noctalia msg";
     mainMod._var = "SUPER";
     terminal._var = "kitty";
     fileManager._var = "dolphin";
-    menu._var = mkLuaInline ''ipc .. " panel-toggle launcher"'';
-
-    monitor = {
-      output = "desc:Samsung Electric Company LS49AG95 HNTTA00029";
-      mode = "5120x1440@239.76";
-      position = "0x0";
-      scale = 1;
-      cm = "auto";
-      bitdepth = 10;
-      supports_wide_color = 1;
-      supports_hdr = 1;
-      sdr_max_luminance = 250;
-      min_luminance = 0.001;
-      max_luminance = 1015;
-      max_avg_luminance = 604;
-      sdrsaturation = 1.0;
-      sdrbrightness = 1.0;
-    };
 
     env = [
       {_args = ["XCURSOR_SIZE" "24"];}
       {_args = ["HYPRCURSOR_SIZE" "24"];}
-      {_args = ["GBM_BACKEND" "nvidia-drm"];}
-      {_args = ["__GLX_VENDOR_LIBRARY_NAME" "nvidia"];}
-      {_args = ["LIBVA_DRIVER_NAME" "nvidia"];}
-      {_args = ["NVD_BACKEND" "direct"];}
       {_args = ["NIXOS_OZONE_WL" "1"];}
-      {_args = ["__GL_GSYNC_ALLOWED" "1"];}
-      {_args = ["__GL_VRR_ALLOWED" "0"];}
     ];
 
     config = {
@@ -88,13 +61,6 @@ in {
         force_default_wallpaper = -1;
         disable_hyprland_logo = false;
         vrr = 2;
-      };
-
-      render = {
-        cm_enabled = true;
-        cm_auto_hdr = 2;
-        direct_scanout = 1;
-        send_content_type = true;
       };
 
       input = {

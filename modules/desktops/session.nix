@@ -7,24 +7,6 @@ in {
     portalPackage = null;
     configType = "lua";
     systemd.enable = false;
-    extraConfig = ''
-      local hm_xdg_config_home = os.getenv("XDG_CONFIG_HOME") or os.getenv("HOME") .. "/.config"
-      package.path = hm_xdg_config_home .. "/hypr/?.lua;" .. hm_xdg_config_home .. "/hypr/?/init.lua;" .. package.path
-      require("noctalia").apply_theme()
-    '';
-    settings.on = {
-      _args = [
-        "hyprland.start"
-        (mkLuaInline ''
-          function()
-            hl.exec_cmd("noctalia")
-            hl.exec_cmd("systemctl --user start openrgb.service")
-            hl.exec_cmd("spotify")
-            hl.exec_cmd("vesktop")
-          end
-        '')
-      ];
-    };
   };
 
   services.hypridle = {

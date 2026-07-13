@@ -26,11 +26,7 @@ in {
       (luaBind (key "CTRL + Escape") "hl.dsp.exit()")
       (luaBind (key "E") (exec "fileManager"))
       (luaBind (key "V") ''hl.dsp.window.float({ action = "toggle" })'')
-      (luaBind (key "R") (exec "menu"))
       (luaBind (key "P") "hl.dsp.window.pseudo()")
-      (luaBind (key "Z") (exec ''ipc .. " panel-toggle control-center"''))
-      (luaBind (key "comma") (exec ''ipc .. " settings-toggle"''))
-      (luaBind (key "SHIFT + C") (exec ''ipc .. " panel-toggle launcher clipboard"''))
 
       (luaBind (key "left") ''hl.dsp.focus({ direction = "left" })'')
       (luaBind (key "right") ''hl.dsp.focus({ direction = "right" })'')
@@ -39,14 +35,6 @@ in {
 
       (luaBind (key "S") ''hl.dsp.workspace.toggle_special("scratch")'')
       (luaBind (key "SHIFT + S") ''hl.dsp.window.move({ workspace = "special:scratch" })'')
-      (luaBind (key "A") ''hl.dsp.workspace.toggle_special("chat")'')
-      (luaBind (key "SHIFT + A") ''hl.dsp.window.move({ workspace = "special:chat" })'')
-      (luaBind (key "M") ''hl.dsp.workspace.toggle_special("media")'')
-      (luaBind (key "SHIFT + M") ''hl.dsp.window.move({ workspace = "special:media" })'')
-
-      (luaBind (key "CTRL + A") (exec ''"vesktop"''))
-      (luaBind (key "CTRL + M") (exec ''"spotify"''))
-
       (luaBind (key "mouse_down") ''hl.dsp.focus({ workspace = "e+1" })'')
       (luaBind (key "mouse_up") ''hl.dsp.focus({ workspace = "e-1" })'')
 

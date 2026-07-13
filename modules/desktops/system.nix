@@ -11,6 +11,8 @@ in {
     xwayland.enable = true;
   };
 
+  services.displayManager.defaultSession = "hyprland";
+
   environment.systemPackages = with pkgs; [
     hyprpolkitagent
     xdg-desktop-portal-hyprland
