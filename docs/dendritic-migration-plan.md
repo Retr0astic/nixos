@@ -1,6 +1,6 @@
 # Final dendritic and modular architecture migration plan
 
-Status: Phase 4 complete; Phase 5 pending explicit approval. This document was
+Status: Phase 5 complete; Phase 6 pending explicit approval. This document was
 prepared from the repository at `28ac4f2` on 2026-07-13. Phase 1 was completed
 after explicit approval; no later phase is authorized by this document.
 
@@ -487,6 +487,20 @@ live-edit path.
 Reviewer checks no missing asset and no accidental generated-log files.
 
 Checkpoint: Approve Phase 6 — Normalize remaining feature ownership.
+
+Phase 5 completion record: replaced the Noctalia theme's out-of-store checkout
+symlink with a recursive, flake-owned `builtins.path` source named
+`noctalia-assets`. The reusable theme remains user-neutral while retaining the
+full Noctalia configuration, plugin manifests/settings, QML, scripts, nested
+assets, Kitty include, and Starship palette behavior. Removed stale
+machine-specific template examples from `modules/noctalia/user-templates.toml`.
+Removed the legacy Noctalia v4 Home Assistant/Hassio plugin assets under
+`modules/noctalia/plugins/hassio/` and its `states.hassio` registration from
+`modules/noctalia/plugins.json`. Validation confirmed immutable source
+evaluation, plugin manifest and JSON consistency, Noctalia/Kitty/Starship
+options, `nix flake check`, both Chapel no-link builds, and canonical/alias
+derivation-path equality. No activation, reboot, commit, deployment, or switch
+was performed. Phase 6 remains pending explicit approval.
 
 ### Phase 6 — Normalize remaining feature ownership
 

@@ -4,7 +4,11 @@
   ...
 }: {
   home.file.".config/noctalia" = {
-    source = config.lib.file.mkOutOfStoreSymlink "/home/sree/nixos/modules/noctalia";
+    source = builtins.path {
+      path = ../noctalia;
+      name = "noctalia-assets";
+      recursive = true;
+    };
     recursive = true;
   };
 
