@@ -36,8 +36,13 @@ Before inspecting or changing the repository:
 2. Run `git status --short`.
 3. Identify pre-existing and unrelated worktree changes.
 4. Preserve all unrelated user changes.
-5. Identify the narrowest relevant repository entrypoints.
-6. Inspect existing conventions before proposing or implementing changes.
+5. Identify any applicable task-specific plan supplied by the user or present
+   in the repository. A plan is applicable only when it covers the exact task
+   scope, matches the current architecture, has no conflicts with the request
+   or repository instructions, is decision-complete, and has any required
+   checkpoints explicitly approved.
+6. Identify the narrowest relevant repository entrypoints.
+7. Inspect existing conventions before proposing or implementing changes.
 
 For migration work, identify the active phase and checkpoint in
 `docs/dendritic-migration-plan.md` before editing. Treat its ownership map,
@@ -151,9 +156,12 @@ already-authorized current changes, use the `implementer` only. The implementer
 handles staging and commit, and the planner, reviewer, corrections, and
 final-review stages are skipped unless the user explicitly requests them.
 
-### 1. Planner
+### 1. Plan selection or planner
 
-Spawn the configured `planner` agent before any repository edit.
+Use an applicable existing task-specific plan without spawning the `planner`.
+If multiple plans apply, select the narrowest authoritative plan and resolve
+any conflicts before implementation. If no applicable plan exists, spawn the
+configured `planner` agent before any repository edit.
 
 Provide the planner with:
 
@@ -164,7 +172,7 @@ Provide the planner with:
 * relevant prior findings;
 * any explicit user constraints.
 
-The planner must return a decision-complete plan containing:
+When spawned, the planner must return a decision-complete plan containing:
 
 * task classification and rationale;
 * relevant files and execution paths;
@@ -177,11 +185,12 @@ The planner must return a decision-complete plan containing:
 
 The planner is read-only.
 
-Wait for the planner to finish before continuing.
+Wait for the planner to finish before continuing when a planner was spawned.
 
 ### 2. Plan assessment
 
-The primary thread must inspect the planner's result before implementation.
+The primary thread must inspect the selected existing plan or newly generated
+planner output before implementation.
 
 Resolve:
 
@@ -203,7 +212,7 @@ Spawn the configured `implementer` agent.
 Provide it with:
 
 * the original user request;
-* the complete planner output;
+* the selected existing plan or complete planner output;
 * any corrections made during plan assessment;
 * applicable `AGENTS.md` instructions;
 * current worktree status;
@@ -214,7 +223,7 @@ Only `implementer` may edit files for a non-trivial task.
 
 The implementer must:
 
-* follow the approved plan;
+* follow the selected plan or planner output;
 * inspect local conventions before editing;
 * preserve unrelated worktree changes;
 * make focused changes;
@@ -224,7 +233,7 @@ The implementer must:
 * report behavior implemented;
 * report commands and tests run;
 * report failures, warnings, and skipped checks;
-* report deviations from the plan;
+* report deviations from the selected plan or planner output;
 * report remaining concerns.
 
 Wait for the implementer to finish.
@@ -236,7 +245,7 @@ After implementation, spawn the configured `reviewer` agent.
 Provide it with:
 
 * the original user request;
-* the approved plan;
+* the selected plan or planner output;
 * the implementer's report;
 * the actual repository diff;
 * validation output;
@@ -247,7 +256,7 @@ The reviewer must inspect:
 * the actual diff;
 * relevant surrounding code;
 * compliance with the original request;
-* compliance with the approved plan;
+* compliance with the selected plan or planner output;
 * compliance with applicable `AGENTS.md` files;
 * correctness;
 * regressions;
@@ -354,8 +363,9 @@ If no subagent runtime is genuinely available:
 * Show only patches, commands, or small relevant excerpts.
 * Keep delegated tasks narrowly scoped.
 * Do not ask multiple subagents to repeat the same broad repository scan.
-* Pass concrete planner findings to the implementer instead of requiring the
-  implementer to rediscover the entire architecture.
+* Pass concrete findings from the selected plan or planner output to the
+  implementer instead of requiring the implementer to rediscover the entire
+  architecture.
 * Pass the actual diff and focused surrounding context to the reviewer.
 
 ## Shell and Command Compatibility
@@ -459,7 +469,8 @@ The following areas always require the full subagent workflow:
 * destructive migrations;
 * system activation behavior.
 
-For these changes, the planner must explicitly address:
+For these changes, the selected plan or planner output must explicitly
+address:
 
 * current execution path;
 * expected failure modes;
@@ -553,13 +564,13 @@ Before completing any implementation task:
    used.
 8. Report:
 
-   * planned files;
+   * files identified by the selected plan or planner output;
    * actual files changed;
    * behavior implemented;
    * validation commands and results;
    * review outcome;
    * failures or warnings;
-   * deviations from the plan;
+   * deviations from the selected plan or planner output;
    * remaining risks;
    * whether activation or reboot is still required.
 
