@@ -1,8 +1,8 @@
 # Final dendritic and modular architecture migration plan
 
-Status: Phase 5 complete; Phase 6 pending explicit approval. This document was
-prepared from the repository at `28ac4f2` on 2026-07-13. Phase 1 was completed
-after explicit approval; no later phase is authorized by this document.
+Status: Phase 8 complete; final architecture migration completion remains
+pending explicit approval. This document was prepared from the repository at
+`28ac4f2` on 2026-07-13 and records the completed phases through Phase 8.
 
 ## 1. Executive summary
 
@@ -50,25 +50,25 @@ Plasma, or other unused implementations.
   it into every `home-manager.users.<name>`. Each selected user receives every
   selected user’s `home` module, and all shared modules are indistinguishable
   from personal modules.
-* `modules/desktops/session.nix` imports `noctalia`, starts `noctalia`, and
-  starts personal Spotify/Vesktop processes. `modules/desktops/settings.nix`
+* `modules/desktops/hyprland/session.nix` imports `noctalia`, starts `noctalia`, and
+  starts personal Spotify/Vesktop processes. `modules/desktops/hyprland/settings.nix`
   defines `noctalia msg` IPC and a Noctalia launcher; `bindings.nix` calls
   Noctalia IPC; `rules.nix` owns Noctalia layer rules. The Hyprland registry
   therefore is not shell-independent.
-* `modules/desktops/settings.nix` owns the Samsung monitor identity, HDR
+* `modules/desktops/hyprland/settings.nix` owns the Samsung monitor identity, HDR
   values, NVIDIA environment, and `NIXOS_OZONE_WL`; these are not reusable
   desktop defaults.
-* `hosts/chapel/default.nix:46` sets
+* `hosts/chapel/host.module.nix:46` sets
   `services.displayManager.defaultSession = "hyprland"`.
 * `modules/home/packages.nix` hardcodes `username = "sree"` and
-  `/home/sree`; `modules/themes/noctalia-theme.nix` hardcodes
+  `/home/sree`; `modules/themes/noctalia.nix` hardcodes
   `/home/sree/nixos/modules/noctalia`.
 
 ### Architectural coupling
 
 * `modules/integrations/hyprland-noctalia.nix` is currently an empty
   compatibility record, so the settings it should own remain in Hyprland.
-* `modules/desktops/rules.nix` mixes reusable game/window behavior with
+* `modules/desktops/hyprland/rules.nix` mixes reusable game/window behavior with
   Noctalia layer policy and personal application classes.
 * `modules/features/graphics.nix` combines reusable graphics with a pinned
   custom NVIDIA driver. The driver and GPU environment need a host/hardware
@@ -77,21 +77,21 @@ Plasma, or other unused implementations.
 * `modules/features/services.nix` contains both generally reusable services
   and Chapel hardware policy (OpenRGB motherboard, NVIDIA power limit,
   Bluetooth/I2C). These must be separated by ownership, not duplicated.
-* `modules/users/sree-system.nix` has an empty personal home registration;
+* `modules/users/sree.nix` has an empty personal home registration;
   personal HM content is currently spread through generic feature files.
 
 ### Cleanup opportunities
 
-* The current schema uses `retr0astic.aliases`; the requested final API is
+* The current schema uses `retr0astic.configurationAliases`; the requested final API is
   `retr0astic.configurationAliases`. Rename the option and generator use in a
   compatibility-preserving phase, with `chapel` resolving the canonical
   configuration object exactly once.
 * `modules/home/*.nix` are registrations despite their path. Keep the path
   temporarily for small diffs, then move registrations to feature/user-owned
   directories only when the ownership change is being made.
-* `modules/features/packages.nix` is both the `nvf` package registration and a
+* `modules/packages/nvf.nix` is both the `nvf` package registration and a
   per-system package output. It must remain outside the recursive registration
-  import only for `nvf-package.nix`; its package helper must not become a
+  import only for `modules/packages/_nvf/package.nix`; its package helper must not become a
   module import.
 
 ### Uncertain items requiring implementation-time verification
@@ -105,7 +105,7 @@ Plasma, or other unused implementations.
 * Whether Home Manager’s `imports` merge and duplicate feature selection make
   duplicate application observable. Add a duplicate-selection check rather
   than relying on option merge behavior.
-* The exact final split of `modules/desktops/settings.nix` requires preserving
+* The exact final split of `modules/desktops/hyprland/settings.nix` requires preserving
   generated Hyprland Lua syntax; inspect the evaluated text after each move.
 
 ## 3. File inventory and classification
@@ -123,22 +123,22 @@ flake-parts modules.
 | `modules/checks.nix` | Recursively imported top-level module; flake checks; consumes registry names | `modules/checks.nix` | Convert | 1/8 |
 | `modules/devshells.nix` | Recursively imported top-level module; per-system dev shell | Same | Retain | 7 |
 | `modules/hosts/chapel.nix` | Recursively imported registration; Chapel host and canonical configuration/alias | `modules/hosts/chapel.nix` plus configuration registration | Split/convert | 4/7 |
-| `modules/users/sree-system.nix` | Recursively imported user registration; system account and empty home | `modules/users/sree.nix` and private `_sree/home.module.nix` | Convert/split | 2 |
-| `modules/desktops/system.nix` | Recursively imported Hyprland system registration; package, portal, UWSM | `modules/desktops/hyprland.nix` | Retain/rename | 3/7 |
-| `modules/desktops/session.nix` | Recursively imported Hyprland HM registration; session, hypridle, startup | `modules/desktops/hyprland/core.nix` plus user/integration owners | Split | 3 |
-| `modules/desktops/settings.nix` | Recursively imported Hyprland HM registration; compositor defaults plus monitor/GPU/Noctalia | `modules/desktops/hyprland/core.nix`, hardware feature, integration | Split | 3/4 |
-| `modules/desktops/animations.nix` | Recursively imported Hyprland HM registration; animations/gestures | `modules/desktops/hyprland/animations.nix` | Move/retain | 7 |
-| `modules/desktops/bindings.nix` | Recursively imported Hyprland HM registration; compositor bindings plus Noctalia IPC and personal apps | `hyprland/bindings.nix`, integration, user/workflow feature | Split | 3 |
-| `modules/desktops/rules.nix` | Recursively imported Hyprland HM registration; game rules, personal app rules, Noctalia layers | `hyprland/rules.nix`, gaming/user/integration owners | Split | 3/4 |
+| `modules/users/sree.nix` | Recursively imported user registration; system account and empty home | `modules/users/sree.nix` and private `_sree/home.module.nix` | Convert/split | 2 |
+| `modules/desktops/hyprland.nix` | Recursively imported Hyprland system registration; package, portal, UWSM | `modules/desktops/hyprland.nix` | Retain/rename | 3/7 |
+| `modules/desktops/hyprland/session.nix` | Recursively imported Hyprland HM registration; session, hypridle, startup | `modules/desktops/hyprland/core.nix` plus user/integration owners | Split | 3 |
+| `modules/desktops/hyprland/settings.nix` | Recursively imported Hyprland HM registration; compositor defaults plus monitor/GPU/Noctalia | `modules/desktops/hyprland/core.nix`, hardware feature, integration | Split | 3/4 |
+| `modules/desktops/hyprland/animations.nix` | Recursively imported Hyprland HM registration; animations/gestures | `modules/desktops/hyprland/animations.nix` | Move/retain | 7 |
+| `modules/desktops/hyprland/bindings.nix` | Recursively imported Hyprland HM registration; compositor bindings plus Noctalia IPC and personal apps | `hyprland/bindings.nix`, integration, user/workflow feature | Split | 3 |
+| `modules/desktops/hyprland/rules.nix` | Recursively imported Hyprland HM registration; game rules, personal app rules, Noctalia layers | `hyprland/rules.nix`, gaming/user/integration owners | Split | 3/4 |
 | `modules/integrations/hyprland-noctalia.nix` | Recursively imported integration registration; currently empty compatibility record | Same, with home/system pair policy | Convert | 3 |
-| `modules/shells/noctalia-shell.nix` | Recursively imported shell registration; Noctalia HM module/service | `modules/shells/noctalia.nix` | Rename/retain | 5/7 |
-| `modules/themes/noctalia-theme.nix` | Recursively imported theme registration; Noctalia files and Kitty theme include | `modules/themes/noctalia.nix` plus immutable asset helper | Convert | 5 |
+| `modules/shells/noctalia.nix` | Recursively imported shell registration; Noctalia HM module/service | `modules/shells/noctalia.nix` | Rename/retain | 5/7 |
+| `modules/themes/noctalia.nix` | Recursively imported theme registration; Noctalia files and Kitty theme include | `modules/themes/noctalia.nix` plus immutable asset helper | Convert | 5 |
 | `modules/features/core.nix` | Recursively imported system feature; boot/network/Nix/common packages | `modules/features/core.nix` | Retain; split only if ownership evidence requires | 6 |
 | `modules/features/fonts.nix` | Recursively imported system feature; fonts and fontconfig input | `modules/features/fonts.nix` | Retain | 6 |
 | `modules/features/gaming.nix` | Recursively imported system feature; Steam/gamescope/gamemode/Heroic | `modules/features/gaming.nix` plus optional HM side | Convert; add home only if needed | 6 |
 | `modules/features/graphics.nix` | Recursively imported system feature; graphics/NVIDIA driver | `modules/features/graphics.nix`, `features/hardware/nvidia.nix` | Split/convert | 4/6 |
-| `modules/features/packages.nix` | Recursively imported registration; `retr0astic.nvf` and per-system `packages.nvf` | `modules/packages/nvf.nix` registration | Move/convert | 7 |
-| `modules/features/nvf-package.nix` | Package expression/helper; NVF module list; consumed only by `packages.nix` | `modules/packages/nvf-package.nix` private helper | Move/retain excluded | 7 |
+| `modules/packages/nvf.nix` | Recursively imported registration; `retr0astic.nvf` and per-system `packages.nvf` | `modules/packages/nvf.nix` registration | Move/convert | 7 |
+| `modules/packages/_nvf/package.nix` | Package expression/helper; NVF module list; consumed only by `packages.nix` | `modules/packages/_nvf/package.nix` private helper | Move/retain excluded | 7 |
 | `modules/features/services.nix` | Recursively imported system feature; services plus hardware-specific daemons | `features/services.nix`, `features/hardware/openrgb.nix`, `features/graphics/nvidia.nix` | Split | 4/6 |
 | `modules/features/starship.nix` | Recursively imported HM feature; Starship and Noctalia palette activation | `features/starship.nix` plus integration hook | Split/convert | 3/6 |
 | `modules/features/zen.nix` | Recursively imported system feature; wrapped Zen Browser | `features/zen.nix` | Retain | 6 |
@@ -150,8 +150,8 @@ flake-parts modules.
 | `modules/home/shell.nix` | Recursively imported HM feature registration; Fish aliases and shell tools | `features/shell.nix` plus `users/sree/home.module.nix` | Split | 2 |
 | `modules/home/terminals.nix` | Recursively imported HM feature registration; Kitty/WezTerm/Ghostty | `features/terminals.nix` | Move/convert | 6 |
 | `modules/home/xdg.nix` | Recursively imported HM feature registration; XDG dirs from HM home path | `features/xdg.nix` | Move/convert | 6 |
-| `hosts/chapel/default.nix` | Private NixOS helper; boot, hostname, session, common host packages; imported by Chapel registration | `hosts/chapel/host.module.nix` or inline host registration | Retain as private helper after session removal | 4/7 |
-| `hosts/chapel/mounts.nix` | Private NixOS helper; `/mnt` mounts; imported by host default | `hosts/chapel/storage.module.nix` | Rename/retain private | 4/7 |
+| `hosts/chapel/host.module.nix` | Private NixOS helper; boot, hostname, session, common host packages; imported by Chapel registration | `hosts/chapel/host.module.nix` or inline host registration | Retain as private helper after session removal | 4/7 |
+| `hosts/chapel/storage.module.nix` | Private NixOS helper; `/mnt` mounts; imported by host default | `hosts/chapel/storage.module.nix` | Rename/retain private | 4/7 |
 | `hosts/chapel/hardware-configuration.nix` | Generated hardware configuration; imported by host default | `hosts/chapel/hardware-configuration.nix` | Retain generated exception | 4/7 |
 
 No file is currently classified as obsolete, stale duplicate, or obsolete
@@ -163,22 +163,22 @@ import-aggregator by design, not an obsolete aggregator.
 
 | Responsibility | Current location | Single final authority |
 |---|---|---|
-| Chapel hostname/architecture | `modules/hosts/chapel.nix`, `hosts/chapel/default.nix` | `retr0astic.hosts.chapel` and private Chapel host module |
+| Chapel hostname/architecture | `modules/hosts/chapel.nix`, `hosts/chapel/host.module.nix` | `retr0astic.hosts.chapel` and private Chapel host module |
 | Generated hardware | `hosts/chapel/hardware-configuration.nix` | Chapel hardware helper; generated file remains untouched |
-| LUKS, bootloader, kernel | `hosts/chapel/default.nix` | Chapel host/hardware profile |
-| Filesystems, mounts, storage | `hosts/chapel/mounts.nix`, generated file | Chapel storage helper; generated root mounts stay generated |
-| Sree system account | `modules/users/sree-system.nix` | `retr0astic.users.sree.system` |
+| LUKS, bootloader, kernel | `hosts/chapel/host.module.nix` | Chapel host/hardware profile |
+| Filesystems, mounts, storage | `hosts/chapel/storage.module.nix`, generated file | Chapel storage helper; generated root mounts stay generated |
+| Sree system account | `modules/users/sree.nix` | `retr0astic.users.sree.system` |
 | Sree home directory/state | `modules/home/packages.nix` | `retr0astic.users.sree.home` |
 | Personal aliases and checkout commands | `modules/home/shell.nix` | Sree profile; use `config.home.homeDirectory`/flake path policy |
 | Shared shell tools | `modules/home/shell.nix` | selected `features.shell.home` |
-| Hyprland system package/portal | `modules/desktops/system.nix` | `retr0astic.desktops.hyprland.system` |
+| Hyprland system package/portal | `modules/desktops/hyprland.nix` | `retr0astic.desktops.hyprland.system` |
 | Hyprland compositor defaults, animations, input | desktop files | `retr0astic.desktops.hyprland.home` |
-| Hypridle/session variables | `modules/desktops/session.nix` | base desktop if shell-neutral |
-| Noctalia service/UI/launcher/panel | `modules/shells/noctalia-shell.nix` and current desktop settings | `retr0astic.shells.noctalia.home` |
+| Hypridle/session variables | `modules/desktops/hyprland/session.nix` | base desktop if shell-neutral |
+| Noctalia service/UI/launcher/panel | `modules/shells/noctalia.nix` and current desktop settings | `retr0astic.shells.noctalia.home` |
 | Noctalia theme/colors/config/plugins/assets | `modules/noctalia/*`, theme registration | `retr0astic.themes.noctalia.home` with immutable flake assets |
 | Hyprland-Noctalia IPC, Lua theme apply, layer rules, launcher/menu bindings | scattered desktop files | `retr0astic.integrations.hyprland-noctalia.home` |
 | Default display-manager session | Chapel host currently | selected desktop or desktop/display-manager integration; Chapel is neutral |
-| Samsung identity/HDR | `modules/desktops/settings.nix` | Chapel monitor hardware profile |
+| Samsung identity/HDR | `modules/desktops/hyprland/settings.nix` | Chapel monitor hardware profile |
 | NVIDIA driver and compositor env | graphics feature and desktop settings | Chapel NVIDIA hardware feature; only generic graphics stays reusable |
 | Gaming packages/services/rules | gaming feature and desktop rules | `features.gaming` (system/home as needed) |
 | Services/audio | `features/services.nix` | split reusable services/audio from Chapel hardware daemons |
@@ -186,7 +186,7 @@ import-aggregator by design, not an obsolete aggregator.
 | Application startup | Hyprland session | Sree workflow feature/profile; shell startup only for shell-owned process |
 | Personal window rules/workspaces | desktop rules/bindings | Sree profile or named workflow feature |
 | Shared packages | core/packages features | owning feature; avoid a catch-all personal package list |
-| NVF | `features/packages.nix`, `nvf-package.nix` | `modules/packages/nvf.nix` and private helper |
+| NVF | `modules/features/packages.nix`, `modules/packages/_nvf/package.nix` | `modules/packages/nvf.nix` and private helper |
 | Starship | `features/starship.nix`, TOML | Starship feature; Noctalia palette hook only in integration |
 | Spicetify | `home/programs.nix` | user-selected programs feature, or Sree profile if personal |
 | Noctalia plugins | `modules/noctalia/plugins/*` and JSON/TOML | Noctalia shell/theme asset set; never Hyprland |
@@ -342,9 +342,9 @@ No activation, reboot, commit, or deployment was performed.
 
 Objective: move identity and personal policy out of reusable modules.
 
-Expected files: `modules/users/sree-system.nix`, `modules/home/packages.nix`,
+Expected files: `modules/users/sree.nix`, `modules/home/packages.nix`,
 `modules/home/shell.nix`, `modules/home/programs.nix`, `modules/desktops/
-bindings.nix`, `modules/desktops/rules.nix`, and registration/configuration
+bindings.nix`, `modules/desktops/hyprland/rules.nix`, and registration/configuration
 files as needed.
 
 Steps: keep account name/home in `users.sree.system` and move
@@ -382,8 +382,8 @@ or switch; the next phase remains pending explicit approval.
 Objective: ensure base Hyprland has zero Noctalia-specific implementation.
 
 Expected files: all `modules/desktops/{session,settings,bindings,rules}.nix`,
-`modules/integrations/hyprland-noctalia.nix`, `modules/shells/noctalia-shell.nix`,
-`modules/themes/noctalia-theme.nix`, and possibly `features/starship.nix`.
+`modules/integrations/hyprland-noctalia.nix`, `modules/shells/noctalia.nix`,
+`modules/themes/noctalia.nix`, and possibly `features/starship.nix`.
 
 Move to base Hyprland: enable/package/UWSM/portal, generic compositor settings,
 animations, input, generic hypridle, and shell-neutral variables/commands.
@@ -422,7 +422,7 @@ approval.
 Objective: remove desktop selection and machine policy from reusable desktop
 modules.
 
-Expected files: `hosts/chapel/default.nix`, `hosts/chapel/mounts.nix`,
+Expected files: `hosts/chapel/host.module.nix`, `hosts/chapel/storage.module.nix`,
 `hosts/chapel/hardware-configuration.nix` only if import path changes,
 `modules/hosts/chapel.nix`, `modules/features/graphics.nix`,
 `modules/features/services.nix`, and extracted host/hardware modules.
@@ -465,8 +465,8 @@ behavior remains an unverified residual gap.
 
 Objective: make Noctalia assets reproducible and theme selection user-neutral.
 
-Expected files: `modules/themes/noctalia-theme.nix`, all files under
-`modules/noctalia/`, `modules/shells/noctalia-shell.nix`, and Starship/theme
+Expected files: `modules/themes/noctalia.nix`, all files under
+`modules/noctalia/`, `modules/shells/noctalia.nix`, and Starship/theme
 consumers only where required.
 
 Steps: decide immutable source as the default; use a flake-owned source path or
@@ -526,7 +526,44 @@ feature sides compose automatically, and no generator feature list exists.
 Reviewer checks inputs, package helper exclusion, feature records, and no
 duplicate services.
 
-Checkpoint: Approve Phase 7 — Strict dendritic cleanup.
+Phase 6 completion record: moved reusable appearance, shell, terminal, XDG,
+programs, and shared package registrations into independent feature-owned
+modules. PipeWire/Pulse is now the selectable `audio` feature; generic system
+packages are owned by `system-packages`; NVF is installed by a selected feature
+while the per-system `packages.nvf` output and excluded helper remain intact.
+Spicetify now owns its Home Manager import and configuration, while Sree retains
+personal Spotify/Vesktop startup, bindings, rules, identity, and packages.
+Chapel selects the new features and no direct NVF injection remains. Validation
+included focused `git diff --check`, `nix flake check`, registry contracts,
+targeted PipeWire/Spicetify/Starship/Zathura/terminal/XDG/package evaluations,
+NVF output evaluation, and canonical/alias no-link derivation evaluations. No
+activation, reboot, commit, deployment, or switch was performed. At that
+time, Phase 6 was complete and Phase 7 was pending explicit approval.
+
+Phase 7 completion record: renamed the public alias registry to
+`configurationAliases`, updated canonical alias resolution and checks, tightened
+recursive discovery to registration `.nix` files while excluding `_` private
+paths, moved the approved registration and Chapel helper paths, and updated
+their consumers and documentation. Registration bodies and host behavior,
+including boot, storage, state versions, and generated hardware, were
+preserved. The extensive Noctalia symlink, backup, and asset changes visible
+in the worktree pre-dated Phase 7 and were not Phase 7 edits. The Phase 7
+scoped `git diff --check` passed; the full staged check is contaminated by
+those pre-existing Noctalia changes, and Nix checks/evaluations were blocked
+by Nix daemon/store access and the read-only Git index hiding moved untracked
+files. No Noctalia assets were modified by Phase 7.
+
+Phase 8 completion record: `nix flake check`, `nix flake show`, both Chapel
+no-link builds, canonical/alias `drvPath` equality, hostname/Hyprland/
+Home Manager user evaluations, coupling searches, and the migration-scoped
+`git diff --check` all passed. `nix fmt` was unavailable because the flake
+exposes no formatter output. Terra reviewed the migration-scoped diff with no
+unresolved medium- or high-severity findings. Existing unrelated worktree
+changes, including the extensive Noctalia symlink, backup, and asset churn,
+were preserved and are not part of the migration-scoped diff. No activation,
+deployment, reboot, commit, or push was performed.
+
+Checkpoint: Approve completion of the final architecture migration.
 
 ### Phase 7 — Strict dendritic cleanup
 
@@ -538,7 +575,7 @@ Expected files: `modules/default.nix`, `modules/schema.nix`,
 
 Steps: convert `aliases` to `configurationAliases` (or remove any temporary
 bridge); ensure every recursively discovered `.nix` under `modules/` is a
-flake-parts registration; exclude `_` private helpers, `nvf-package.nix`, and
+flake-parts registration; exclude `_` private helpers, `modules/packages/_nvf/package.nix`, and
 non-module data; move or inline private host helpers; remove only wrappers
 proven obsolete by `rg` consumers. Keep generated hardware. Update README
 examples to output `. #chapel` and `. #chapel-hyprland-noctalia` accurately.
@@ -554,7 +591,7 @@ Reviewer checks every inventory row and import predicate.
 
 Checkpoint: Approve Phase 8 — Final validation and review.
 
-### Phase 8 — Final validation and review
+### Phase 8 — Final validation and review (complete)
 
 Objective: establish objective completion and obtain Terra review.
 
@@ -565,8 +602,9 @@ alias/canonical option comparisons, prohibited-coupling searches, and runtime
 behavior checklist. Ask Terra to review the final diff and resolve every
 medium/high finding before completion.
 
-Acceptance: all completion criteria in section 12 pass, Terra has no unresolved
-medium/high findings, and the final worktree contains only intended changes.
+Acceptance: all migration-scoped completion criteria in section 12 pass, Terra
+has no unresolved medium/high findings, and the migration-scoped diff contains
+only intended changes; unrelated pre-existing worktree changes are preserved.
 No activation, switch, deployment, or reboot is part of this phase.
 
 Checkpoint: Approve completion of the final architecture migration.

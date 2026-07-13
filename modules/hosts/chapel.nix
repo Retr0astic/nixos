@@ -4,8 +4,7 @@
       hostname = "chapel";
       system = "x86_64-linux";
       module = {pkgs, ...}: {
-      imports = [../../hosts/chapel/default.nix inputs.silentSDDM.nixosModules.default];
-        environment.systemPackages = [(config.retr0astic.nvf pkgs)];
+      imports = [../../hosts/chapel/host.module.nix inputs.silentSDDM.nixosModules.default];
       };
     };
     configurations.chapel-hyprland-noctalia = {
@@ -16,10 +15,10 @@
       users = ["sree"];
       features = [
         "core" "services" "graphics" "gaming" "zen" "fonts" "chapel-nvidia" "chapel-monitor" "chapel-openrgb"
-        "appearance" "packages" "programs" "shell"
-        "terminals" "xdg" "starship"
+        "appearance" "system-packages" "packages" "programs" "shell"
+        "terminals" "xdg" "starship" "audio" "nvf" "spicetify"
       ];
     };
-    aliases.chapel = "chapel-hyprland-noctalia";
+    configurationAliases.chapel = "chapel-hyprland-noctalia";
   };
 }

@@ -71,7 +71,7 @@
     }] ++ [pair.system] ++ spec.extraModules;
   };
   configurations = builtins.mapAttrs mkHost r.configurations;
-  aliases = builtins.mapAttrs (_: target: require (resolve "configuration" target configurations)) r.aliases;
+  aliases = builtins.mapAttrs (_: target: require (resolve "configuration" target configurations)) r.configurationAliases;
 in {
   config.retr0astic.validation.resolve = resolve;
   config.retr0astic.validation.validatePair = validatePair;

@@ -2,8 +2,10 @@
   imports = let
     files = lib.filesystem.listFilesRecursive ./.;
     isRegistration = file:
-      lib.hasSuffix ".nix" (toString file)
+      let
+        path = lib.splitString "/" (toString file);
+      in lib.hasSuffix ".nix" (toString file)
       && file != ./default.nix
-      && file != ./features/nvf-package.nix;
+      && !(builtins.any (component: lib.hasPrefix "_" component) path);
   in lib.filter isRegistration files;
 }

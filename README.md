@@ -2,8 +2,8 @@
 
 This is a dendritic flake-parts NixOS configuration. Every `.nix` file under
 `modules/` is recursively imported and must be a self-registering flake-parts
-module. The sole current exception is `modules/features/nvf-package.nix`, a
-package helper. Generated/host-specific leaves remain under `hosts/chapel/`;
+module. Private helpers such as `modules/packages/_nvf/package.nix` are
+excluded by the underscore path convention. Generated/host-specific leaves remain under `hosts/chapel/`;
 Noctalia assets and other non-Nix assets are not imported.
 
 ## Architecture
@@ -11,7 +11,7 @@ Noctalia assets and other non-Nix assets are not imported.
 `flake.nix` only declares inputs, systems, and the recursive import. The
 declared `retr0astic` schema contains typed, lazy registries for:
 
-- open-string registries for `hosts`, `configurations`, `aliases`, `desktops`,
+- open-string registries for `hosts`, `configurations`, `configurationAliases`, `desktops`,
   `shells`, `themes`, `users`, and top-level `features`;
 - pair-specific desktop/shell `integrations` with explicit compatibility;
 - generated `nixosConfigurations`.
@@ -91,14 +91,14 @@ push, and deployment are intentionally outside this migration.
   Ordinary NixOS/Home Manager bodies belong in that module’s typed deferred
   value, not in hidden helper files or owner imports.
 - Every ordinary `.nix` under the owning `modules/` domain directories is a
-  flake-parts module and assigns typed deferred values directly. The only
-  excluded Nix file is `modules/features/nvf-package.nix`.
+  flake-parts module and assigns typed deferred values directly. Private helper
+  paths with a component beginning with `_` are excluded from discovery.
 
 The integration registry is the authoritative compatibility whitelist (Policy
 A). Unsupported pairs fail with the selected names, available pairs, and the
 required corrective action. Every declaration under `retr0astic.configurations`
 automatically produces the same-named `flake.nixosConfigurations` output.
-`retr0astic.aliases` resolves to an existing configuration declaration; the
+`retr0astic.configurationAliases` resolves to an existing configuration declaration; the
 public `chapel` alias therefore reuses `chapel-hyprland-noctalia`.
 
 Home Manager is composed in `modules/configurations.nix` from the selected user,
@@ -112,9 +112,9 @@ registration that owns them rather than exposed to every module.
 flake.nix                 flake-parts entrypoint
 modules/                  recursive registrations, schema, and variants
 hosts/chapel/             Chapel leaf and generated hardware exception
-modules/home/             Home Manager registration modules
 modules/desktops/         desktop registration modules
 modules/features/         feature registration modules
+modules/packages/          package registrations and private helpers
 modules/shells/            shell registration modules
 modules/themes/            theme registration modules
 modules/users/             user registration modules

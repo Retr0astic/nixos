@@ -7,7 +7,6 @@
     nix.settings.trusted-users = ["root"];
     nixpkgs.config.allowUnfree = true;
     nixpkgs.config.permittedInsecurePackages = ["pnpm-10.29.2" "electron-39.8.10"];
-    environment.systemPackages = with pkgs; [vim bat wget sbctl git glib lm_sensors gsettings-desktop-schemas opencode dconf ddcutil seahorse gnome-keyring libsecret nwg-look adw-gtk3 qt6Packages.qt6ct mpv imv kdePackages.dolphin kdePackages.ark kdePackages.kio-extras btop p7zip bubblewrap unrar];
     environment.sessionVariables = {
       NIXOS_OZONE_WL = "1";
       SDL_VIDEODRIVER = "wayland";

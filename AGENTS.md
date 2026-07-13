@@ -20,9 +20,10 @@ task requirement.
 * `docs/dendritic-migration-plan.md` is the authoritative plan and status
   record for the dendritic architecture migration.
 
-Every `.nix` file under `modules/` is recursively imported and must be a
-flake-parts registration module. The sole current exception is
-`modules/features/nvf-package.nix`, a package helper. Typed `retr0astic`
+Every discovered `.nix` file under `modules/` is recursively imported and must
+be a flake-parts registration module. Private helpers such as
+`modules/packages/_nvf/package.nix` are excluded by the underscore path
+convention. Typed `retr0astic`
 registries hold deferred NixOS and Home Manager modules. Host-only leaves
 remain in `hosts/chapel/`, including generated hardware configuration; non-Nix
 assets are not imported.

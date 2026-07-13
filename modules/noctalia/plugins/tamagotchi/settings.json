@@ -1,10 +1,1 @@
-{
-  "hunger": 94,
-  "happiness": 94,
-  "cleanliness": 94,
-  "energy": 94,
-  "volume": 0.5,
-  "difficulty": 50,
-  "showDebug": false,
-  "showPercentage": false
-}
+/nix/store/wv1hc02fnyxb05xxdp6cazzf4wlb4ahp-home-manager-files/.config/noctalia/plugins/tamagotchi/settings.json

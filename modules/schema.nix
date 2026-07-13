@@ -51,7 +51,7 @@ in {
     type = types.submodule ({...}: {options = {
       hosts = mkOption {type = types.lazyAttrsOf host; default = {};};
       configurations = mkOption {type = types.lazyAttrsOf configuration; default = {};};
-      aliases = mkOption {type = types.lazyAttrsOf types.str; default = {};};
+      configurationAliases = mkOption {type = types.lazyAttrsOf types.str; default = {};};
       features = mkOption {type = types.lazyAttrsOf feature; default = {};};
       desktops = mkOption {type = types.lazyAttrsOf desktop; default = {};};
       shells = mkOption {type = types.lazyAttrsOf shell; default = {};};
