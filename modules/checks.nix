@@ -17,13 +17,13 @@
     in pkgs.runCommand "retr0astic-registry-failure-contract" {} ''
       test "${unknownHost}" = "retr0astic: invalid host 'missing-host'; available values: chapel"
       test "${unknownDesktop}" = "retr0astic: invalid desktop 'missing-desktop'; available values: hyprland"
-      test "${unknownShell}" = "retr0astic: invalid shell 'missing-shell'; available values: noctalia"
-      test "${unknownTheme}" = "retr0astic: invalid theme 'missing-theme'; available values: noctalia"
+      test "${unknownShell}" = "retr0astic: invalid shell 'missing-shell'; available values: caelestia, noctalia"
+      test "${unknownTheme}" = "retr0astic: invalid theme 'missing-theme'; available values: caelestia, noctalia"
       test "${unknownUser}" = "retr0astic: invalid user 'missing-user'; available values: sree"
       test "${unknownFeature}" = "retr0astic: invalid feature 'missing-feature'; available values: appearance, audio, chapel-monitor, chapel-nvidia, chapel-openrgb, core, fonts, gaming, graphics, nvf, packages, programs, services, shell, spicetify, starship, system-packages, terminals, xdg, zen"
-      test "${incompatible}" = "retr0astic: unsupported desktop/shell pair 'hyprland-missing-shell'; add an explicit compatibility record to retr0astic.integrations; supported pairs: hyprland-noctalia"
-      test "${missingIntegration}" = "retr0astic: unsupported desktop/shell pair 'hyprland-synthetic-shell'; add an explicit compatibility record to retr0astic.integrations; supported pairs: hyprland-noctalia"
-      test "${badAlias}" = "retr0astic: invalid configuration 'missing-configuration'; available values: chapel-hyprland-noctalia"
+      test "${incompatible}" = "retr0astic: unsupported desktop/shell pair 'hyprland-missing-shell'; add an explicit compatibility record to retr0astic.integrations; supported pairs: hyprland-caelestia, hyprland-noctalia"
+      test "${missingIntegration}" = "retr0astic: unsupported desktop/shell pair 'hyprland-synthetic-shell'; add an explicit compatibility record to retr0astic.integrations; supported pairs: hyprland-caelestia, hyprland-noctalia"
+      test "${badAlias}" = "retr0astic: invalid configuration 'missing-configuration'; available values: caelestia-hyprland, noctalia-hyprland"
       test "${incompatible}" != "${missingIntegration}"
       touch $out
     '';
@@ -45,8 +45,9 @@
     '';
     checks.registry-contract = pkgs.runCommand "retr0astic-registry-contract" {} ''
       test "${config.retr0astic.hosts.chapel.hostname}" = chapel
-      test "${config.retr0astic.configurations.chapel-hyprland-noctalia.host}" = chapel
-      test "${config.retr0astic.configurationAliases.chapel}" = chapel-hyprland-noctalia
+      test "${config.retr0astic.configurations.noctalia-hyprland.host}" = chapel
+      test "${config.retr0astic.configurations.caelestia-hyprland.host}" = chapel
+      test "${config.retr0astic.configurationAliases.chapel}" = noctalia-hyprland
       test "${config.retr0astic.integrations.hyprland-noctalia.desktop}" = hyprland
       test "${config.retr0astic.integrations.hyprland-noctalia.shell}" = noctalia
       touch $out

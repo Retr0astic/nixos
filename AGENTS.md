@@ -258,5 +258,6 @@ Before completing implementation:
 5. run required validation;
 6. complete review when required by the risk policy;
 7. report planned and actual files changed, behavior implemented, validation results, review outcome when used, warnings/failures/deviations/remaining risks, and whether activation or reboot remains necessary.
+8. before finalizing, explicitly ask whether the user wants the intended changes committed and CI validation run; do not assume commit or CI authorization from an implementation request alone.
 
 Do not commit, push, deploy, activate, reboot, or perform irreversible actions unless explicitly requested.

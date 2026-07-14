@@ -101,21 +101,22 @@ shared selected modules. Finally, the configuration record becomes a
 | Host | A physical machine and its host-owned system policy. |
 | Configuration | A rebuildable composition of named selections. |
 | Desktop | The compositor or desktop session; currently Hyprland. |
-| Shell | The graphical UI stack; currently Noctalia. |
-| Theme | Reusable styling and theme assets; currently Noctalia. |
+| Shell | The graphical UI stack; currently Noctalia or Caelestia. |
+| Theme | Reusable styling and theme assets; currently Noctalia or Caelestia. |
 | User | A system account and its personal Home Manager module. |
 | Feature | A reusable capability with `system` and `home` sides. |
 | Integration | An explicitly supported desktop–shell pair. |
 | Alias | An alternate name resolving to a canonical configuration. |
 
-The current composition is:
+The current compositions are:
 
 ```text
-chapel + hyprland + noctalia + noctalia theme + sree
+noctalia-hyprland or caelestia-hyprland, both on Chapel with Hyprland and Sree
 ```
 
-`chapel` is the public alias for `chapel-hyprland-noctalia`; both resolve to
-the same canonical configuration object.
+`noctalia-hyprland` is the canonical Noctalia configuration. `chapel`,
+`chapel-hyprland-noctalia`, and `noctalia` remain aliases; `caelestia` aliases
+`caelestia-hyprland`.
 
 ## 📦 Available outputs
 
@@ -123,7 +124,9 @@ Confirmed flake outputs include:
 
 ```text
 nixosConfigurations.chapel
-nixosConfigurations.chapel-hyprland-noctalia
+nixosConfigurations.noctalia-hyprland
+nixosConfigurations.caelestia-hyprland
+nixosConfigurations.chapel-hyprland-noctalia (alias)
 packages.x86_64-linux.nvf
 devShells.x86_64-linux.default
 ```
@@ -176,15 +179,30 @@ Test a configuration first:
 sudo nixos-rebuild test --flake .#chapel
 
 sudo nixos-rebuild test \
-  --flake .#chapel-hyprland-noctalia
+  --flake .#noctalia-hyprland
+
+sudo nixos-rebuild test \
+  --flake .#caelestia-hyprland
 ```
 
 After confirming the test activation behaves as expected, a persistent switch
 can be used deliberately:
 
 ```bash
-sudo nixos-rebuild switch --flake .#chapel
+# Noctalia + Hyprland
+sudo nixos-rebuild switch --flake .#noctalia-hyprland
+
+# Caelestia + Hyprland
+sudo nixos-rebuild switch --flake .#caelestia-hyprland
+
+# Short aliases
+sudo nixos-rebuild switch --flake .#noctalia
+sudo nixos-rebuild switch --flake .#caelestia
 ```
+
+These selectors are two shell compositions of the same Chapel machine, not
+separate physical hosts. The existing `chapel` alias remains the Noctalia
+fallback.
 
 ## ✅ Validate
 

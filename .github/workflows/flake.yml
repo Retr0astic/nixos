@@ -44,15 +44,42 @@ jobs:
       - name: Verify Chapel alias
         shell: bash
         run: |
-          canonical=$(nix eval --raw \
+          noctalia=$(nix eval --raw \
             --accept-flake-config \
-            .#nixosConfigurations.chapel-hyprland-noctalia.config.system.build.toplevel.drvPath)
+            .#nixosConfigurations.noctalia-hyprland.config.system.build.toplevel.drvPath)
 
           alias=$(nix eval --raw \
             --accept-flake-config \
-            .#nixosConfigurations.chapel.config.system.build.toplevel.drvPath)
+            .#nixosConfigurations.noctalia.config.system.build.toplevel.drvPath)
 
-          test "$canonical" = "$alias"
+          test "$noctalia" = "$alias"
+
+      - name: Verify Caelestia alias
+        shell: bash
+        run: |
+          caelestia=$(nix eval --raw \
+            --accept-flake-config \
+            .#nixosConfigurations.caelestia-hyprland.config.system.build.toplevel.drvPath)
+
+          alias=$(nix eval --raw \
+            --accept-flake-config \
+            .#nixosConfigurations.caelestia.config.system.build.toplevel.drvPath)
+
+          test "$caelestia" = "$alias"
+
+      - name: Build graphical shell variants
+        run: |
+          nix build \
+            --accept-flake-config \
+            .#nixosConfigurations.noctalia-hyprland.config.system.build.toplevel \
+            --no-link \
+            --print-build-logs
+
+          nix build \
+            --accept-flake-config \
+            .#nixosConfigurations.caelestia-hyprland.config.system.build.toplevel \
+            --no-link \
+            --print-build-logs
 
       - name: Build Chapel toplevel
         run: |
