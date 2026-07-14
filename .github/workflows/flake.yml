@@ -22,7 +22,7 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           persist-credentials: false
 
@@ -31,6 +31,12 @@ jobs:
         with:
           extra_nix_config: |
             accept-flake-config = true
+
+      - name: Configure Cachix
+        uses: cachix/cachix-action@v17
+        with:
+          name: chapel
+          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
 
       - name: Check flake
         run: nix flake check --print-build-logs --accept-flake-config
