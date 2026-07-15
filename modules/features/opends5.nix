@@ -11,7 +11,9 @@
 
       services.opends5 = {
         enable = true;
-        users = ["sree"];
+
+        # Currently required for Bluetooth bridging.
+        # This may interfere with Bluetooth keyboards and mice.
         disableBluezInputPlugin = true;
       };
     };
