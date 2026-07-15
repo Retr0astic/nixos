@@ -63,6 +63,9 @@
       url = "github:Gerg-L/spicetify-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    opends5 = {
+      url = "path:/home/sree/Projects/OpenDS5";
+    };
   };
 
   outputs = inputs @ {flake-parts, ...}:
