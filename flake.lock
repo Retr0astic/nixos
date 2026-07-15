@@ -613,14 +613,18 @@
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1784101893,
-        "narHash": "sha256-YQzrP42C6EDj8TMRozhq9Vl3fQyyEmloJGoF50SKF8Q=",
-        "path": "/home/sree/Projects/OpenDS5",
-        "type": "path"
+        "lastModified": 1784110861,
+        "narHash": "sha256-GzUT8SCv93e3m36PySoS5RZPpEWliaNNPYRvYedtBhQ=",
+        "owner": "Retr0astic",
+        "repo": "OpenDS5",
+        "rev": "241158909098391973712452cae2c66e5e1ff7eb",
+        "type": "github"
       },
       "original": {
-        "path": "/home/sree/Projects/OpenDS5",
-        "type": "path"
+        "owner": "Retr0astic",
+        "ref": "feat/nix-support",
+        "repo": "OpenDS5",
+        "type": "github"
       }
     },
     "pre-commit-hooks": {

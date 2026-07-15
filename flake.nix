@@ -64,7 +64,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     opends5 = {
-      url = "path:/home/sree/Projects/OpenDS5";
+      url = "github:Retr0astic/OpenDS5?ref=feat/nix-support";
     };
   };
 
