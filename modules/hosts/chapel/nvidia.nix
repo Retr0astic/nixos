@@ -14,7 +14,14 @@
         persistencedSha256 = "sha256:0nd0bf2s9b2ic8a0rcscddasddkryx2qf6mx4861bv44wblm513z";
       };
     };
-    systemd.services.nvidia-power-limit = {description = "Set NVIDIA GPU Power Limit"; wantedBy = ["multi-user.target"]; serviceConfig = {Type = "oneshot"; ExecStart = "/run/current-system/sw/bin/nvidia-smi -pl 314";};};
+    systemd.services.nvidia-power-limit = {
+      description = "Set NVIDIA GPU Power Limit";
+      wantedBy = ["multi-user.target"];
+      serviceConfig = {
+        Type = "oneshot";
+        ExecStart = "/run/current-system/sw/bin/nvidia-smi -pl 314";
+      };
+    };
   };
   config.retr0astic.features.chapel-nvidia.home = {lib, ...}: {
     wayland.windowManager.hyprland.settings.env = lib.mkAfter [

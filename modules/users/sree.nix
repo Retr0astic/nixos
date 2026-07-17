@@ -1,5 +1,9 @@
 {config, ...}: {
-  config.retr0astic.users.sree.system = {lib, pkgs, ...}: {
+  config.retr0astic.users.sree.system = {
+    lib,
+    pkgs,
+    ...
+  }: {
     programs.fish.enable = true;
     nix.settings.trusted-users = lib.mkAfter ["sree"];
 
@@ -19,7 +23,12 @@
     };
   };
 
-  config.retr0astic.users.sree.home = {config, lib, pkgs, ...}: let
+  config.retr0astic.users.sree.home = {
+    config,
+    lib,
+    pkgs,
+    ...
+  }: let
     inherit (lib.generators) mkLuaInline;
 
     luaBind = key: dispatcher: {

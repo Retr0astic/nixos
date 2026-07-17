@@ -1,5 +1,5 @@
 {...}: {
-  config.retr0astic.features.chapel-monitor.home = { ... }: {
+  config.retr0astic.features.chapel-monitor.home = {...}: {
     wayland.windowManager.hyprland.settings.monitor = {
       output = "desc:Samsung Electric Company LS49AG95 HNTTA00029";
       mode = "5120x1440@239.76";
@@ -16,6 +16,11 @@
       sdrsaturation = 1.0;
       sdrbrightness = 1.0;
     };
-    wayland.windowManager.hyprland.settings.config.render = {cm_enabled = true; cm_auto_hdr = 2; direct_scanout = 1; send_content_type = true;};
+    wayland.windowManager.hyprland.settings.config.render = {
+      cm_enabled = true;
+      cm_auto_hdr = 2;
+      direct_scanout = 1;
+      send_content_type = true;
+    };
   };
 }
