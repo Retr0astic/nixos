@@ -20,7 +20,7 @@
           Restart = "on-failure";
           RestartSec = 5;
         };
-        Install = {WantedBy = ["graphical-session.target"];};
+        Install = {WantedBy = ["default.target"];};
       };
     };
   };
