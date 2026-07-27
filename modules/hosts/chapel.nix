@@ -34,7 +34,7 @@ in {
       module = {...}: {
         imports = [
           ../../hosts/chapel/host.module.nix
-          inputs.silentSDDM.nixosModules.default
+          inputs.noctalia-greeter.nixosModules.default
         ];
       };
     };

@@ -15,10 +15,6 @@
         enable = true;
         openFirewall = true;
       };
-      displayManager.sddm = {
-        enable = true;
-        wayland.enable = true;
-      };
       power-profiles-daemon.enable = true;
       dbus.packages = [pkgs.gsettings-desktop-schemas];
       gnome.gnome-keyring.enable = true;
@@ -26,17 +22,15 @@
     programs = {
       coolercontrol.enable = true;
       virt-manager.enable = true;
-      silentSDDM = {
+      noctalia-greeter = {
         enable = true;
-        theme = "default";
-        settings.General.background_fill_mode = "crop";
       };
     };
     virtualisation.libvirtd = {
       enable = true;
       qemu.swtpm.enable = true;
     };
-    security.pam.services.sddm.enableGnomeKeyring = true;
+    security.pam.services.greetd.enableGnomeKeyring = true;
     hardware.bluetooth.enable = true;
   };
 }

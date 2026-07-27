@@ -586,6 +586,26 @@
         "type": "github"
       }
     },
+    "noctalia-greeter": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1785030494,
+        "narHash": "sha256-ck4CpAHRKhwf3w/1+CYh+UISQXD+k+HyjIL9LP9Feis=",
+        "owner": "noctalia-dev",
+        "repo": "noctalia-greeter",
+        "rev": "32b015ff9d2c8268f9f195e719c150d2c0513814",
+        "type": "github"
+      },
+      "original": {
+        "owner": "noctalia-dev",
+        "repo": "noctalia-greeter",
+        "type": "github"
+      }
+    },
     "nvf": {
       "inputs": {
         "flake-compat": "flake-compat_2",
@@ -679,31 +699,11 @@
         "lucidglyph": "lucidglyph",
         "nixpkgs": "nixpkgs",
         "noctalia": "noctalia",
+        "noctalia-greeter": "noctalia-greeter",
         "nvf": "nvf",
         "opends5": "opends5",
-        "silentSDDM": "silentSDDM",
         "spicetify-nix": "spicetify-nix",
         "zenBrowser": "zenBrowser"
-      }
-    },
-    "silentSDDM": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1785015872,
-        "narHash": "sha256-7dTNd8o3xInMXSBRkRCkHAGQc+e0mrlljDGTXKhk6I0=",
-        "owner": "uiriansan",
-        "repo": "SilentSDDM",
-        "rev": "da69191d32721c1f093d13bfd803e8d8000bd712",
-        "type": "github"
-      },
-      "original": {
-        "owner": "uiriansan",
-        "repo": "SilentSDDM",
-        "type": "github"
       }
     },
     "spicetify-nix": {

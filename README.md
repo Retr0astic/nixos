@@ -312,4 +312,4 @@ noctalia, caelestia, dotfiles, linux-desktop.
 [Hyprland](https://github.com/hyprwm/Hyprland),
 [Noctalia](https://github.com/noctalia-dev/noctalia),
 [NVF](https://github.com/NotAShelf/nvf), and
-[SilentSDDM](https://github.com/uiriansan/SilentSDDM).
+[Noctalia Greeter](https://github.com/noctalia-dev/noctalia-greeter).
