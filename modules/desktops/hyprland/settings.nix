@@ -19,9 +19,14 @@
 
       config = {
         general = {
-          gaps_in = 3;
-          gaps_out = 5;
-          border_size = 1;
+          gaps_in = 4;
+          gaps_out = 8;
+          border_size = 2;
+          "col.active_border" = {
+            colors = ["rgba(ffade1ee)" "rgba(ffb5a1ee)"];
+            angle = 45;
+          };
+          "col.inactive_border" = "rgba(5d4038ee)";
           resize_on_border = false;
           allow_tearing = true;
           layout = "master";
@@ -32,7 +37,7 @@
           rounding_power = 2;
           active_opacity = 1.0;
           inactive_opacity = 1.0;
-          dim_special = 0.4;
+          dim_special = 0.6;
           shadow = {
             enabled = true;
             range = 4;
@@ -41,10 +46,11 @@
           };
           blur = {
             enabled = true;
-            size = 3;
-            passes = 2;
-            vibrancy = 0.1696;
-            special = true;
+            size = 8;
+            passes = 4;
+            vibrancy = 0.24;
+            special = false;
+            new_optimizations = true;
           };
         };
 
@@ -62,6 +68,7 @@
           force_default_wallpaper = -1;
           disable_hyprland_logo = false;
           vrr = 2;
+          allow_session_lock_restore = true;
         };
 
         input = {

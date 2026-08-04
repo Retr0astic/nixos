@@ -23,14 +23,18 @@
       };
     };
   };
-  config.retr0astic.features.chapel-nvidia.home = {lib, ...}: {
-    wayland.windowManager.hyprland.settings.env = lib.mkAfter [
+  config.retr0astic.features.chapel-nvidia.home = {
+    config,
+    lib,
+    ...
+  }: {
+    wayland.windowManager.hyprland.settings.env = lib.mkIf config.wayland.windowManager.hyprland.enable (lib.mkAfter [
       {_args = ["GBM_BACKEND" "nvidia-drm"];}
       {_args = ["__GLX_VENDOR_LIBRARY_NAME" "nvidia"];}
       {_args = ["LIBVA_DRIVER_NAME" "nvidia"];}
       {_args = ["NVD_BACKEND" "direct"];}
       {_args = ["__GL_GSYNC_ALLOWED" "1"];}
       {_args = ["__GL_VRR_ALLOWED" "0"];}
-    ];
+    ]);
   };
 }

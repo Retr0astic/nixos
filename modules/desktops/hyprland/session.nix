@@ -14,9 +14,9 @@
       enable = true;
       settings = {
         general = {
-          lock_cmd = "pidof hyprlock || hyprlock";
-          before_sleep_cmd = "loginctl lock-session";
-          after_sleep_cmd = "hyprctl dispatch dpms on";
+          lock_cmd = "noctalia msg session lock";
+          before_sleep_cmd = "noctalia msg session lock";
+          after_sleep_cmd = ''hyprctl dispatch 'hl.dsp.dpms("on")' '';
           ignore_dbus_inhibit = false;
           ignore_systemd_inhibit = false;
           ignore_wayland_inhibit = false;
@@ -25,11 +25,11 @@
         listener = [
           {
             timeout = 600;
-            on-timeout = "loginctl lock-session";
+            on-timeout = "noctalia msg session lock";
           }
           {
             timeout = 900;
-            on-timeout = "systemctl suspend";
+            on-timeout = "noctalia msg session lock-and-suspend";
           }
         ];
       };

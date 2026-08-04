@@ -45,12 +45,6 @@
     options = ["fmask=0022" "dmask=0022"];
   };
 
-  fileSystems."/mnt/bigdrive" = {
-    device = "/dev/disk/by-uuid/C26251F26251EBA3";
-    fsType = "ntfs3";
-    options = ["rw" "uid=1000" "nofail"];
-  };
-
   swapDevices = [
     {device = "/dev/mapper/vg-swap";}
   ];

@@ -66,7 +66,7 @@
       update = "cd ${checkout} && nix flake update && sudo nixos-rebuild switch --flake .";
     };
 
-    wayland.windowManager.hyprland.settings.on = lib.mkAfter [
+    wayland.windowManager.hyprland.settings.on = lib.mkIf config.wayland.windowManager.hyprland.enable (lib.mkAfter [
       {
         _args = [
           "hyprland.start"
@@ -78,18 +78,18 @@
           '')
         ];
       }
-    ];
+    ]);
 
-    wayland.windowManager.hyprland.settings.bind = lib.mkAfter [
+    wayland.windowManager.hyprland.settings.bind = lib.mkIf config.wayland.windowManager.hyprland.enable (lib.mkAfter [
       (luaBind (key "A") ''hl.dsp.workspace.toggle_special("chat")'')
       (luaBind (key "SHIFT + A") ''hl.dsp.window.move({ workspace = "special:chat" })'')
       (luaBind (key "M") ''hl.dsp.workspace.toggle_special("media")'')
       (luaBind (key "SHIFT + M") ''hl.dsp.window.move({ workspace = "special:media" })'')
       (luaBind (key "CTRL + A") (exec ''"vesktop"''))
       (luaBind (key "CTRL + M") (exec ''"spotify"''))
-    ];
+    ]);
 
-    wayland.windowManager.hyprland.settings.window_rule = lib.mkAfter [
+    wayland.windowManager.hyprland.settings.window_rule = lib.mkIf config.wayland.windowManager.hyprland.enable (lib.mkAfter [
       {
         match.class = "(vesktop|Vesktop)";
         workspace = "special:chat silent";
@@ -107,6 +107,6 @@
         match.class = "(Spotify|spotify)";
         idle_inhibit = "focus";
       }
-    ];
+    ]);
   };
 }

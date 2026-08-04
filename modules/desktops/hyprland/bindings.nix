@@ -36,15 +36,19 @@
 
         (luaBind (key "S") ''hl.dsp.workspace.toggle_special("scratch")'')
         (luaBind (key "SHIFT + S") ''hl.dsp.window.move({ workspace = "special:scratch" })'')
+        (luaBind (key "G") ''hl.dsp.focus({ workspace = "name:games" })'')
+        (luaBind (key "SHIFT + G") ''hl.dsp.window.move({ workspace = "name:games" })'')
         (luaBind (key "mouse_down") ''hl.dsp.focus({ workspace = "e+1" })'')
         (luaBind (key "mouse_up") ''hl.dsp.focus({ workspace = "e-1" })'')
 
         (luaBind (key "print") (exec ''"hyprshot -m window --clipboard-only"''))
         (luaBind ''"print"'' (exec ''"hyprshot -m output --clipboard-only"''))
-        (luaBind ''"SHIFT + print"'' (exec ''"hyprshot -m region --clipboard-only"''))
+        (luaBind ''"SHIFT + print"'' (exec ''"hyprshot -m region -z --clipboard-only"''))
         (luaBind ''"CTRL + print"'' (exec ''"hyprshot -m window"''))
         (luaBind ''"CTRL + " .. mainMod .. " + print"'' (exec ''"hyprshot -m output"''))
-        (luaBind ''"CTRL + SHIFT + print"'' (exec ''"hyprshot -m region"''))
+        (luaBind ''"CTRL + SHIFT + print"'' (exec ''"hyprshot -m region -z"''))
+
+        (luaBind (key "ALT + O") ''hl.dsp.dpms("off")'')
 
         (luaBindWith (key "mouse:272") "hl.dsp.window.drag()" {mouse = true;})
         (luaBindWith (key "mouse:273") "hl.dsp.window.resize()" {mouse = true;})

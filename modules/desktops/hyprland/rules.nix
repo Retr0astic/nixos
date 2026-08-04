@@ -5,14 +5,18 @@
         {
           match.class = "cs2";
           immediate = true;
+          content = "game";
+          workspace = "name:games";
+        }
+        {
+          match.class = "^(steam_app_.*)$";
+          content = "game";
+          workspace = "name:games";
         }
         {
           match.xdg_tag = "proton-game";
           content = "game";
-        }
-        {
-          match.class = "cs2";
-          content = "game";
+          workspace = "name:games";
         }
         {
           match.class = "mpv";
@@ -34,12 +38,6 @@
           match.fullscreen = true;
           match.content = "game";
           tonemap = "off";
-        }
-        {
-          match.fullscreen = true;
-          match.content = "game";
-          tonemap = "off";
-          workspace = "9";
         }
       ];
     };
