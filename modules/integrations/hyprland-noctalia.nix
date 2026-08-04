@@ -14,6 +14,17 @@
               local hm_xdg_config_home = os.getenv("XDG_CONFIG_HOME") or os.getenv("HOME") .. "/.config"
               package.path = hm_xdg_config_home .. "/hypr/?.lua;" .. hm_xdg_config_home .. "/hypr/?/init.lua;" .. package.path
               require("noctalia").apply_theme()
+
+              hl.layer_rule({
+                name = "noctalia",
+                match = {
+                  namespace = "^noctalia-(bar-.+|notification|dock|panel|attached-panel|osd|window-switcher)$",
+                },
+                no_anim = true,
+                ignore_alpha = 0.5,
+                blur = true,
+                blur_popups = true,
+              })
             '';
 
             settings = {
@@ -48,13 +59,6 @@
                 (luaBind (key "comma") (exec ''ipc .. " settings-toggle"''))
                 (luaBind (key "SHIFT + C") (exec ''ipc .. " panel-toggle launcher clipboard"''))
               ]);
-
-              layer_rule = {
-                match.namespace = "^noctalia-(bar-.+|notification|dock|panel|attached-panel|osd)$";
-                ignore_alpha = 0.5;
-                blur = true;
-                blur_popups = true;
-              };
             };
           };
         }

@@ -9,13 +9,15 @@
           background_blur = 9;
           background_tint = "0.55";
           background_tint_gaps = "0";
-          cursor_trail = 200;
+          confirm_os_window_close = 0;
+          cursor_shape = "beam";
+          cursor_trail = 1;
           cursor_trail_decay = "0.05 0.2";
           cursor_trail_start_threshold = 2;
         };
         font = {
           name = "JetBrainsMono Nerd Font";
-          size = 10;
+          size = 11;
         };
       };
       wezterm.enable = true;

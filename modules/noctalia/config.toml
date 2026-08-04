@@ -9,7 +9,8 @@ capsule = true
 capsule_border = "primary"
 capsule_fill = "on_primary"
 capsule_foreground = "tertiary"
-center = [ "audio_visualizer", "media", "session", "notifications" ]
+capsule_thickness = 0.82999998517334461
+center = [ "audio_visualizer", "media", "session", "notifications", "bar" ]
 color = "tertiary"
 contact_shadow = true
 end = [ "tray", "clipboard", "bluetooth", "volume" ]
@@ -25,23 +26,48 @@ thickness = 30
 [calendar]
 enabled = true
 
+    [calendar.account.personal_icloud]
+    provider = "icloud"
+    type = "caldav"
+    username = "sree2399@gmail.com"
+
     [calendar.account.sree2399]
     name = "sree2399"
     type = "google"
 
+[control_center]
+hidden_tabs = [ "monitor" ]
+sidebar = "full"
+sidebar_section = "full"
+
+    [[control_center.shortcuts]]
+    type = "wifi"
+
+    [[control_center.shortcuts]]
+    type = "bluetooth"
+
+    [[control_center.shortcuts]]
+    type = "caffeine"
+
+    [[control_center.shortcuts]]
+    type = "notification"
+
+    [[control_center.shortcuts]]
+    type = "power_profile"
+
 [desktop_widgets]
 schema_version = 2
 widget_order = [
-    "desktop-widget-0000000000000003",
     "desktop-widget-0000000000000004",
     "desktop-widget-0000000000000005",
-    "desktop-widget-0000000000000006"
+    "desktop-widget-0000000000000006",
+    "desktop-widget-0000000000000008"
 ]
 
     [desktop_widgets.grid]
     cell_size = 8
     major_interval = 4
-    visible = true
+    visible = false
 
     [desktop_widgets.widget.desktop-widget-0000000000000002]
     box_height = 256.0
@@ -71,14 +97,12 @@ widget_order = [
         background_opacity = 0.32000000000000001
         background_padding = 13
         background_radius = 32
-        clock_style = "analog"
-        font_family = ""
 
     [desktop_widgets.widget.desktop-widget-0000000000000004]
-    box_height = 192.0
-    box_width = 400.0
-    cx = 2762.0
-    cy = 520.0
+    box_height = 280.0
+    box_width = 208.0
+    cx = 2922.328125
+    cy = 529.47265625
     output = "DP-2"
     rotation = 0.0
     type = "media_player"
@@ -88,13 +112,13 @@ widget_order = [
         background_padding = 22
         background_radius = 32
         hide_when_no_media = true
-        layout = "horizontal"
+        layout = "vertical"
 
     [desktop_widgets.widget.desktop-widget-0000000000000005]
     box_height = 0.0
     box_width = 0.0
-    cx = 2662.0
-    cy = 670.0
+    cx = 3191.375
+    cy = 442.66015625
     output = "DP-2"
     rotation = 0.0
     type = "weather"
@@ -104,14 +128,12 @@ widget_order = [
         background_opacity = 0.40000000000000002
         background_radius = 32
         show_forecast = false
-        stat = "cpu_usage"
-        stat2 = "cpu_temp"
 
     [desktop_widgets.widget.desktop-widget-0000000000000006]
     box_height = 96.0
     box_width = 192.0
-    cx = 2866.0
-    cy = 670.0
+    cx = 3190.35546875
+    cy = 595.77734375
     output = "DP-2"
     rotation = 0.0
     type = "clock"
@@ -121,7 +143,24 @@ widget_order = [
         background_radius = 32
         center_text = true
         clock_style = "digital"
-        show_forecast = true
+        color = "primary"
+        font_family = "FreeSerif"
+
+    [desktop_widgets.widget.desktop-widget-0000000000000008]
+    box_height = 103.859375
+    box_width = 821.390625
+    cx = 2560.0
+    cy = 1361.12109375
+    output = "DP-2"
+    rotation = 0.0
+    type = "audio_visualizer"
+
+        [desktop_widgets.widget.desktop-widget-0000000000000008.settings]
+        background_opacity = 0.23000000000000001
+        background_padding = 32
+        background_radius = 32
+        bands = 128
+        show_when_idle = true
 
 [dock]
 background_opacity = 0.74999998323619366
@@ -172,7 +211,7 @@ widget_order = [
     visible = true
 
     [lockscreen_widgets.widget."lockscreen-login-box@DP-2"]
-    box_height = 229.0
+    box_height = 196.0
     box_width = 736.0
     cx = 2560.0
     cy = 1314.5
@@ -181,7 +220,7 @@ widget_order = [
     type = "login_box"
 
         [lockscreen_widgets.widget."lockscreen-login-box@DP-2".settings]
-        background_color = "surface_variant"
+        background_color = "on_primary"
         background_opacity = 0.55000000000000004
         background_radius = 32.0
         center_password_text = true
@@ -192,12 +231,12 @@ widget_order = [
         show_keyboard_layout = true
         show_login_button = true
         show_media = true
-        show_password_hint = true
         show_session_buttons = true
+        show_unlock_hint = true
         show_weather = true
 
     [lockscreen_widgets.widget."lockscreen-login-box@DP-5"]
-    box_height = 229.0
+    box_height = 196.0
     box_width = 720.0
     cx = 2560.0
     cy = 1321.0
@@ -217,12 +256,12 @@ widget_order = [
         show_keyboard_layout = true
         show_login_button = true
         show_media = true
-        show_password_hint = true
         show_session_buttons = true
+        show_unlock_hint = true
         show_weather = true
 
     [lockscreen_widgets.widget."lockscreen-login-box@FALLBACK"]
-    box_height = 229.0
+    box_height = 196.0
     box_width = 720.0
     cx = 960.0
     cy = 961.0
@@ -242,8 +281,8 @@ widget_order = [
         show_keyboard_layout = true
         show_login_button = true
         show_media = true
-        show_password_hint = true
         show_session_buttons = true
+        show_unlock_hint = true
         show_weather = true
 
     [lockscreen_widgets.widget.lockscreen-widget-0000000000000003]
@@ -283,13 +322,24 @@ widget_order = [
 
         [lockscreen_widgets.widget.lockscreen-widget-0000000000000005.settings]
         background = true
-        background_color = "on_primary"
-        background_opacity = 0.55000000000000004
-        background_padding = 32
-        background_radius = 32
+        background_color = "surface"
+        background_opacity = 0.80000000000000004
+        background_padding = 10
+        background_radius = 12
+        color = "primary"
+        color2 = "secondary"
+        display = "graph"
+        font_family = ""
+        gauge_layout = "horizontal"
+        highlight_color = "error"
+        interface = ""
+        label_min_width = 0
+        network_speed_compact = false
+        network_speed_unit = "auto"
         shadow = true
         show_label = true
-        stat2 = "ram_pct"
+        stat = "cpu_usage"
+        stat2 = ""
 
     [lockscreen_widgets.widget.lockscreen-widget-0000000000000006]
     box_height = 64.0
@@ -314,9 +364,19 @@ widget_order = [
     type = "clock"
 
         [lockscreen_widgets.widget.lockscreen-widget-0000000000000007.settings]
-        background_opacity = 0.55000000000000004
-        background_padding = 12.0
-        background_radius = 32
+        background = true
+        background_color = "surface"
+        background_opacity = 0.80000000000000004
+        background_padding = 10
+        background_radius = 12
+        center_text = false
+        circle = true
+        clock_style = "digital"
+        color = "on_surface"
+        font_family = ""
+        format = "{:%H:%M}"
+        shadow = true
+        timezone = ""
 
     [lockscreen_widgets.widget.lockscreen-widget-0000000000000008]
     box_height = 224.0
@@ -328,11 +388,25 @@ widget_order = [
     type = "sysmon"
 
         [lockscreen_widgets.widget.lockscreen-widget-0000000000000008.settings]
-        background_opacity = 0.55000000000000004
-        background_padding = 32
-        background_radius = 32
-        stat = "cpu_temp"
-        stat2 = "gpu_temp"
+        background = true
+        background_color = "surface"
+        background_opacity = 0.80000000000000004
+        background_padding = 10
+        background_radius = 12
+        color = "primary"
+        color2 = "secondary"
+        display = "graph"
+        font_family = ""
+        gauge_layout = "horizontal"
+        highlight_color = "error"
+        interface = ""
+        label_min_width = 0
+        network_speed_compact = false
+        network_speed_unit = "auto"
+        shadow = true
+        show_label = true
+        stat = "cpu_usage"
+        stat2 = ""
 
     [lockscreen_widgets.widget.lockscreen-widget-0000000000000009]
     box_height = 0.0
@@ -396,7 +470,9 @@ widget_order = [
     type = "audio_visualizer"
 
         [lockscreen_widgets.widget.lockscreen-widget-000000000000000c.settings]
-        background_opacity = 0.55000000000000004
+        background = false
+        background_color = "on_primary"
+        background_opacity = 0.40000000000000002
         background_padding = 1
         background_radius = 32
         bands = 96
@@ -413,28 +489,36 @@ widget_order = [
     type = "volume"
 
         [lockscreen_widgets.widget.lockscreen-widget-000000000000000d.settings]
-        background_opacity = 0.55000000000000004
-        background_padding = 18
-        background_radius = 32
+        background = true
+        background_color = "surface"
+        background_opacity = 0.80000000000000004
+        background_padding = 10
+        background_radius = 12
+        device = "output"
+        fill_color = "primary"
+        font_family = ""
+        glyph = ""
         scroll_step = 5
+        shadow = true
+        show_device = true
+        track_color = "on_surface_variant"
 
 [notification]
-background_opacity = 0.74999998323619366
+background_opacity = 0.54999998770654202
+offset_y = 15
+position = "bottom_center"
 
 [osd]
-background_opacity = 0.74999998323619366
-
-[plugin_settings."alexander/game-launcher"]
-steampoacher_enabled = true
-
-[plugin_settings."noctalia/wallhaven"]
-download_dir = ""
+background_opacity = 0.54999998770654202
+offset_y = 20
 
 [plugins]
-enabled = [ "noctalia/screen_recorder" ]
+enabled = [ "noctalia/screen_recorder", "pozzoo/hassio", "yuuto/calculator" ]
 
 [shell]
-font_family = "Inter"
+app_icon_color = "secondary"
+avatar_path = "/home/sree/.face"
+font_family = "Rubik"
 launch_apps_as_systemd_services = true
 password_style = "random"
 polkit_agent = true
@@ -446,28 +530,26 @@ screen_time_enabled = true
     [shell.greeter_sync]
     auto_sync = true
 
-    [shell.launcher]
-    session_search = true
+    [shell.launcher.providers.emoji]
+    global = false
 
-        [shell.launcher.providers.emoji]
-        global = false
+    [shell.launcher.providers.session]
+    global = true
 
-        [shell.launcher.providers.session]
-        global = true
+    [shell.launcher.providers.wallpaper]
+    global = false
 
-        [shell.launcher.providers.wallpaper]
-        global = false
-
-        [shell.launcher.providers.windows]
-        global = true
+    [shell.launcher.providers.windows]
+    global = true
 
     [shell.panel]
     clipboard_position = "auto"
     control_center_placement = "floating"
     list_item_background = true
     open_near_click_clipboard = true
+    open_near_click_control_center = true
     open_near_click_wallpaper = true
-    transparency_mode = "soft"
+    transparency_mode = "glass"
 
     [shell.screenshot]
     directory = "/home/sree/Pictures/Screenshots"
@@ -476,11 +558,11 @@ screen_time_enabled = true
     grid = true
 
 [theme]
-builtin = "Rosé Pine"
+builtin = "Catppuccin"
 community_palette = "Ayu Red"
 mode = "dark"
-source = "builtin"
-wallpaper_scheme = "m3-tonal-spot"
+source = "wallpaper"
+wallpaper_scheme = "m3-content"
 
     [theme.templates]
     builtin_ids = [ "btop", "gtk3", "gtk4", "hyprland", "kcolorscheme", "kitty", "qt", "starship" ]
@@ -506,13 +588,13 @@ wallpaper_scheme = "m3-tonal-spot"
 directory = "/home/sree/Pictures/Wallpapers"
 
     [wallpaper.default]
-    path = "/home/sree/Pictures/Wallpapers/2e0njflekw3b1.png"
+    path = "/home/sree/Pictures/Wallpapers/Camp E33.png"
 
     [wallpaper.last]
-    path = "/home/sree/Pictures/Wallpapers/2e0njflekw3b1.png"
+    path = "/home/sree/Pictures/Wallpapers/Camp E33.png"
 
     [wallpaper.monitors.DP-2]
-    path = "/home/sree/Pictures/Wallpapers/2e0njflekw3b1.png"
+    path = "/home/sree/Pictures/Wallpapers/Camp E33.png"
 
     [wallpaper.monitors.DP-5]
     path = "/home/sree/Pictures/Wallpapers/Arcane S1 V Fighting.jpg"
@@ -529,12 +611,21 @@ directory = "/home/sree/Pictures/Wallpapers"
     path = "/home/sree/Pictures/Wallpapers/2e0njflekw3b1.png"
     theme_mode = "auto"
 
+    [[wallpaper.favorite]]
+    palette_source = "wallpaper"
+    path = "/home/sree/Pictures/Wallpapers/Samurai.jpg"
+    theme_mode = "dark"
+    wallpaper_scheme = "m3-tonal-spot"
+
 [widget.active_window]
 anchor = true
 capsule = true
 
 [widget.audio_visualizer]
 color_2 = "secondary"
+
+[widget.bar]
+type = "yuuto/calculator:bar"
 
 [widget.workspaces]
 capsule = true

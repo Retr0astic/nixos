@@ -5,14 +5,8 @@ command_timeout = 1000
 palette = "noctalia"
 
 format = """
-$directory\
-$git_branch\
-$git_status\
-$nix_shell\
-$fill\
-$cmd_duration\
-$time
-$character
+[╭─](overlay1) $directory $git_branch$git_status $nix_shell $fill $cmd_duration $time
+[╰─](overlay1)$status$jobs$shlvl$character
 """
 
 ################################################################################
@@ -23,22 +17,24 @@ $character
 truncation_length = 3
 truncate_to_repo = true
 fish_style_pwd_dir_length = 1
-style = "black bold bg:blue"
-format = "[](blue)[ $path]($style)[ ](blue)"
-read_only = ""
+truncation_symbol = "…/"
+style = "bold crust bg:blue"
+format = "[](blue)[ 󰉋 $path ]($style)[](blue)"
+read_only = " 󰌾"
+read_only_style = "bold crust bg:blue"
 
 ################################################################################
-# Git
+# Git (branch + status share one continuous pill)
 ################################################################################
 
 [git_branch]
-symbol = " "
-style = "white bold bg:bright-black"
-format = "[](bright-black)[ $symbol$branch ]($style)[ ](bright-black)"
+symbol = " "
+style = "bold text bg:overlay1"
+format = "[](overlay1)[ $symbol$branch]($style)"
 
 [git_status]
-style = "yellow bold bg:black"
-format = "([](black)[ $all_status$ahead_behind ]($style)[ ](black))"
+style = "bold text bg:overlay1"
+format = "([ $all_status$ahead_behind ]($style))[](overlay1)"
 
 ahead = "⇡"
 behind = "⇣"
@@ -59,23 +55,42 @@ symbol = " "
 
 [cmd_duration]
 min_time = 1000
-style = "white bg:black"
-format = "[](black)[󱎫 $duration ]($style)[ ](black)"
+style = "bold text bg:base"
+format = "[](base)[ 󱎫 $duration ]($style)[](base)"
 
 [time]
 disabled = false
 time_format = "%H:%M"
-style = "black bold bg:magenta"
-format = "[](magenta)[󰥔 $time ]($style)[](magenta)"
+style = "bold crust bg:yellow"
+format = "[](yellow)[ 󰥔 $time ]($style)[](yellow)"
 
 ################################################################################
-# Prompt
+# Prompt line (extra bells: exit code, background jobs, shell nesting)
 ################################################################################
 
 [character]
-success_symbol = "[❯](bold green)"
-error_symbol = "[❯](bold red)"
-vimcmd_symbol = "[❮](bold magenta)"
+success_symbol = "[❯❯](bold blue)"
+error_symbol = "[❯❯](bold red)"
+vimcmd_symbol = "[❮❮](bold text)"
+
+[status]
+disabled = false
+format = "[ $symbol$status]($style) "
+symbol = "✕"
+style = "bold red"
+
+[jobs]
+disabled = false
+symbol = " "
+style = "bold text"
+format = "[$symbol$number]($style) "
+
+[shlvl]
+disabled = false
+threshold = 2
+symbol = "❯"
+style = "bold text"
+format = "[$symbol$shlvl]($style) "
 
 ################################################################################
 # Nix
@@ -83,9 +98,9 @@ vimcmd_symbol = "[❮](bold magenta)"
 
 [nix_shell]
 disabled = false
-symbol = " "
-style = "black bold bg:green"
-format = "[](green)[ $symbol$name ]($style)[ ](green)"
+symbol = " "
+style = "bold crust bg:green"
+format = "[](green)[ $symbol$name ]($style)[](green)"
 
 ################################################################################
 # Disabled modules

@@ -46,12 +46,23 @@
           };
           blur = {
             enabled = true;
-            size = 8;
-            passes = 4;
-            vibrancy = 0.24;
+            xray = true;
             special = false;
             new_optimizations = true;
+            size = 10;
+            passes = 3;
+            brightness = 1;
+            noise = 0.05;
+            contrast = 0.89;
+            vibrancy = 0.5;
+            vibrancy_darkness = 0.5;
+            popups = false;
+            popups_ignorealpha = 0.6;
+            input_methods = true;
+            input_methods_ignorealpha = 0.8;
           };
+          dim_inactive = true;
+          dim_strength = 0.05;
         };
 
         animations.enabled = true;

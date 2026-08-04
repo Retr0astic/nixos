@@ -15,7 +15,7 @@
     gtk = {
       enable = true;
       font = {
-        name = "Inter";
+        name = "Rubik";
         size = 11;
       };
       cursorTheme = {

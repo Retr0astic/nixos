@@ -16,8 +16,7 @@
     in {
       fonts = {
         packages = with pkgs; [
-          inter
-          geist-font
+          rubik
           jetbrains-mono
           iosevka
           noto-fonts

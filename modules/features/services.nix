@@ -24,6 +24,21 @@
       virt-manager.enable = true;
       noctalia-greeter = {
         enable = true;
+        settings = {
+          user.default = "sree";
+          output.scale = 1;
+          appearance = {
+            theme_mode = "dark";
+            corner_radius_scale = 1.0;
+            font_family = "Rubik";
+            password_style = "random";
+          };
+          cursor = {
+            theme = "Bibata-Modern-Classic";
+            size = 16;
+          };
+          keyboard.layout = "us";
+        };
       };
     };
     virtualisation.libvirtd = {
