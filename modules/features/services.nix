@@ -18,6 +18,8 @@
       power-profiles-daemon.enable = true;
       dbus.packages = [pkgs.gsettings-desktop-schemas];
       gnome.gnome-keyring.enable = true;
+      gvfs.enable = true;
+      udisks2.enable = true;
     };
     programs = {
       coolercontrol.enable = true;

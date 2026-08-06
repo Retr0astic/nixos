@@ -25,6 +25,7 @@
     "nvf"
     "spicetify"
     "opends5"
+    "overlays"
   ];
 in {
   config.retr0astic = {

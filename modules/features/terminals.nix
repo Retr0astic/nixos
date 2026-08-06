@@ -4,10 +4,11 @@
       kitty = {
         enable = true;
         settings = {
+          text_composition_strategy = 1.7;
           dynamic_background_opacity = true;
           background_opacity = "0.45";
           background_blur = 9;
-          background_tint = "0.55";
+          background_tint = "0.75";
           background_tint_gaps = "0";
           confirm_os_window_close = 0;
           cursor_shape = "beam";
