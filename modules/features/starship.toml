@@ -1,152 +1,103 @@
-"$schema" = 'https://starship.rs/config-schema.json'
+# Don't print a new line at the start of the prompt
+add_newline = false
+# Pipes ╰─ ╭─
+# Powerline symbols                                     
+# Wedges 🭧🭒 🭣🭧🭓
+# Random noise 🬖🬥🬔🬗
+# Cool stuff 󰜥   
 
-add_newline = true
-command_timeout = 1000
-palette = "noctalia"
-
+# format = """
+# $directory $fill $git_branch $cmd_duration
+#  $character"""
 format = """
-[╭─](overlay1) $directory $git_branch$git_status $nix_shell $fill $cmd_duration $time
-[╰─](overlay1)$status$jobs$shlvl$character
-"""
-
-################################################################################
-# Directory
-################################################################################
-
-[directory]
-truncation_length = 3
-truncate_to_repo = true
-fish_style_pwd_dir_length = 1
-truncation_symbol = "…/"
-style = "bold crust bg:blue"
-format = "[](blue)[ 󰉋 $path ]($style)[](blue)"
-read_only = " 󰌾"
-read_only_style = "bold crust bg:blue"
-
-################################################################################
-# Git (branch + status share one continuous pill)
-################################################################################
-
-[git_branch]
-symbol = " "
-style = "bold text bg:overlay1"
-format = "[](overlay1)[ $symbol$branch]($style)"
-
-[git_status]
-style = "bold text bg:overlay1"
-format = "([ $all_status$ahead_behind ]($style))[](overlay1)"
-
-ahead = "⇡"
-behind = "⇣"
-diverged = "⇕"
-modified = "~"
-deleted = "✕"
-staged = "+"
-untracked = "?"
-renamed = "»"
-conflicted = "!"
-
-################################################################################
-# Right side
-################################################################################
+$cmd_duration $directory$git_branch
+  $character"""
 
 [fill]
-symbol = " "
+symbol = '-'
+style = 'fg:245'
 
-[cmd_duration]
-min_time = 1000
-style = "bold text bg:base"
-format = "[](base)[ 󱎫 $duration ]($style)[](base)"
+# Replace the "❯" symbol in the prompt with "➜"
+[character]                            # The name of the module we are configuring is "character"
+success_symbol = "[ ](bold fg:243)"
+error_symbol = "[ ](bold fg:244)"
 
-[time]
-disabled = false
-time_format = "%H:%M"
-style = "bold crust bg:yellow"
-format = "[](yellow)[ 󰥔 $time ]($style)[](yellow)"
-
-################################################################################
-# Prompt line (extra bells: exit code, background jobs, shell nesting)
-################################################################################
-
-[character]
-success_symbol = "[❯❯](bold blue)"
-error_symbol = "[❯❯](bold red)"
-vimcmd_symbol = "[❮❮](bold text)"
-
-[status]
-disabled = false
-format = "[ $symbol$status]($style) "
-symbol = "✕"
-style = "bold red"
-
-[jobs]
-disabled = false
-symbol = " "
-style = "bold text"
-format = "[$symbol$number]($style) "
-
-[shlvl]
-disabled = false
-threshold = 2
-symbol = "❯"
-style = "bold text"
-format = "[$symbol$shlvl]($style) "
-
-################################################################################
-# Nix
-################################################################################
-
-[nix_shell]
-disabled = false
-symbol = " "
-style = "bold crust bg:green"
-format = "[](green)[ $symbol$name ]($style)[](green)"
-
-################################################################################
-# Disabled modules
-################################################################################
-
-[username]
-disabled = true
-
-[hostname]
-disabled = true
-
-[battery]
-disabled = true
-
-[memory_usage]
-disabled = true
-
-[nodejs]
-disabled = true
-
-[python]
-disabled = true
-
-[rust]
-disabled = true
-
-[golang]
-disabled = true
-
-[c]
-disabled = true
-
+# Disable the package module, hiding it from the prompt completely
 [package]
 disabled = true
 
-[docker_context]
-disabled = true
+[git_branch]
+style = "bg: 252"
+symbol = "󰘬"
+truncation_length = 12
+truncation_symbol = ""
+format = " 󰜥 [](bold fg:252)[$symbol $branch(:$remote_branch)](fg:235 bg:252)[ ](bold fg:252)"
 
-[kubernetes]
-disabled = true
+[git_commit]
+commit_hash_length = 4
+tag_symbol = " "
 
-[aws]
-disabled = true
+[git_state]
+format = '[\($state( $progress_current of $progress_total)\)]($style) '
+cherry_pick = "[🍒 PICKING](bold red)"
 
-[gcloud]
-disabled = true
+[git_status]
+conflicted = " 🏳 "
+ahead = " 🏎💨 "
+behind = " 😰 "
+diverged = " 😵 "
+untracked = " 🤷 ‍"
+stashed = " 📦 "
+modified = " 📝 "
+staged = '[++\($count\)](green)'
+renamed = " ✍️ "
+deleted = " 🗑 "
 
-[terraform]
+[hostname]
+ssh_only = false
+format =  "[•$hostname](bg:252 bold fg:235)[](bold fg:252)"
+trim_at = ".companyname.com"
+disabled = false
+
+[line_break]
+disabled = false
+
+[memory_usage]
 disabled = true
+threshold = -1
+symbol = " "
+style = "bold dimmed green"
+
+[time]
+disabled = true
+format = '🕙[\[ $time \]]($style) '
+time_format = "%T"
+
+[username]
+style_user = "bold bg:252 fg:235"
+style_root = "red bold"
+format = "[](bold fg:252)[$user]($style)"
+disabled = false
+show_always = true
+
+[directory]
+home_symbol = " "
+read_only = "  "
+style = "bg:255 fg:240"
+truncation_length = 2
+truncation_symbol = ".../"
+format = '[](bold fg:255)[󰉋 → $path]($style)[](bold fg:255)'
+
+
+[directory.substitutions]
+"Desktop" = "  "
+"Documents" = "  "
+"Downloads" = "  "
+"Music" = " 󰎈 "
+"Pictures" = "  "
+"Videos" = "  "
+"GitHub" = " 󰊤 "
+
+[cmd_duration]
+min_time = 0
+format = '[](bold fg:252)[󰪢 $duration](bold bg:252 fg:235)[](bold fg:252)'

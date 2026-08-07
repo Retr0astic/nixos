@@ -46,7 +46,7 @@
           };
           blur = {
             enabled = true;
-            xray = true;
+            # xray = true;
             special = false;
             new_optimizations = true;
             size = 10;
