@@ -9,7 +9,7 @@
     wayland.windowManager.hyprland.settings = {
       mainMod._var = "SUPER";
       terminal._var = "kitty";
-      fileManager._var = "dolphin";
+      fileManager._var = "nautilus";
 
       env = [
         {_args = ["XCURSOR_SIZE" "24"];}
