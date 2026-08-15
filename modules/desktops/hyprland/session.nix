@@ -16,7 +16,7 @@
         general = {
           lock_cmd = "noctalia msg session lock";
           before_sleep_cmd = "noctalia msg session lock";
-          after_sleep_cmd = ''hyprctl dispatch 'hl.dsp.dpms("on")' '';
+          after_sleep_cmd = ''hyprctl dispatch 'hl.dsp.dpms({ action = "enable" })' '';
           ignore_dbus_inhibit = false;
           ignore_systemd_inhibit = false;
           ignore_wayland_inhibit = false;

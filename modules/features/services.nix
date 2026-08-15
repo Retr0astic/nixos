@@ -42,6 +42,7 @@
           keyboard.layout = "us";
         };
       };
+      gpu-screen-recorder.enable = true;
     };
     virtualisation.libvirtd = {
       enable = true;

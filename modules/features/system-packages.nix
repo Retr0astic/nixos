@@ -32,6 +32,7 @@
       unrar
       smartmontools
       claude-code
+      gcc
     ];
   };
 }

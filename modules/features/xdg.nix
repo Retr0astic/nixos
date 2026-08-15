@@ -13,4 +13,9 @@
       publicShare = "${config.home.homeDirectory}/Public";
     };
   };
+  config.retr0astic.features.system-packages.system = {pkgs, ...}: {
+    environment.systemPackages = with pkgs; [
+      xdg-utils
+    ];
+  };
 }

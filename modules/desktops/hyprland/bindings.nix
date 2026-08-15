@@ -48,7 +48,8 @@
         (luaBind ''"CTRL + " .. mainMod .. " + print"'' (exec ''"hyprshot -m output"''))
         (luaBind ''"CTRL + SHIFT + print"'' (exec ''"hyprshot -m region -z"''))
 
-        (luaBind (key "ALT + O") ''hl.dsp.dpms("off")'')
+        (luaBind (key "D") ''hl.dsp.dpms({ action = "on" })'')
+        (luaBind (key "SHIFT + D") ''hl.dsp.dpms({ action = "off" })'')
 
         (luaBindWith (key "mouse:272") "hl.dsp.window.drag()" {mouse = true;})
         (luaBindWith (key "mouse:273") "hl.dsp.window.resize()" {mouse = true;})

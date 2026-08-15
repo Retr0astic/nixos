@@ -39,6 +39,14 @@
           match.content = "game";
           tonemap = "off";
         }
+        {
+          match.class = "heroic";
+          workspace = "special:scratch";
+        }
+        {
+          match.class = "steam";
+          workspace = "special:scratch";
+        }
       ];
     };
   };
