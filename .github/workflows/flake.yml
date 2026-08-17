@@ -19,7 +19,7 @@ jobs:
   changes:
     runs-on: ubuntu-24.04
     outputs:
-      caelestia: ${{ steps.filter.outputs.caelestia != 'false' }}
+      variants: ${{ steps.variants.outputs.list }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
@@ -37,8 +37,22 @@ jobs:
               - 'modules/shells/caelestia.nix'
               - 'modules/desktops/hyprland.nix'
               - 'modules/desktops/hyprland/**'
+              - 'flake.nix'
               - 'flake.lock'
               - '.github/workflows/flake.yml'
+
+      # Chapel always builds. Caelestia builds only when its own files, the
+      # desktop it runs on, or the flake inputs change.
+      - name: Select build variants
+        id: variants
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ steps.filter.outputs.caelestia }}" = "false" ]; then
+            echo 'list=["chapel"]' >>"$GITHUB_OUTPUT"
+          else
+            echo 'list=["chapel","caelestia-hyprland"]' >>"$GITHUB_OUTPUT"
+          fi
 
   check:
     runs-on: ubuntu-24.04
@@ -63,83 +77,37 @@ jobs:
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
           skipPush: true
 
+      - name: Check formatting
+        run: nix fmt -- --check .
+
       - name: Check flake
         run: nix flake check --print-build-logs --accept-flake-config
 
-      - name: Verify Chapel alias
+      # A rename or a lost alias breaks every rebuild command that names it.
+      - name: Verify configuration names
         shell: bash
-        run: |
-          noctalia=$(nix eval --raw \
-            --accept-flake-config \
-            .#nixosConfigurations.noctalia-hyprland.config.system.build.toplevel.drvPath)
-
-          alias=$(nix eval --raw \
-            --accept-flake-config \
-            .#nixosConfigurations.noctalia.config.system.build.toplevel.drvPath)
-
-          test "$noctalia" = "$alias"
-
-      - name: Verify Caelestia alias
-        shell: bash
-        run: |
-          caelestia=$(nix eval --raw \
-            --accept-flake-config \
-            .#nixosConfigurations.caelestia-hyprland.config.system.build.toplevel.drvPath)
-
-          alias=$(nix eval --raw \
-            --accept-flake-config \
-            .#nixosConfigurations.caelestia.config.system.build.toplevel.drvPath)
-
-          test "$caelestia" = "$alias"
-
-  build-chapel:
-    needs: check
-    runs-on: ubuntu-24.04
-    timeout-minutes: 90
-
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v7
-        with:
-          persist-credentials: false
-
-      - name: Install Nix
-        uses: cachix/install-nix-action@v31
-        with:
-          extra_nix_config: |
-            accept-flake-config = true
-
-      - name: Configure Cachix
-        uses: cachix/cachix-action@v17
-        with:
-          name: chapel
-          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
-          skipPush: true
-
-      - name: Build Chapel toplevel
-        run: |
-          nix build \
-            --accept-flake-config \
-            .#nixosConfigurations.chapel.config.system.build.toplevel \
-            --no-link \
-            --print-build-logs
-
-      - name: Push to Cachix
-        if: always()
-        continue-on-error: true
         run: |
           set -euo pipefail
-          out=$(nix eval --raw --accept-flake-config \
-            .#nixosConfigurations.chapel.config.system.build.toplevel.outPath)
-          nix-store --query --requisites "$out" | cachix push chapel
+          expected='["caelestia","caelestia-hyprland","chapel","chapel-hyprland-noctalia","noctalia","noctalia-hyprland"]'
 
-  build-caelestia:
+          actual=$(nix eval --json \
+            --accept-flake-config \
+            --apply 'builtins.attrNames' \
+            .#nixosConfigurations)
+
+          test "$actual" = "$expected"
+
+  build:
     needs:
       - check
       - changes
-    if: needs.changes.outputs.caelestia == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 90
+
+    strategy:
+      fail-fast: false
+      matrix:
+        variant: ${{ fromJSON(needs.changes.outputs.variants) }}
 
     steps:
       - name: Check out repository
@@ -160,11 +128,11 @@ jobs:
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
           skipPush: true
 
-      - name: Build Caelestia toplevel
+      - name: Build ${{ matrix.variant }} toplevel
         run: |
           nix build \
             --accept-flake-config \
-            .#nixosConfigurations.caelestia-hyprland.config.system.build.toplevel \
+            .#nixosConfigurations.${{ matrix.variant }}.config.system.build.toplevel \
             --no-link \
             --print-build-logs
 
@@ -174,5 +142,5 @@ jobs:
         run: |
           set -euo pipefail
           out=$(nix eval --raw --accept-flake-config \
-            .#nixosConfigurations.caelestia-hyprland.config.system.build.toplevel.outPath)
+            .#nixosConfigurations.${{ matrix.variant }}.config.system.build.toplevel.outPath)
           nix-store --query --requisites "$out" | cachix push chapel
