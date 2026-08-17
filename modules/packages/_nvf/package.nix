@@ -24,6 +24,13 @@ _: {
 
     statusline.lualine.enable = true;
     telescope.enable = true;
+    tabline.nvimBufferline.enable = true;
+
+    # ── Navigation ────────────────────────────────────────────
+    filetree.neo-tree.enable = true;
+    terminal.toggleterm.enable = true;
+    utility.motion.flash-nvim.enable = true;
+    utility.surround.enable = true;
     # ── Git ───────────────────────────────────────────────────
     git = {
       enable = true;
@@ -40,6 +47,10 @@ _: {
       cellular-automaton.enable = true;
     };
 
+    ui.noice.enable = true; # command line and messages in a floating window
+    treesitter.context.enable = true; # sticky header for the current function
+    notes.todo-comments.enable = true; # highlights TODO and FIXME
+
     # ── Utility ───────────────────────────────────────────────
     autopairs.nvim-autopairs.enable = true;
     comments.comment-nvim.enable = true;
@@ -54,14 +65,35 @@ _: {
     lsp = {
       enable = true;
       formatOnSave = true;
-      lspSignature.enable = true; # signature help while typing
+      # blink-cmp supplies signature help itself. lspSignature conflicts.
       trouble.enable = true; # diagnostics list
       lightbulb.enable = true; # code action indicator
       nvim-docs-view.enable = true;
     };
     # ── Completion ────────────────────────────────────────────
-    autocomplete.nvim-cmp.enable = true;
+    autocomplete.blink-cmp = {
+      enable = true;
+      setupOpts.signature.enabled = true; # signature help while typing
+    };
     snippets.luasnip.enable = true;
+
+    # ── Formatting ────────────────────────────────────────────
+    # lsp.formatOnSave covers only what a language server offers. conform
+    # gives every language a real formatter.
+    formatter.conform-nvim = {
+      enable = true;
+      presets = {
+        alejandra.enable = true;
+        black.enable = true;
+        isort.enable = true;
+        rustfmt.enable = true;
+        stylua.enable = true;
+        shfmt.enable = true;
+        prettier.enable = true;
+        taplo.enable = true;
+        mdformat.enable = true;
+      };
+    };
     languages = {
       enableTreesitter = true;
 
@@ -79,6 +111,12 @@ _: {
       bash.enable = true;
       lua.enable = true;
       python.enable = true;
+
+      # Written every week in this repository.
+      markdown.enable = true;
+      yaml.enable = true;
+      json.enable = true;
+      toml.enable = true;
     };
     # ── Spellcheck ────────────────────────────────────────────
     spellcheck = {
