@@ -71,6 +71,7 @@ stashed = "⚑${count}"
 
 [git_metrics]
 disabled = false
+only_nonzero_diffs = true
 added_style = "green bold bg:surface1"
 deleted_style = "red bold bg:surface1"
 format = "[](surface1)[ +$added]($added_style)[ -$deleted ]($deleted_style)[](surface1)"
@@ -78,7 +79,7 @@ format = "[](surface1)[ +$added]($added_style)[ -$deleted ]($deleted_style)[�
 [nix_shell]
 disabled = false
 symbol = ""
-heuristic = true
+heuristic = false  # only inside a real nix shell, not in every flake dir
 style = "crust bold bg:green"
 format = "[](green)[ $symbol( $state) ]($style)[](green)"
 
