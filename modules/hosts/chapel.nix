@@ -3,66 +3,62 @@
   inputs,
   ...
 }: let
-  commonFeatures = [
-    "core"
-    "services"
-    "graphics"
-    "gaming"
-    "zen"
-    "fonts"
-    "chapel-nvidia"
-    "chapel-monitor"
-    "chapel-openrgb"
-    "appearance"
-    "system-packages"
-    "packages"
-    "programs"
-    "shell"
-    "terminals"
-    "xdg"
-    "starship"
-    "audio"
-    "nvf"
-    "spicetify"
-    "opends5"
-    "overlays"
+  m = config.flake.modules.nixos;
+
+  # Every configuration of this machine starts from these modules.
+  base = with m; [
+    chapel
+    home-manager
+    sree
+    core
+    services
+    graphics
+    gaming
+    zen
+    fonts
+    appearance
+    system-packages
+    packages
+    programs
+    shell
+    terminals
+    xdg
+    starship
+    audio
+    nvf
+    spicetify
+    opends5
+    overlays
   ];
-in {
-  config.retr0astic = {
-    hosts.chapel = {
-      hostname = "chapel";
+
+  # Add a desktop and a shell to build one variant.
+  mk = extra:
+    inputs.nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
-      module = {...}: {
-        imports = [
-          ../../hosts/chapel/host.module.nix
-          inputs.noctalia-greeter.nixosModules.default
-        ];
-      };
+      modules = base ++ extra;
     };
 
-    configurations.noctalia-hyprland = {
-      host = "chapel";
-      desktop = "hyprland";
-      shell = "noctalia";
-      theme = "noctalia";
-      users = ["sree"];
-      features = commonFeatures;
-    };
+  # Write `m.<name>` here. A bare name would pick up the attribute below it.
+  withNoctalia = mk [m.hyprland m.noctalia];
+  withCaelestia = mk [m.hyprland m.caelestia];
+in {
+  flake.modules.nixos.chapel = {
+    imports = [
+      ../../hosts/chapel/host.module.nix
+      inputs.noctalia-greeter.nixosModules.default
+    ];
 
-    configurations.caelestia-hyprland = {
-      host = "chapel";
-      desktop = "hyprland";
-      shell = "caelestia";
-      theme = "caelestia";
-      users = ["sree"];
-      features = commonFeatures;
-    };
+    home-manager.sharedModules = [config.flake.modules.homeManager.chapel];
+  };
 
-    configurationAliases = {
-      chapel = "noctalia-hyprland";
-      chapel-hyprland-noctalia = "noctalia-hyprland";
-      noctalia = "noctalia-hyprland";
-      caelestia = "caelestia-hyprland";
-    };
+  flake.nixosConfigurations = {
+    noctalia-hyprland = withNoctalia;
+    caelestia-hyprland = withCaelestia;
+
+    # Short names for the same two builds.
+    chapel = withNoctalia;
+    chapel-hyprland-noctalia = withNoctalia;
+    noctalia = withNoctalia;
+    caelestia = withCaelestia;
   };
 }

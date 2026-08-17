@@ -1,5 +1,5 @@
 {...}: {
-  config.retr0astic.features.chapel-monitor.home = {...}: {
+  flake.modules.homeManager.chapel = {...}: {
     wayland.windowManager.hyprland.settings.monitor = {
       output = "desc:Samsung Electric Company LS49AG95 HNTTA00029";
       mode = "5120x1440@239.76";

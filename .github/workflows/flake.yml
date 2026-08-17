@@ -35,8 +35,6 @@ jobs:
           filters: |
             caelestia:
               - 'modules/shells/caelestia.nix'
-              - 'modules/themes/caelestia.nix'
-              - 'modules/integrations/hyprland-caelestia.nix'
               - 'modules/desktops/hyprland.nix'
               - 'modules/desktops/hyprland/**'
               - 'flake.lock'

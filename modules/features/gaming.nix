@@ -1,5 +1,7 @@
-{...}: {
-  config.retr0astic.features.gaming.system = {pkgs, ...}: {
+{config, ...}: {
+  flake.modules.nixos.gaming = {pkgs, ...}: {
+    home-manager.sharedModules = [config.flake.modules.homeManager.gaming];
+
     programs = {
       steam = {
         enable = true;
@@ -20,7 +22,7 @@
     environment.systemPackages = [(pkgs.heroic.override {extraPkgs = pkgs': with pkgs'; [gamescope gamemode];})];
   };
 
-  config.retr0astic.features.gaming.home = {pkgs, ...}: {
+  flake.modules.homeManager.gaming = {pkgs, ...}: {
     home.packages = with pkgs; [gamescope-wsi mangohud ludusavi protonup-qt];
   };
 }

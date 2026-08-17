@@ -1,5 +1,5 @@
 {config, ...}: {
-  config.retr0astic.desktops.hyprland.home = {lib, ...}: let
+  flake.modules.homeManager.hyprland = {lib, ...}: let
     inherit (lib.generators) mkLuaInline;
   in {
     wayland.windowManager.hyprland = {

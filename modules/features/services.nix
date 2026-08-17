@@ -1,5 +1,5 @@
 {...}: {
-  config.retr0astic.features.services.system = {pkgs, ...}: {
+  flake.modules.nixos.services = {pkgs, ...}: {
     services.logind.settings.Login.HandlePowerKey = "suspend";
     services = {
       avahi = {

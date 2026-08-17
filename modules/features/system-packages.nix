@@ -1,5 +1,5 @@
 {...}: {
-  config.retr0astic.features.system-packages.system = {pkgs, ...}: {
+  flake.modules.nixos.system-packages = {pkgs, ...}: {
     environment.systemPackages = with pkgs; [
       vim
       bat

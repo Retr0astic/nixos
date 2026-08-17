@@ -1,5 +1,13 @@
-{...}: {
-  config.retr0astic.features.xdg.home = {config, ...}: {
+{config, ...}: {
+  flake.modules.nixos.xdg = {pkgs, ...}: {
+    home-manager.sharedModules = [config.flake.modules.homeManager.xdg];
+
+    environment.systemPackages = with pkgs; [
+      xdg-utils
+    ];
+  };
+
+  flake.modules.homeManager.xdg = {config, ...}: {
     xdg.userDirs = {
       enable = true;
       createDirectories = true;
@@ -12,10 +20,5 @@
       templates = "${config.home.homeDirectory}/Templates";
       publicShare = "${config.home.homeDirectory}/Public";
     };
-  };
-  config.retr0astic.features.system-packages.system = {pkgs, ...}: {
-    environment.systemPackages = with pkgs; [
-      xdg-utils
-    ];
   };
 }

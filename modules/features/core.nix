@@ -1,5 +1,5 @@
 {...}: {
-  config.retr0astic.features.core.system = {pkgs, ...}: {
+  flake.modules.nixos.core = {pkgs, ...}: {
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;
     networking.networkmanager.enable = true;

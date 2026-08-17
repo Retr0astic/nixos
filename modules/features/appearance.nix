@@ -1,5 +1,10 @@
-{...}: {
-  config.retr0astic.features.appearance.home = {pkgs, ...}: {
+{config, ...}: {
+  # Pull the home-manager side in whenever this module is selected.
+  flake.modules.nixos.appearance = {
+    home-manager.sharedModules = [config.flake.modules.homeManager.appearance];
+  };
+
+  flake.modules.homeManager.appearance = {pkgs, ...}: {
     qt = {
       enable = true;
       platformTheme.name = "qt6ct";

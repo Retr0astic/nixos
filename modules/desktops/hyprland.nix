@@ -3,9 +3,11 @@
   inputs,
   ...
 }: {
-  config.retr0astic.desktops.hyprland.system = {pkgs, ...}: let
+  flake.modules.nixos.hyprland = {pkgs, ...}: let
     hyprland = inputs.hyprland;
   in {
+    home-manager.sharedModules = [config.flake.modules.homeManager.hyprland];
+
     programs.hyprland = {
       enable = true;
       withUWSM = true;

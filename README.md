@@ -3,16 +3,13 @@
 # Retr0astic’s NixOS
 
 Personal NixOS configuration for composing a Chapel host from reusable desktops,
-graphical shells, themes, users, and features.
+graphical shells, users, and features.
 
 [![NixOS unstable](https://img.shields.io/badge/NixOS-unstable-5277C3?logo=nixos&logoColor=white)](https://nixos.org/)
 [![Nix flakes](https://img.shields.io/badge/Nix-flakes-7EBAE4?logo=nixos&logoColor=111827)](https://wiki.nixos.org/wiki/Flakes)
 [![flake-parts](https://img.shields.io/badge/flake--parts-composable-6E56CF)](https://github.com/hercules-ci/flake-parts)
 [![Home Manager](https://img.shields.io/badge/Home_Manager-integrated-5277C3?logo=nixos&logoColor=white)](https://github.com/nix-community/home-manager)
 [![CI](https://github.com/Retr0astic/nixos/actions/workflows/flake.yml/badge.svg)](https://github.com/Retr0astic/nixos/actions/workflows/flake.yml)
-
-<!-- Place the real desktop capture at assets/desktop.webp. Do not commit a generated placeholder. -->
-![Desktop overview](assets/desktop.webp)
 
 </div>
 
@@ -22,17 +19,17 @@ machine running NixOS unstable.
 
 ## Highlights
 
-- **Dendritic modules:** public modules self-register in typed,
-  string-keyed retr0astic registries; the recursive importer avoids a growing
-  central import list.
+- **Dendritic modules:** every file publishes one aspect under
+  `flake.modules.nixos.<name>` or `flake.modules.homeManager.<name>`; the
+  recursive importer avoids a growing central import list.
 - **Flakes + flake-parts:** `flake.nix` owns inputs and the supported system;
-  `modules/default.nix` is imported through flake-parts.
+  every file under `modules/` is loaded by `import-tree`.
 - **Home Manager integration:** selected users receive personal and shared
   Home Manager modules as part of the generated NixOS configuration.
-- **Composable variants:** hosts, desktops, shells, themes, users, features,
-  and desktop–shell integrations are selected by name.
+- **Composable variants:** each configuration is a plain list of aspect
+  modules, so a desktop or a shell is added or removed in one line.
 - **Desktop stack:** Hyprland is paired with either Noctalia or Caelestia;
-  their shells and themes remain separately registered.
+  each shell carries its own theming and its own Hyprland glue.
 - **Chapel hardware and gaming:** the selected Chapel composition includes
   NVIDIA, monitor/HDR, OpenRGB, Steam, Gamescope, Gamemode, Heroic, and related
   gaming tooling.
@@ -40,17 +37,6 @@ machine running NixOS unstable.
   main/testing, builds both graphical-shell variants, verifies aliases, and
   configures the chapel Cachix cache. The flake also declares trusted
   substituters for Chapel, NVF, and Noctalia.
-
-## Screenshots
-
-<!-- Add the real screenshots at these paths when available. These references are intentionally not replaced with fake images. -->
-
-| View | Image |
-| --- | --- |
-| Desktop | ![Desktop overview](assets/desktop.webp) |
-| Launcher | ![Launcher](assets/launcher.webp) |
-| Terminal | ![Terminal](assets/terminal.webp) |
-| Lockscreen | ![Lockscreen](assets/lockscreen.webp) |
 
 ## Available configurations
 
@@ -60,61 +46,65 @@ experimental configuration variant is declared by the flake.
 
 | Output | Type | Composition |
 | --- | --- | --- |
-| noctalia-hyprland | Canonical | Chapel + Hyprland + Noctalia + Noctalia theme |
-| caelestia-hyprland | Canonical | Chapel + Hyprland + Caelestia + Caelestia theme |
+| noctalia-hyprland | Canonical | Chapel + Hyprland + Noctalia |
+| caelestia-hyprland | Canonical | Chapel + Hyprland + Caelestia |
 | chapel | Alias | noctalia-hyprland |
 | chapel-hyprland-noctalia | Alias | noctalia-hyprland |
 | noctalia | Alias | noctalia-hyprland |
 | caelestia | Alias | caelestia-hyprland |
 
 Other useful outputs include `packages.x86_64-linux.nvf`,
-`devShells.x86_64-linux.default`, and the three `x86_64-linux` checks:
-`composition-contract`, `registry-contract`, and `registry-failure-contract`.
+`devShells.x86_64-linux.default`, and `modules.nixos` / `modules.homeManager`,
+which expose every aspect module by name.
 
 ## Architecture
 
 ~~~mermaid
 flowchart LR
     F[flake.nix] --> P[flake-parts]
-    P --> I[modules/default.nix<br/>recursive importer]
-    I --> R[typed retr0astic registries]
-    R --> H[modules/hosts/chapel.nix<br/>current flake/hosts role]
-    R --> C[configuration selection]
-    C --> HC[host composition<br/>Chapel + features]
-    C --> D[desktop modules<br/>Hyprland]
-    C --> T[theme modules<br/>Noctalia or Caelestia]
-    C --> S[shell modules<br/>Noctalia or Caelestia]
-    C --> G[desktop-shell integrations]
-    C --> N[NixOS modules]
-    C --> M[Home Manager modules]
-    H --> HC
-    D --> N
-    T --> M
-    S --> M
-    G --> N
-    G --> M
-    HC --> O[nixosConfigurations]
-    N --> O
-    M --> O
+    P --> X[flakeModules.modules<br/>declares flake.modules]
+    P --> I[import-tree ./modules<br/>loads every file]
+    I --> A["aspect files<br/>flake.modules.nixos.&lt;name&gt;<br/>flake.modules.homeManager.&lt;name&gt;"]
+    A --> H[modules/hosts/chapel.nix<br/>lists the modules it wants]
+    H --> O[nixosConfigurations]
 ~~~
 
-`modules/configurations.nix` resolves the named selections, validates the
-desktop–shell integration, composes each selected feature’s system and home
-sides, and exposes same-named `nixosConfigurations`. Underscore-prefixed
-helpers are excluded from recursive discovery; generated hardware and
-repository-owned Noctalia data are deliberate non-registration exceptions.
+Every file under `modules/` is a flake-parts module. Each one names an aspect,
+such as `gaming` or `hyprland`, and gives that aspect a NixOS side, a Home
+Manager side, or both. Several files may define the same aspect name, and the
+module system merges them.
+
+`modules/hosts/chapel.nix` then builds each variant from a plain list of those
+modules. Underscore-prefixed helpers stay out of recursive discovery. Generated
+hardware and repository-owned Noctalia data are deliberate exceptions.
+
+A NixOS aspect pulls in its own Home Manager half:
+
+~~~nix
+flake.modules.nixos.gaming = {pkgs, ...}: {
+  home-manager.sharedModules = [config.flake.modules.homeManager.gaming];
+  programs.steam.enable = true;
+};
+
+flake.modules.homeManager.gaming = {pkgs, ...}: {
+  home.packages = [pkgs.mangohud];
+};
+~~~
 
 ### Composition model
 
 | Concept | Responsibility | Current values |
 | --- | --- | --- |
-| Host | Physical machine, boot, storage, and host policy | Chapel |
-| Desktop | Compositor and desktop session | Hyprland |
-| Shell | Graphical UI stack | Noctalia, Caelestia |
-| Theme | Visual styling and assets | Noctalia, Caelestia |
-| User | System account and personal Home Manager module | Sree |
-| Feature | Reusable NixOS/Home Manager capability | Core, gaming, graphics, fonts, and others |
-| Integration | Explicitly supported desktop–shell pair | hyprland-noctalia, hyprland-caelestia |
+| Host | Physical machine, boot, storage, and host policy | `chapel` |
+| Desktop | Compositor and desktop session | `hyprland` |
+| Shell | Graphical UI stack, including its own theming | `noctalia`, `caelestia` |
+| User | System account and personal Home Manager module | `sree` |
+| Feature | Reusable NixOS/Home Manager capability | `core`, `gaming`, `graphics`, `fonts`, and others |
+
+Pair-specific behavior lives inside the module that needs it, behind a
+condition. The Hyprland key bindings of Noctalia, for example, apply only when
+`config.wayland.windowManager.hyprland.enable` is true. No table of supported
+pairs exists, and none is needed.
 
 ## Quick start
 
@@ -153,127 +143,113 @@ performed by this README.
 .
 ├── flake.nix                 # inputs, systems, and flake-parts entry point
 ├── modules/
-│   ├── default.nix           # recursive registration importer
-│   ├── schema.nix            # typed retr0astic registries
-│   ├── configurations.nix    # selection and output generation
-│   ├── checks.nix            # composition and registry contracts
-│   ├── hosts/                # host and configuration registrations
+│   ├── home-manager.nix      # shared Home Manager settings
+│   ├── hosts/                # host modules and nixosConfigurations
 │   ├── desktops/             # Hyprland and desktop modules
 │   ├── shells/               # Noctalia and Caelestia modules
-│   ├── themes/               # theme registrations
-│   ├── integrations/         # supported desktop–shell pairs
 │   ├── features/             # reusable system/home capabilities
-│   ├── users/                # user registrations
+│   ├── users/                # user modules
 │   └── noctalia/             # repository-owned shell assets/plugins
-├── hosts/chapel/             # Chapel hardware, boot, and storage helpers
-├── assets/                   # README screenshots (user-provided)
-└── docs/                     # project plans and supporting documentation
+└── hosts/chapel/             # Chapel hardware, boot, and storage helpers
 ~~~
 
 ## Extending the configuration
 
-Additions are registrations, not edits to a central list. Public `.nix` files
-under `modules/` are discovered recursively unless their path contains an
-underscore-prefixed component.
+See [`docs/GUIDE.md`](docs/GUIDE.md) for the full working manual: daily
+commands, recipes, known traps, and debugging steps.
+
+Write one file, then name it in a host. Public `.nix` files under `modules/`
+are discovered recursively unless their path contains an underscore-prefixed
+component.
 
 <details>
-<summary>Add a Home Manager module</summary>
+<summary>Add a feature</summary>
 
-Put a reusable Home Manager module in the owning feature, desktop, shell,
-theme, or user registration and expose it through that registry’s home value.
-Features may expose both system and home; a user exposes separate system and
-personal home values. Shared selected modules are composed for each selected
-user, while a personal user module is applied only to that user.
+Give the aspect a Home Manager side, a NixOS side, or both. A NixOS side that
+carries only the link line is normal for a home-only feature.
 
 ~~~nix
-config.retr0astic.features.example.home = {pkgs, ...}: {
-  home.packages = [pkgs.ripgrep];
-};
+{config, ...}: {
+  flake.modules.nixos.example = {
+    home-manager.sharedModules = [config.flake.modules.homeManager.example];
+  };
+
+  flake.modules.homeManager.example = {pkgs, ...}: {
+    home.packages = [pkgs.ripgrep];
+  };
+}
+~~~
+
+Then add `example` to the `base` list in `modules/hosts/chapel.nix`.
+
+</details>
+
+<details>
+<summary>Add a desktop or a desktop environment</summary>
+
+Write `modules/desktops/niri.nix`, then add one line to the host file. Nothing
+else is required. A desktop environment such as GNOME needs no shell entry and
+no theme entry.
+
+~~~nix
+{...}: {
+  flake.modules.nixos.niri = {
+    programs.niri.enable = true;
+    services.displayManager.defaultSession = "niri";
+  };
+}
+~~~
+
+~~~nix
+# modules/hosts/chapel.nix
+withNiri = mk [m.niri m.noctalia];
 ~~~
 
 </details>
 
 <details>
-<summary>Add a desktop variant</summary>
+<summary>Add a graphical shell</summary>
 
-Register the desktop under modules/desktops/ with NixOS and/or Home Manager
-modules, then add an explicit integration for every supported graphical shell.
-The configuration generator will not accept an unregistered desktop–shell pair.
+Write `modules/shells/<name>.nix`. Keep the theming of that shell in the same
+file. Put desktop-specific glue behind a condition, so the shell stays usable
+under any other desktop.
 
 ~~~nix
-config.retr0astic.desktops.niri = {
-  system = {programs.niri.enable = true;};
-  home = {wayland.windowManager.niri.enable = true;};
-};
-
-config.retr0astic.integrations.niri-noctalia = {
-  desktop = "niri";
-  shell = "noctalia";
-  system = {};
-  home = {};
-};
+wayland.windowManager.hyprland.settings =
+  lib.mkIf config.wayland.windowManager.hyprland.enable {
+    bind = lib.mkAfter [ /* shell key bindings */ ];
+  };
 ~~~
 
 </details>
 
 <details>
-<summary>Add a theme variant</summary>
+<summary>Add a host or a variant</summary>
 
-Register the theme under modules/themes/ and expose its Home Manager styling
-and assets through home. Keep functional shell behavior in modules/shells/ and
-pair-specific behavior in modules/integrations/.
+Copy `modules/hosts/chapel.nix`, point it at the new hardware module, and list
+the aspects the machine needs. Every attribute of `flake.nixosConfigurations`
+becomes a selector for `nixos-rebuild`.
 
 ~~~nix
-config.retr0astic.themes.example.home = { ... }: {
-  # Theme-specific Home Manager options and assets
+flake.nixosConfigurations = {
+  lantern = mk [m.hyprland m.noctalia];
 };
 ~~~
 
-</details>
-
-<details>
-<summary>Add a host or configuration variant</summary>
-
-Register a host with its system, hostname, and host module, then declare a
-configuration that selects the host, desktop, shell, theme, users, and features.
-Every declaration becomes a same-named nixosConfigurations output.
-
-~~~nix
-config.retr0astic.hosts.lantern = {
-  hostname = "lantern";
-  system = "x86_64-linux";
-  module = ./lantern/host.module.nix;
-};
-
-config.retr0astic.configurations.lantern-hyprland-noctalia = {
-  host = "lantern";
-  desktop = "hyprland";
-  shell = "noctalia";
-  theme = "noctalia";
-  users = ["sree"];
-  features = ["core"];
-};
-~~~
-
-Add an alias only when a second public name is useful:
-
-~~~nix
-config.retr0astic.configurationAliases.lantern =
-  "lantern-hyprland-noctalia";
-~~~
+Write `m.<name>` inside those lists. A bare name would pick up an attribute of
+the same set, which yields a confusing "expected a module" error.
 
 </details>
 
 ### Where configuration belongs
 
 - Host-specific boot, LUKS, storage, generated hardware, monitors, NVIDIA,
-  HDR, and OpenRGB policy belongs in hosts/chapel/ or Chapel-specific
-  registrations.
+  HDR, and OpenRGB policy belongs in hosts/chapel/ or modules/hosts/chapel/.
 - Reusable NixOS/Home Manager capabilities belong in modules/features/.
 - Compositor/session behavior belongs in modules/desktops/.
-- Graphical shell behavior belongs in modules/shells/.
-- Visual styling belongs in modules/themes/.
-- Desktop–shell pair behavior belongs in modules/integrations/.
+- Graphical shell behavior and shell theming belong in modules/shells/.
+- Desktop-specific glue belongs in the module that needs it, behind a
+  condition.
 - Personal identity, aliases, packages, startup, and personal rules belong in
   modules/users/.
 

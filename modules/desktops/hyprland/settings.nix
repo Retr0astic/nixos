@@ -1,5 +1,5 @@
 {config, ...}: {
-  config.retr0astic.desktops.hyprland.home = {pkgs, ...}: {
+  flake.modules.homeManager.hyprland = {pkgs, ...}: {
     home.packages = with pkgs; [
       hyprshot
       cliphist

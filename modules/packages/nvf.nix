@@ -1,15 +1,16 @@
-{
-  config,
-  inputs,
-  ...
-}: {
-  config.retr0astic.nvf = pkgs:
+{inputs, ...}: let
+  mkNvf = pkgs:
     (inputs.nvf.lib.neovimConfiguration {
       inherit pkgs;
       modules = [./_nvf/package.nix];
-    }).neovim;
+    })
+    .neovim;
+in {
+  flake.modules.nixos.nvf = {pkgs, ...}: {
+    environment.systemPackages = [(mkNvf pkgs)];
+  };
 
-  config.perSystem = {pkgs, ...}: {
-    packages.nvf = config.retr0astic.nvf pkgs;
+  perSystem = {pkgs, ...}: {
+    packages.nvf = mkNvf pkgs;
   };
 }

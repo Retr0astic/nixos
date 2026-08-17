@@ -1,5 +1,5 @@
 {config, ...}: {
-  config.retr0astic.desktops.hyprland.home = {...}: {
+  flake.modules.homeManager.hyprland = {...}: {
     wayland.windowManager.hyprland.settings = {
       window_rule = [
         {

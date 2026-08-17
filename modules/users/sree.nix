@@ -1,9 +1,16 @@
 {config, ...}: {
-  config.retr0astic.users.sree.system = {
+  flake.modules.nixos.sree = {
     lib,
     pkgs,
     ...
   }: {
+    # This user owns the home-manager configuration of the same name.
+    # Keep the braces. `home-manager.users.sree.imports = [...]` reads as an
+    # option path and fails with "expected a module, found a configuration".
+    home-manager.users.sree = {
+      imports = [config.flake.modules.homeManager.sree];
+    };
+
     programs.fish.enable = true;
     nix.settings.trusted-users = lib.mkAfter ["sree"];
 
@@ -23,7 +30,7 @@
     };
   };
 
-  config.retr0astic.users.sree.home = {
+  flake.modules.homeManager.sree = {
     config,
     lib,
     pkgs,

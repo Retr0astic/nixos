@@ -19,6 +19,8 @@
 
     flake-parts.url = "github:hercules-ci/flake-parts";
 
+    import-tree.url = "github:vic/import-tree";
+
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -60,6 +62,7 @@
     };
     opends5 = {
       url = "github:LordVicky/OpenDS5/dev";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
     noctalia-greeter = {
       url = "github:noctalia-dev/noctalia-greeter";
@@ -69,7 +72,10 @@
 
   outputs = inputs @ {flake-parts, ...}:
     flake-parts.lib.mkFlake {inherit inputs;} {
-      imports = [./modules/default.nix];
+      imports = [
+        flake-parts.flakeModules.modules
+        (inputs.import-tree ./modules)
+      ];
       systems = ["x86_64-linux"];
     };
 }

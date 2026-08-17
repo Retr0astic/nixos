@@ -1,5 +1,5 @@
 {...}: {
-  config.retr0astic.features.audio.system = {
+  flake.modules.nixos.audio = {
     services.pipewire = {
       enable = true;
       pulse.enable = true;

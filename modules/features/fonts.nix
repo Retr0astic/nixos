@@ -3,7 +3,7 @@
   inputs,
   ...
 }: {
-  config.retr0astic.features.fonts.system = let
+  flake.modules.nixos.fonts = let
     lucidglyph = inputs.lucidglyph;
   in
     {pkgs, ...}: let

@@ -3,7 +3,7 @@
   inputs,
   ...
 }: {
-  config.retr0astic.features.zen.system = let
+  flake.modules.nixos.zen = let
     zenBrowser = inputs.zenBrowser;
   in
     {

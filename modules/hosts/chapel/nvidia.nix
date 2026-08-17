@@ -1,5 +1,5 @@
-{config, ...}: {
-  config.retr0astic.features.chapel-nvidia.system = {config, ...}: {
+{...}: {
+  flake.modules.nixos.chapel = {config, ...}: {
     services.xserver.videoDrivers = ["nvidia"];
     hardware.nvidia = {
       modesetting.enable = true;
@@ -23,7 +23,8 @@
       };
     };
   };
-  config.retr0astic.features.chapel-nvidia.home = {
+
+  flake.modules.homeManager.chapel = {
     config,
     lib,
     ...

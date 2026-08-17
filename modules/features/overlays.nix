@@ -1,5 +1,5 @@
 {...}: {
-  config.retr0astic.features.overlays.system = {...}: {
+  flake.modules.nixos.overlays = {...}: {
     nixpkgs.overlays = [
       (final: prev: {
         nautilus = prev.nautilus.overrideAttrs (old: {
