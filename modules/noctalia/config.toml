@@ -26,10 +26,12 @@ order = [ "widgets" ]
     reserve_space = false
     scale = 1.0500000081956387
     smart_auto_hide = true
-    start = [ "active_window", "workspaces", "temp" ]
+    start = [ "active_window", "group:g3", "temp", "recorder" ]
     thickness = 39
 
         [[bar.widgets.capsule_group]]
+        accordion = false
+        accordion_direction = "end"
         border = "primary"
         enabled = true
         fill = "on_primary"
@@ -41,12 +43,26 @@ order = [ "widgets" ]
         radius = 50.0
 
         [[bar.widgets.capsule_group]]
+        accordion = false
+        accordion_direction = "end"
         border = "primary"
         enabled = true
         fill = "on_primary"
         foreground = "tertiary"
         id = "g2"
-        members = [ "bar", "clipboard" ]
+        members = [ "bar", "status", "clipboard" ]
+        opacity = 1.0
+        padding = 6.0
+
+        [[bar.widgets.capsule_group]]
+        accordion = false
+        accordion_direction = "end"
+        border = "primary"
+        enabled = true
+        fill = "on_primary"
+        foreground = "tertiary"
+        id = "g3"
+        members = [ "workspaces", "special-workspaces" ]
         opacity = 1.0
         padding = 6.0
 
@@ -85,16 +101,18 @@ sidebar_section = "full"
 [desktop_widgets]
 schema_version = 2
 widget_order = [
+    "desktop-widget-000000000000000f",
     "desktop-widget-0000000000000009",
     "desktop-widget-000000000000000e",
-    "desktop-widget-000000000000000f",
-    "desktop-widget-0000000000000011"
+    "desktop-widget-0000000000000011",
+    "desktop-widget-0000000000000012",
+    "desktop-widget-0000000000000013"
 ]
 
     [desktop_widgets.grid]
     cell_size = 64
     major_interval = 4
-    visible = true
+    visible = false
 
     [desktop_widgets.widget.desktop-widget-0000000000000002]
     box_height = 256.0
@@ -191,11 +209,11 @@ widget_order = [
 
     [desktop_widgets.widget.desktop-widget-0000000000000009]
     box_height = 192.0
-    box_width = 320.0
-    cx = 4896.0
-    cy = 562.779296875
+    box_width = 384.0
+    cx = 474.0118408203125
+    cy = 818.091552734375
     output = "DP-2"
-    rotation = 0.0
+    rotation = -0.0063870251178741455
     type = "media_player"
 
         [desktop_widgets.widget.desktop-widget-0000000000000009.settings]
@@ -203,7 +221,7 @@ widget_order = [
         background_color = "on_secondary"
         background_opacity = 0.25
         background_padding = 0
-        background_radius = 32
+        background_radius = 0
         color = "primary"
         font_family = "DejaVu Sans"
         layout = "horizontal"
@@ -230,14 +248,15 @@ widget_order = [
     [desktop_widgets.widget.desktop-widget-000000000000000f]
     box_height = 192.0
     box_width = 256.0
-    cx = 4544.0
-    cy = 560.037109375
+    cx = 182.1953125
+    cy = 818.46484375
     output = "DP-2"
     rotation = 0.0
     type = "weather"
 
         [desktop_widgets.widget.desktop-widget-000000000000000f.settings]
         background = true
+        background_color = "on_secondary"
         background_opacity = 0.25
         color = "primary"
         font_family = "Liberation Mono"
@@ -247,17 +266,49 @@ widget_order = [
     [desktop_widgets.widget.desktop-widget-0000000000000011]
     box_height = 192.0
     box_width = 640.0
-    cx = 4736.0
-    cy = 336.0
+    cx = 4784.6328125
+    cy = 605.55078125
     output = "DP-2"
     rotation = -0.0
     type = "clock"
 
         [desktop_widgets.widget.desktop-widget-0000000000000011.settings]
         background_opacity = 0.25
-        background_radius = 32
+        background_radius = 0
         center_text = true
         format = "{:%H:%M:%S}"
+
+    [desktop_widgets.widget.desktop-widget-0000000000000012]
+    box_height = 448.0
+    box_width = 384.0
+    cx = 2757.19140625
+    cy = 353.83203125
+    output = "DP-2"
+    rotation = 0.0
+    type = "fancy_audio_visualizer"
+
+        [desktop_widgets.widget.desktop-widget-0000000000000012.settings]
+        background = false
+        bloom_intensity = 0.90000000000000002
+        inner_diameter = 0.60000000000000009
+        ring_opacity = 0.40000000000000002
+        rotation_speed = 0.10000000000000001
+        sensitivity = 1.0
+        visualization_mode = "rings"
+
+    [desktop_widgets.widget.desktop-widget-0000000000000013]
+    box_height = 92.125
+    box_width = 268.234375
+    cx = 2780.7734375
+    cy = 303.53515625
+    output = "DP-2"
+    rotation = 0.0
+    type = "sticker"
+
+        [desktop_widgets.widget.desktop-widget-0000000000000013.settings]
+        background = false
+        image_path = "/home/sree/Pictures/2026-08-12-213931_hyprshot.png"
+        opacity = 1.0
 
 [dock]
 background_opacity = 0.74999998323619366
@@ -635,8 +686,31 @@ background_opacity = 0.44999998994171619
 border = false
 offset_y = 45
 
+[plugin_settings."alexander/game-launcher"]
+browser_placement = "attached"
+
+[plugin_settings."noctalia/screen_recorder"]
+audio_codec = "flac"
+video_codec = "hevc"
+
+[plugin_settings."pozzoo/hassio"]
+entity_manager_open_near_click = true
+entity_manager_placement = "attached"
+ha_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiI3NWRhOTgyMGJjMGU0MmNlOWQ5YzM3ZjAxODEzYjExMSIsImlhdCI6MTc4Njc4NzcxOCwiZXhwIjoyMTAyMTQ3NzE4fQ.fW8H_maOYU_-y1YljOcvigdNAs3vgfO3w861HcBDfqk"
+ha_url = "https://ha.retr0astic.com"
+
+[plugin_settings."weinguyen/procmon"]
+panel_placement = "attached"
+
 [plugins]
-enabled = [ "noctalia/screen_recorder", "pozzoo/hassio", "yuuto/calculator" ]
+enabled = [
+    "pozzoo/hassio",
+    "yuuto/calculator",
+    "noctalia/screen_recorder",
+    "alexander/game-launcher",
+    "weinguyen/procmon",
+    "jamesfeeder/special-workspaces"
+]
 
 [shell]
 app_icon_color = "secondary"
@@ -685,8 +759,8 @@ settings_window_translucent = true
 builtin = "Dracula"
 community_palette = "Ayu Red"
 mode = "dark"
-source = "builtin"
-wallpaper_scheme = "m3-tonal-spot"
+source = "wallpaper"
+wallpaper_scheme = "m3-fruit-salad"
 
     [theme.templates]
     builtin_ids = [ "btop", "gtk3", "gtk4", "hyprland", "kcolorscheme", "kitty", "qt", "starship" ]
@@ -765,6 +839,15 @@ type = "yuuto/calculator:bar"
 [widget.media]
 hide_when_no_media = true
 title_scroll = "on_hover"
+
+[widget.recorder]
+type = "noctalia/screen_recorder:recorder"
+
+[widget.special-workspaces]
+type = "jamesfeeder/special-workspaces:special-workspaces"
+
+[widget.status]
+type = "pozzoo/hassio:status"
 
 [widget.sysmon]
 stat = "gpu_usage"
