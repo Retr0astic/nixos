@@ -11,6 +11,7 @@
     home-manager
     sree
     core
+    secrets
     services
     graphics
     gaming
