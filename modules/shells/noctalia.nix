@@ -25,6 +25,11 @@
     key = suffix: ''mainMod .. " + ${suffix}"'';
     exec = command: ''hl.dsp.exec_cmd(${command})'';
   in {
+    # home-manager now ships its own programs.noctalia module upstream,
+    # which collides with noctalia's own module below. Keep the
+    # noctalia-provided one — this config relies on its options (e.g.
+    # systemd.enable) which the upstream module doesn't necessarily match.
+    disabledModules = ["${inputs.home-manager}/modules/programs/noctalia.nix"];
     imports = [inputs.noctalia.homeModules.default];
 
     programs.noctalia = {
