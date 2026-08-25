@@ -23,6 +23,7 @@
     wayland.windowManager.hyprland.settings.bind =
       [
         (luaBind (key "Return") (exec "terminal"))
+        (luaBind (key "SHIFT + Return") (exec "browser"))
         (luaBind (key "C") "hl.dsp.window.close()")
         (luaBind (key "CTRL + Escape") "hl.dsp.exit()")
         (luaBind (key "E") (exec "fileManager"))

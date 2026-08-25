@@ -10,6 +10,7 @@
       mainMod._var = "SUPER";
       terminal._var = "kitty";
       fileManager._var = "nautilus";
+      browser._var = "zen";
 
       env = [
         {_args = ["XCURSOR_SIZE" "24"];}

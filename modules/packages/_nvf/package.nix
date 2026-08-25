@@ -42,7 +42,6 @@ _: {
     visuals = {
       nvim-web-devicons.enable = true;
       indent-blankline.enable = true;
-      fidget-nvim.enable = true; # LSP progress in bottom-right
       # optional eye-candy:
       cellular-automaton.enable = true;
     };
@@ -59,7 +58,6 @@ _: {
 
     binds = {
       whichKey.enable = true; # <leader>? popup showing all keybinds
-      cheatsheet.enable = true;
     };
     # ── LSP ───────────────────────────────────────────────────
     lsp = {
@@ -67,8 +65,6 @@ _: {
       formatOnSave = true;
       # blink-cmp supplies signature help itself. lspSignature conflicts.
       trouble.enable = true; # diagnostics list
-      lightbulb.enable = true; # code action indicator
-      nvim-docs-view.enable = true;
     };
     # ── Completion ────────────────────────────────────────────
     autocomplete.blink-cmp = {

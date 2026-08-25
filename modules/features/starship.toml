@@ -9,19 +9,16 @@ command_timeout = 1000
 
 format = """
 [╭─](overlay0)\
-$os\
-$directory\
-$git_branch\
-$git_status\
-$git_metrics\
-$nix_shell\
-$direnv\
+$directory \
+$git_branch$git_status$git_metrics \
+$nix_shell \
+$direnv \
 $fill\
-$c$golang$java$lua$nodejs$python$rust\
-$docker_context\
-$jobs\
-$status\
-$cmd_duration\
+$c$golang$java$lua$nodejs$python$rust \
+$docker_context \
+$jobs \
+$status \
+$cmd_duration \
 $time\
 $line_break\
 [╰─](overlay0)$character"""
@@ -29,15 +26,6 @@ $line_break\
 ################################################################################
 # Left side
 ################################################################################
-
-[os]
-disabled = false
-style = "blue bold bg:surface1"
-format = "[](surface1)[ $symbol ]($style)[](surface1)"
-
-[os.symbols]
-NixOS = ""
-Linux = ""
 
 [directory]
 truncation_length = 3
@@ -99,7 +87,7 @@ unloaded_msg = "off"
 ################################################################################
 
 [fill]
-symbol = " · "
+symbol = "─"
 style = "overlay0"
 
 ################################################################################
