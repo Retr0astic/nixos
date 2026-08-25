@@ -7,6 +7,10 @@
 
     sops.secrets.github_token = {};
 
+    sops.secrets."passwd/sree" = {
+      neededForUsers = true;
+    };
+
     sops.templates."nix-access-tokens.conf".content = ''
       access-tokens = github.com=${config.sops.placeholder.github_token}
     '';

@@ -1,17 +1,10 @@
-{
-  config,
-  inputs,
-  ...
-}: {
-  flake.modules.nixos.hyprland = {pkgs, ...}: let
-    hyprland = inputs.hyprland;
-  in {
+{config, ...}: {
+  flake.modules.nixos.hyprland = {pkgs, ...}: {
     home-manager.sharedModules = [config.flake.modules.homeManager.hyprland];
 
     programs.hyprland = {
       enable = true;
       withUWSM = true;
-      package = hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
       xwayland.enable = true;
     };
 

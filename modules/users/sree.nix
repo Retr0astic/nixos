@@ -1,5 +1,5 @@
 {config, ...}: {
-  flake.modules.nixos.sree = {
+  flake.modules.nixos.sree = osArgs @ {
     lib,
     pkgs,
     ...
@@ -17,6 +17,7 @@
     users.users.sree = {
       isNormalUser = true;
       description = "Sree";
+      hashedPasswordFile = osArgs.config.sops.secrets."passwd/sree".path;
       extraGroups = [
         "wheel"
         "video"
