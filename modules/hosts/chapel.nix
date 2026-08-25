@@ -19,7 +19,6 @@
     fonts
     appearance
     system-packages
-    packages
     programs
     shell
     terminals

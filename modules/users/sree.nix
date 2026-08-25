@@ -68,12 +68,23 @@
         nextcloud-client
         kdePackages.qtwebsockets
         qbittorrent
-        libreoffice-qt6-fresh
+        libreoffice
         hunspell
         hunspellDicts.en-us-large
         codex
         mcp-nixos
         vscode
+        fastfetch
+        fd
+        htop
+        ripgrep
+        eza
+        jq
+        gh
+        chromium
+        obsidian
+        easyeffects
+        feishin
       ];
     };
 

@@ -33,6 +33,7 @@
       smartmontools
       claude-code
       gcc
+      playerctl
     ];
   };
 }
