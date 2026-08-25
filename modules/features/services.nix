@@ -21,6 +21,8 @@
       gvfs.enable = true;
       udisks2.enable = true;
     };
+    environment.systemPackages = [pkgs.playerctl];
+
     programs = {
       coolercontrol.enable = true;
       virt-manager.enable = true;

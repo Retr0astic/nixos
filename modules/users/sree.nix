@@ -29,6 +29,14 @@
       shell = pkgs.fish;
       home = "/home/sree";
     };
+
+    # Only applies to `nixos-rebuild build-vm`, never the real system: the
+    # sops-encrypted passwd secret can't decrypt with the VM's ephemeral
+    # SSH host key, so give the VM a throwaway plaintext password instead.
+    virtualisation.vmVariant.users.users.sree = {
+      hashedPasswordFile = lib.mkForce null;
+      password = "test";
+    };
   };
 
   flake.modules.homeManager.sree = {
@@ -67,6 +75,15 @@
         mcp-nixos
         vscode
       ];
+    };
+
+    systemd.user.services.mpris-proxy = {
+      Unit = {
+        Description = "Bridge Bluetooth AVRCP controls (headphone play/pause/next) to MPRIS";
+        After = ["bluetooth.target"];
+      };
+      Service.ExecStart = "${pkgs.bluez}/bin/mpris-proxy";
+      Install.WantedBy = ["default.target"];
     };
 
     programs.fish.shellAliases = {
