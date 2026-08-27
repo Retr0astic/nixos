@@ -105,8 +105,6 @@
           (luaBind (key "Z") (exec ''ipc .. " panel-toggle control-center"''))
           (luaBind (key "comma") (exec ''ipc .. " settings-toggle"''))
           (luaBind (key "SHIFT + C") (exec ''ipc .. " panel-toggle launcher clipboard"''))
-          (luaBind (key "SHIFT + X") (exec ''ipc .. " panel-toggle alexander/game-launcher:browser"''))
-          (luaBind (key "SHIFT + R") (exec ''ipc .. " panel-toggle weinguyen/procmon:panel"''))
           (luaBind (key "D") (exec ''ipc .. " caffeine-disable"''))
           (luaBind (key "SHIFT + D") (exec ''ipc .. " caffeine-enable"''))
         ];
