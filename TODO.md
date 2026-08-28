@@ -43,6 +43,9 @@ change.
 
 ## 3. Loosen the configuration-name check
 
+**Status:** done. The step now asserts that four required names are present
+and allows any extra name.
+
 **Problem:** `test "$actual" = "$expected"` asserts exact set equality
 against seven hardcoded names in sorted order. Adding a host breaks CI on an
 unrelated PR, and removing a redundant alias (item 6) requires editing this

@@ -110,18 +110,30 @@ jobs:
         run: nix flake check --print-build-logs --accept-flake-config
 
       # A rename or a lost alias breaks every rebuild command that names it.
+      # Only the names a person or a document actually passes to
+      # `nixos-rebuild` are required:
+      #   bigrig, chapel     a bare `--flake ~/nixos` resolves by hostname
+      #   caelestia          docs/GUIDE.md
+      #   noctalia-hyprland  README.md
+      # An extra name passes. Only a missing name fails, so adding a host
+      # does not break CI on an unrelated pull request.
       - name: Verify configuration names
         shell: bash
         run: |
           set -euo pipefail
-          expected='["bigrig","caelestia","caelestia-hyprland","chapel","chapel-hyprland-noctalia","noctalia","noctalia-hyprland"]'
+          required='["bigrig","caelestia","chapel","noctalia-hyprland"]'
 
           actual=$(nix eval --json \
             --accept-flake-config \
             --apply 'builtins.attrNames' \
             .#nixosConfigurations)
 
-          test "$actual" = "$expected"
+          missing=$(jq -c --argjson actual "$actual" '. - $actual' <<<"$required")
+          if [ "$missing" != "[]" ]; then
+            echo "::error::missing nixosConfigurations: $missing"
+            echo "present: $actual"
+            exit 1
+          fi
 
   build:
     needs:
