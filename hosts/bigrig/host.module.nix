@@ -31,10 +31,10 @@
 
   system.stateVersion = "26.05";
 
-  # TODO: paste your SSH public key(s) here as a second way in, in case
-  # passwd/sree fails to decrypt (see the sops note above).
+  # Second way in, in case passwd/sree fails to decrypt (see the sops note
+  # above).
   users.users.sree.openssh.authorizedKeys.keys = [
-    # "ssh-ed25519 AAAA... your key comment"
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJj+EmkhR8opwF5DsQlGtjeZh5aM3BoX2GKszpbY9bfu sree2399@gmail.com"
   ];
 
   # Matches the old system exactly (`id sree`, `id vicky`, /etc/subuid,
