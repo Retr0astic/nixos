@@ -6,7 +6,9 @@
   m = config.flake.modules.nixos;
 
   # Headless server: no graphics, gaming, browser, fonts, appearance,
-  # spicetify, opends5, audio, terminals, xdg, starship, or any compositor.
+  # spicetify, opends5, audio, terminals, xdg, or any compositor. Uses
+  # starship-server instead of chapel's starship (different style, no
+  # noctalia palette dependency).
   base = with m; [
     bigrig
     home-manager
@@ -15,6 +17,7 @@
     secrets
     server
     shell
+    starship-server
     nvf
   ];
 in {

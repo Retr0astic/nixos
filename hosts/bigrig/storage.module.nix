@@ -7,17 +7,21 @@
 {...}: {
   boot.swraid.enable = true;
 
-  # The array homehost is `vega`, not bigrig — that's why md126/md127 assign
-  # semi-randomly instead of stable /dev/md/<name> paths. Assembly below is
-  # by UUID, so this doesn't affect boot; fileSystems reference the arrays by
-  # label too. Set HOMEHOST or rename the arrays later if stable /dev/md/
-  # paths are wanted.
+  # The array homehost is `vega`, not bigrig — mdadm treats a foreign
+  # homehost as a reason to skip auto-assembly, not just a naming quirk.
+  # `HOMEHOST <ignore>` tells mdadm to assemble by UUID regardless of which
+  # host created the array; the explicit ARRAY lines below are what it then
+  # assembles. fileSystems below mount by filesystem UUID, so this doesn't
+  # affect mounting once the arrays are up — only whether they come up at
+  # all. Rename the arrays later (`mdadm --assemble --update=homehost`) if
+  # stable /dev/md/vega:* paths under the new hostname are wanted instead.
   #
   # vega:0 is Vault, vega:1 is Storage. The vega:0 UUID here is regrouped
   # from the digits provided (mdadm.conf wants four 8-hex-digit groups);
   # verify against `mdadm --detail --scan` on the live system before relying
   # on it.
   boot.swraid.mdadmConf = ''
+    HOMEHOST <ignore>
     MAILADDR root
     ARRAY /dev/md/vega:1 metadata=1.2 UUID=cedfacc0:73d5c703:1b46f284:87d141be name=vega:1
     ARRAY /dev/md/vega:0 metadata=1.2 UUID=a224fd89:a8aab8c3:a0034335:3b3f3203 name=vega:0

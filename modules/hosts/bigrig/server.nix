@@ -25,6 +25,10 @@
       rsync
       restic
       smartmontools
+      # kitty forwards TERM=xterm-kitty over SSH. Without kitty's terminfo
+      # installed, ncurses tools (clear, htop's own redraw, etc.) fail with
+      # "unknown terminal type". Just the terminfo data, not the GUI app.
+      kitty.terminfo
     ];
 
     # Start sree's user systemd units (podman quadlets) without a login
