@@ -1,6 +1,13 @@
 {...}: {
-  flake.modules.homeManager.sree = {pkgs, ...}: {
-    home.packages = with pkgs; [
+  # Desktop apps only. Guarded on hostname so bigrig (headless) does not pull
+  # these in through the shared `sree` module.
+  flake.modules.homeManager.sree = {
+    lib,
+    pkgs,
+    osConfig,
+    ...
+  }: {
+    home.packages = lib.mkIf (osConfig.networking.hostName != "bigrig") (with pkgs; [
       # Communication
       vesktop
       bitwarden-desktop
@@ -34,6 +41,6 @@
       obsidian
       easyeffects
       feishin
-    ];
+    ]);
   };
 }
