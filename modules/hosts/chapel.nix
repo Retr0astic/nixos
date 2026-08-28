@@ -11,6 +11,7 @@
     home-manager
     sree
     core
+    core-desktop
     secrets
     services
     graphics
