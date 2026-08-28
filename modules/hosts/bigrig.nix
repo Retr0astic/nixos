@@ -15,7 +15,9 @@
     sree
     core
     secrets
-    server
+    system-packages
+    server-services
+    server-packages
     shell
     starship-bigrig
     nvf

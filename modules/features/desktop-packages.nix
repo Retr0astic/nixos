@@ -2,8 +2,27 @@
   # Desktop apps, opt-in like `programs`/`terminals`/`xdg`: only a host that
   # names `desktop-packages` in its base list gets these. bigrig (headless)
   # does not.
-  flake.modules.nixos.desktop-packages = {
+  flake.modules.nixos.desktop-packages = {pkgs, ...}: {
     home-manager.sharedModules = [config.flake.modules.homeManager.desktop-packages];
+
+    environment.systemPackages = with pkgs; [
+      mpv
+      loupe
+      swayimg
+      kdePackages.dolphin
+      kdePackages.ark
+      kdePackages.kio-extras
+      nautilus
+      qt6Packages.qt6ct
+      adw-gtk3
+      nwg-look
+      seahorse
+      playerctl
+      ddcutil
+      sbctl
+      dconf
+      gsettings-desktop-schemas
+    ];
   };
 
   flake.modules.homeManager.desktop-packages = {pkgs, ...}: {
@@ -26,15 +45,6 @@
       codex
       mcp-nixos
       vscode
-      gh
-
-      # CLI utilities
-      fastfetch
-      fd
-      htop
-      ripgrep
-      eza
-      jq
 
       # Browsers and desktop apps
       chromium

@@ -2,7 +2,7 @@
   # Headless service-host concerns for bigrig. Not shared with chapel's
   # `services` module, which pulls in printing, avahi, noctalia-greeter,
   # bluetooth, coolercontrol, libvirtd, gnome-keyring and gvfs.
-  flake.modules.nixos.server = {pkgs, ...}: {
+  flake.modules.nixos.server-services = {pkgs, ...}: {
     services.openssh = {
       enable = true;
       openFirewall = true;
@@ -18,18 +18,6 @@
     # CAP_NET_BIND_SERVICE. 81 is NPM's admin UI.
     boot.kernel.sysctl."net.ipv4.ip_unprivileged_port_start" = 80;
     networking.firewall.allowedTCPPorts = [80 443 81];
-
-    environment.systemPackages = with pkgs; [
-      git
-      htop
-      rsync
-      restic
-      smartmontools
-      # kitty forwards TERM=xterm-kitty over SSH. Without kitty's terminfo
-      # installed, ncurses tools (clear, htop's own redraw, etc.) fail with
-      # "unknown terminal type". Just the terminfo data, not the GUI app.
-      kitty.terminfo
-    ];
 
     # Start sree's user systemd units (podman quadlets) without a login
     # session.
