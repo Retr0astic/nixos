@@ -1,6 +1,12 @@
 {inputs, ...}: {
-  flake.modules.nixos.secrets = {config, ...}: {
+  flake.modules.nixos.secrets = {
+    config,
+    pkgs,
+    ...
+  }: {
     imports = [inputs.sops-nix.nixosModules.sops];
+
+    environment.systemPackages = [pkgs.sops];
 
     sops.defaultSopsFile = ../../secrets/secrets.yaml;
     sops.age.sshKeyPaths = ["/etc/ssh/ssh_host_ed25519_key"];
