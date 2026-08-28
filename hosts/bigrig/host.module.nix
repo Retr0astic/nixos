@@ -25,4 +25,10 @@
   boot.loader.systemd-boot.configurationLimit = 10;
 
   system.stateVersion = "26.05";
+
+  # TODO: paste your SSH public key(s) here as a second way in, in case
+  # passwd/sree fails to decrypt (see the sops note above).
+  users.users.sree.openssh.authorizedKeys.keys = [
+    # "ssh-ed25519 AAAA... your key comment"
+  ];
 }

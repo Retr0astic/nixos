@@ -15,8 +15,17 @@
     };
 
     # Rootless Nginx Proxy Manager (or similar) needs to bind 80/443 without
-    # CAP_NET_BIND_SERVICE.
+    # CAP_NET_BIND_SERVICE. 81 is NPM's admin UI.
     boot.kernel.sysctl."net.ipv4.ip_unprivileged_port_start" = 80;
+    networking.firewall.allowedTCPPorts = [80 443 81];
+
+    environment.systemPackages = with pkgs; [
+      git
+      htop
+      rsync
+      restic
+      smartmontools
+    ];
 
     # Start sree's user systemd units (podman quadlets) without a login
     # session.
