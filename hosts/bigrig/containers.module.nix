@@ -1,14 +1,10 @@
 # Placeholder for rootless podman quadlet services. Real .container files are
 # supplied separately; do not invent service definitions here.
 #
-# Volumes are restored from a backup of the old system. For restored file
-# ownership to map correctly into sree's rootless user namespace, sree's
-# UID/GID and subuid/subgid ranges must match the old system exactly.
-# TODO: on the old system, record:
-#   id sree
-#   grep sree /etc/subuid /etc/subgid
-# and set matching values here (e.g. `users.users.sree.uid = lib.mkForce ...;`,
-# `users.users.sree.subUidRanges`/`subGidRanges`) before restoring volumes.
+# Volumes are restored from a backup of the old system. sree's uid/gid and
+# subuid/subgid ranges are pinned in host.module.nix to match the old system
+# exactly, so restored file ownership maps correctly into sree's rootless
+# user namespace.
 {...}: {
   # Quadlet units go to ~/.config/containers/systemd/*.container, where
   # podman's per-user systemd generator picks them up (sree has

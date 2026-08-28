@@ -1,4 +1,4 @@
-{...}: {
+{lib, ...}: {
   imports = [
     ./hardware-configuration.nix
     ./disko.module.nix
@@ -31,4 +31,47 @@
   users.users.sree.openssh.authorizedKeys.keys = [
     # "ssh-ed25519 AAAA... your key comment"
   ];
+
+  # Matches the old system exactly (`id sree`, `id vicky`, /etc/subuid,
+  # /etc/subgid), so restored volumes keep correct ownership.
+  users.groups.sree.gid = 1000;
+  users.users.sree = {
+    uid = lib.mkForce 1000;
+    group = lib.mkForce "sree";
+    subUidRanges = [
+      {
+        startUid = 524288;
+        count = 65536;
+      }
+    ];
+    subGidRanges = [
+      {
+        startGid = 524288;
+        count = 65536;
+      }
+    ];
+  };
+
+  # vicky is a Samba-only account (no desktop/home-manager profile). The
+  # Samba service itself isn't configured yet — add that when needed. This
+  # only pins the uid/gid so restored files resolve to a name instead of a
+  # raw number.
+  users.groups.vicky.gid = 1001;
+  users.users.vicky = {
+    isNormalUser = true;
+    uid = 1001;
+    group = "vicky";
+    subUidRanges = [
+      {
+        startUid = 589824;
+        count = 65536;
+      }
+    ];
+    subGidRanges = [
+      {
+        startGid = 589824;
+        count = 65536;
+      }
+    ];
+  };
 }

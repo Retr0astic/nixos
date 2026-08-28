@@ -5,11 +5,7 @@
 {...}: {
   disko.devices.disk.nvme0n1 = {
     type = "disk";
-    # TODO: replace with the real by-id path. Get it on the live ISO with:
-    #   ls -l /dev/disk/by-id/ | grep nvme0n1
-    # and use the longest stable identifier (nvme-<model>_<serial>), not the
-    # nvme-eui.* alias.
-    device = "/dev/disk/by-id/TODO-nvme0n1-by-id";
+    device = "/dev/disk/by-id/nvme-SN530_SDBPNPZ-512G-1004_212429803514";
     content = {
       type = "gpt";
       partitions = {
