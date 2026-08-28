@@ -1,13 +1,13 @@
-{...}: {
-  # Desktop apps only. Guarded on hostname so bigrig (headless) does not pull
-  # these in through the shared `sree` module.
-  flake.modules.homeManager.sree = {
-    lib,
-    pkgs,
-    osConfig,
-    ...
-  }: {
-    home.packages = lib.mkIf (osConfig.networking.hostName != "bigrig") (with pkgs; [
+{config, ...}: {
+  # Desktop apps, opt-in like `programs`/`terminals`/`xdg`: only a host that
+  # names `desktop-packages` in its base list gets these. bigrig (headless)
+  # does not.
+  flake.modules.nixos.desktop-packages = {
+    home-manager.sharedModules = [config.flake.modules.homeManager.desktop-packages];
+  };
+
+  flake.modules.homeManager.desktop-packages = {pkgs, ...}: {
+    home.packages = with pkgs; [
       # Communication
       vesktop
       bitwarden-desktop
@@ -41,6 +41,6 @@
       obsidian
       easyeffects
       feishin
-    ]);
+    ];
   };
 }

@@ -1,12 +1,15 @@
 {...}: {
   flake.modules.homeManager.sree = {
     config,
+    lib,
     pkgs,
     ...
   }: let
     checkout = "${config.home.homeDirectory}/nixos";
   in {
-    systemd.user.services.mpris-proxy = {
+    # Bluetooth-only: bigrig never enables hardware.bluetooth, so this stays
+    # off there rather than idling against a dbus service that never exists.
+    systemd.user.services.mpris-proxy = lib.mkIf config.wayland.windowManager.hyprland.enable {
       Unit = {
         Description = "Bridge Bluetooth AVRCP controls (headphone play/pause/next) to MPRIS";
         After = ["bluetooth.target"];

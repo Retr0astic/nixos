@@ -20,6 +20,7 @@
     fonts
     appearance
     system-packages
+    desktop-packages
     programs
     shell
     terminals

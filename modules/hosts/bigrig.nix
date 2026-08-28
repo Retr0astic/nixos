@@ -16,7 +16,6 @@
     server
     shell
     nvf
-    overlays
   ];
 in {
   flake.modules.nixos.bigrig = {
