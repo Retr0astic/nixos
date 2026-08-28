@@ -15,7 +15,10 @@
     (modulesPath + "/installer/scan/not-detected.nix")
   ];
 
-  boot.initrd.availableKernelModules = []; # TODO: fill in from nixos-generate-config
+  # "nvme" is required so the root disk (nvme0n1) is visible in stage 1; the
+  # rest (usb/ahci/etc.) is safe to fill in from nixos-generate-config, but
+  # do not drop "nvme" or the machine will not boot.
+  boot.initrd.availableKernelModules = ["nvme"]; # TODO: fill in the rest from nixos-generate-config
   boot.initrd.kernelModules = []; # TODO: fill in from nixos-generate-config
   boot.kernelModules = []; # TODO: fill in from nixos-generate-config
   boot.extraModulePackages = [];

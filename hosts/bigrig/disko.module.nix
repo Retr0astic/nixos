@@ -45,6 +45,8 @@
                 mountpoint = "/var";
                 mountOptions = ["compress=zstd" "noatime"];
               };
+              # Not in the spec: /.snapshots is the conventional snapper
+              # mountpoint. Say if you want it elsewhere.
               "@snapshots" = {
                 mountpoint = "/.snapshots";
                 mountOptions = ["compress=zstd" "noatime"];

@@ -17,6 +17,8 @@
     # TODO: ARRAY lines from `mdadm --detail --scan`
   '';
 
+  # Mountpoints are not in the spec, chosen to match the array labels. Say if
+  # you want them elsewhere.
   fileSystems."/mnt/storage" = {
     device = "/dev/disk/by-label/Storage";
     fsType = "ext4";
