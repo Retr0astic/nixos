@@ -58,6 +58,9 @@ present. Do not assert the set contains nothing else.
 
 ## 4. Hoist the duplicated Hyprland Lua helpers
 
+**Status:** done. `modules/desktops/hyprland/lib.nix` defines
+`flake.lib.hypr`. The four consumers inherit from it.
+
 **Problem:** `mkLuaInline`, `luaBind`, `key`, and `exec` are defined
 identically in three files:
 

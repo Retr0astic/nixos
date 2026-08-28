@@ -2,7 +2,9 @@
   config,
   inputs,
   ...
-}: {
+}: let
+  inherit (config.flake.lib.hypr) mkLuaInline globalBind;
+in {
   # Pull the home-manager side in whenever this module is selected.
   flake.modules.nixos.caelestia = {
     home-manager.sharedModules = [config.flake.modules.homeManager.caelestia];
@@ -12,17 +14,7 @@
     config,
     lib,
     ...
-  }: let
-    inherit (lib.generators) mkLuaInline;
-
-    globalBind = key: shortcut: options: {
-      _args = [
-        (mkLuaInline ''"${key}"'')
-        (mkLuaInline ''hl.dsp.global("${shortcut}")'')
-        options
-      ];
-    };
-  in {
+  }: {
     imports = [inputs.caelestia-shell.homeManagerModules.default];
 
     programs.caelestia = {
