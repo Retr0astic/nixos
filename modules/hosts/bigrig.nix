@@ -9,19 +9,19 @@
   # media, file-managers, spicetify, opends5, audio, terminals, xdg, or any
   # compositor. Uses starship-bigrig instead of chapel's starship (different
   # style, no noctalia palette dependency).
-  base = with m; [
-    bigrig
-    home-manager
-    sree
-    core
-    secrets
-    server-services
-    server-packages
-    shell
-    hardware-tools
-    ai-tools
-    starship-bigrig
-    nvf
+  base = [
+    m.bigrig
+    m.home-manager
+    m.sree
+    m.core
+    m.secrets
+    m.server-services
+    m.server-packages
+    m.shell
+    m.hardware-tools
+    m.ai-tools
+    m.starship-bigrig
+    m.nvf
   ];
 in {
   flake.modules.nixos.bigrig = {

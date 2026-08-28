@@ -98,6 +98,8 @@ system, tab-completion noise.
 
 ## 7. Replace `with m;` in the host base lists
 
+**Status:** done. Both base lists carry `m.` on every entry.
+
 **Problem:** `modules/hosts/chapel.nix` uses `base = with m; [...]`, and its
 own comment records that a bare name silently resolves to a `let` binding
 instead of the intended aspect. `with` is the only thing making that
