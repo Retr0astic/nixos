@@ -26,6 +26,9 @@ one job.
 
 ## 2. CI never builds bigrig
 
+**Status:** done. `.github/workflows/flake.yml` carries a `bigrig` paths
+filter and adds `bigrig` to the build matrix.
+
 **Problem:** the build matrix is `["chapel"]` or
 `["chapel","caelestia-hyprland"]`. bigrig appears only in the name
 verification step. `nix flake check` evaluates the config but does not build
