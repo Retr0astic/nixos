@@ -48,6 +48,16 @@
       enable = true;
       qemu.swtpm.enable = true;
     };
+
+    environment.systemPackages = with pkgs; [
+      # Backing libraries for services.gnome.gnome-keyring above. System
+      # scope: the greeter PAM stack needs these before login completes.
+      gnome-keyring
+      libsecret
+      # Used by programs.virt-manager above.
+      qemu
+      quickemu
+    ];
     security.pam.services.greetd.enableGnomeKeyring = true;
     hardware.bluetooth.enable = true;
   };

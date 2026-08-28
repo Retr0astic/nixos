@@ -1,6 +1,7 @@
 {...}: {
   # Headless host packages, opt-in by naming `server-packages` in a base list.
-  # Only packages the server role needs and system-packages does not provide.
+  # Only packages the server role needs. git, btop, fd, jq and smartmontools
+  # are NOT here: `core`, `shell` and `hardware-tools` give them to both hosts.
   flake.modules.nixos.server-packages = {pkgs, ...}: {
     environment.systemPackages = with pkgs; [
       rsync

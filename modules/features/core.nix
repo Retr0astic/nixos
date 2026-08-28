@@ -1,6 +1,17 @@
 {...}: {
   # Shared by every host, desktop or headless.
-  flake.modules.nixos.core = {...}: {
+  flake.modules.nixos.core = {pkgs, ...}: {
+    # Needed before any user session exists: recovery shell, root over SSH,
+    # and `nixos-rebuild` on a machine whose home-manager generation failed.
+    environment.systemPackages = with pkgs; [
+      vim
+      git
+      wget
+      # TODO: verify. Carried over from the old system-packages list with no
+      # recorded reason. Drop it if nothing regresses.
+      bubblewrap
+    ];
+
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;
     networking.networkmanager.enable = true;

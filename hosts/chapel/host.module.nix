@@ -37,11 +37,5 @@
     };
   };
 
-  environment.etc."xdg/menus/applications.menu".source = ../../modules/dolphin.menu;
-  environment.systemPackages = with pkgs; [
-    qemu
-    quickemu
-  ];
-
   system.stateVersion = "25.11";
 }

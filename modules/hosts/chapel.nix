@@ -19,8 +19,11 @@
     zen
     fonts
     appearance
-    system-packages
     desktop-packages
+    media
+    file-managers
+    hardware-tools
+    ai-tools
     programs
     shell
     terminals
@@ -30,7 +33,6 @@
     nvf
     spicetify
     opends5
-    overlays
   ];
 
   # Add a desktop and a shell to build one variant.
