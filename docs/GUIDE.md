@@ -46,7 +46,7 @@ sudo nixos-rebuild switch --flake ~/nixos
 sudo nixos-rebuild test --flake ~/nixos#chapel
 
 # Build the other variant
-sudo nixos-rebuild switch --flake ~/nixos#caelestia
+sudo nixos-rebuild switch --flake ~/nixos#chapel-caelestia
 
 # Build without touching the running system
 nix build ~/nixos#nixosConfigurations.chapel.config.system.build.toplevel --no-link
@@ -64,8 +64,9 @@ Two aliases exist in your fish shell already: `rebuild` and `update`.
 
 | Name | Builds |
 | --- | --- |
-| `chapel`, `noctalia`, `noctalia-hyprland`, `chapel-hyprland-noctalia` | Hyprland + Noctalia |
-| `caelestia`, `caelestia-hyprland` | Hyprland + Caelestia |
+| `chapel` | Hyprland + Noctalia |
+| `chapel-caelestia` | Hyprland + Caelestia |
+| `bigrig` | Headless server |
 
 A bare `nixos-rebuild --flake ~/nixos` picks `chapel`, because that is the
 hostname.

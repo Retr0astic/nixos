@@ -57,14 +57,10 @@ in {
     home-manager.sharedModules = [config.flake.modules.homeManager.chapel];
   };
 
+  # One name per build. `chapel` matches the hostname, so a bare
+  # `nixos-rebuild --flake ~/nixos` picks it.
   flake.nixosConfigurations = {
-    noctalia-hyprland = withNoctalia;
-    caelestia-hyprland = withCaelestia;
-
-    # Short names for the same two builds.
     chapel = withNoctalia;
-    chapel-hyprland-noctalia = withNoctalia;
-    noctalia = withNoctalia;
-    caelestia = withCaelestia;
+    chapel-caelestia = withCaelestia;
   };
 }

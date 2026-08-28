@@ -90,6 +90,9 @@ it in `home.packages`; `vim` in `core` already covers root and recovery.
 
 ## 6. Remove the redundant `nixosConfigurations` aliases
 
+**Status:** done. Three names remain: `chapel`, `chapel-caelestia`, and
+`bigrig`. CI, README.md and docs/GUIDE.md follow.
+
 **Problem:** `chapel`, `noctalia`, `noctalia-hyprland`, and
 `chapel-hyprland-noctalia` all resolve to the same build. Four names, one
 system, tab-completion noise.

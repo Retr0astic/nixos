@@ -73,7 +73,7 @@ jobs:
           set -euo pipefail
           list='["chapel"]'
           if [ "${{ steps.filter.outputs.caelestia }}" != "false" ]; then
-            list=$(printf '%s' "$list" | jq -c '. + ["caelestia-hyprland"]')
+            list=$(printf '%s' "$list" | jq -c '. + ["chapel-caelestia"]')
           fi
           if [ "${{ steps.filter.outputs.bigrig }}" != "false" ]; then
             list=$(printf '%s' "$list" | jq -c '. + ["bigrig"]')
@@ -112,16 +112,15 @@ jobs:
       # A rename or a lost alias breaks every rebuild command that names it.
       # Only the names a person or a document actually passes to
       # `nixos-rebuild` are required:
-      #   bigrig, chapel     a bare `--flake ~/nixos` resolves by hostname
-      #   caelestia          docs/GUIDE.md
-      #   noctalia-hyprland  README.md
+      #   bigrig, chapel    a bare `--flake ~/nixos` resolves by hostname
+      #   chapel-caelestia  README.md and docs/GUIDE.md
       # An extra name passes. Only a missing name fails, so adding a host
       # does not break CI on an unrelated pull request.
       - name: Verify configuration names
         shell: bash
         run: |
           set -euo pipefail
-          required='["bigrig","caelestia","chapel","noctalia-hyprland"]'
+          required='["bigrig","chapel","chapel-caelestia"]'
 
           actual=$(nix eval --json \
             --accept-flake-config \
