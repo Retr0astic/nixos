@@ -88,7 +88,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          expected='["caelestia","caelestia-hyprland","chapel","chapel-hyprland-noctalia","noctalia","noctalia-hyprland"]'
+          expected='["bigrig","caelestia","caelestia-hyprland","chapel","chapel-hyprland-noctalia","noctalia","noctalia-hyprland"]'
 
           actual=$(nix eval --json \
             --accept-flake-config \
