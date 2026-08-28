@@ -18,6 +18,9 @@
           tree = "eza --tree";
         };
       };
+      eza.enable = true;
+      bat.enable = true;
+      ripgrep.enable = true;
       zoxide = {
         enable = true;
         enableFishIntegration = true;
