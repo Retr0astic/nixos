@@ -79,6 +79,9 @@ to cross-file sharing: flake-parts options, never `specialArgs`.
 
 ## 5. Move nvf to home packages
 
+**Status:** done. `modules/packages/nvf.nix` now sets a home-manager half
+and installs nvf through `home.packages`.
+
 **Problem:** `modules/packages/nvf.nix` installs neovim into
 `environment.systemPackages`. The package placement rule in `CLAUDE.md` puts
 it in `home.packages`; `vim` in `core` already covers root and recovery.
