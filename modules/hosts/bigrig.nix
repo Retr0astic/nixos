@@ -7,7 +7,7 @@
 
   # Headless server: no graphics, gaming, browser, fonts, appearance,
   # spicetify, opends5, audio, terminals, xdg, or any compositor. Uses
-  # starship-server instead of chapel's starship (different style, no
+  # starship-bigrig instead of chapel's starship (different style, no
   # noctalia palette dependency).
   base = with m; [
     bigrig
@@ -17,7 +17,7 @@
     secrets
     server
     shell
-    starship-server
+    starship-bigrig
     nvf
   ];
 in {
