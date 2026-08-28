@@ -9,6 +9,11 @@
   networking.hostName = "bigrig";
   time.timeZone = "Asia/Dubai";
 
+  # TODO (do this before wiping the old system): copy its Samba config —
+  # it defines the share-to-user mapping (sree/vicky/media/paperless) and
+  # is not worth reconstructing from memory once gone.
+  #   cp -a /mnt/root/etc/samba /mnt/backup/
+
   # TODO (do this before nixos-install, not after): `secrets` requires
   # sops.age.sshKeyPaths to decrypt passwd/sree, and that secret is
   # `neededForUsers = true`. On a headless box there is no greeter to fall
@@ -73,5 +78,27 @@
         count = 65536;
       }
     ];
+  };
+
+  # media and paperless are not standalone accounts: their UIDs (525292,
+  # 525287) fall inside sree's subuid range (524288-589823, offsets 1004 and
+  # 999), so they are rootless container UIDs surfaced as host users purely
+  # so Samba and `ls` can resolve a name instead of a raw number. No subuid
+  # ranges of their own, no login: sree's linger + subuid range is what
+  # actually runs their containers.
+  users.groups.media.gid = 525292;
+  users.users.media = {
+    isNormalUser = true;
+    uid = 525292;
+    group = "media";
+    home = "/home/media";
+  };
+
+  users.groups.paperless.gid = 525287;
+  users.users.paperless = {
+    isNormalUser = true;
+    uid = 525287;
+    group = "paperless";
+    home = "/home/paperless";
   };
 }
