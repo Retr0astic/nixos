@@ -5,6 +5,12 @@
   };
 
   flake.modules.homeManager.appearance = {pkgs, ...}: {
+    home.packages = with pkgs; [
+      nwg-look
+      adw-gtk3
+      qt6Packages.qt6ct
+    ];
+
     qt = {
       enable = true;
       platformTheme.name = "qt6ct";

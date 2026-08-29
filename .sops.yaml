@@ -1,7 +1,9 @@
 keys:
   - &host_chapel age1eyzplhadmwvavu96e8r0unqjvevqxlvgvl6aklqzw4znuvtm046q5n6zmt
+  - &host_bigrig age1l03fj2xqrng6vanrlqhjd2r2ms80qgqch936h3f65pgwqz38rsyqmvwm8h
 creation_rules:
   - path_regex: secrets/secrets\.yaml$
     key_groups:
       - age:
           - *host_chapel
+          - *host_bigrig

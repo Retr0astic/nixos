@@ -1,0 +1,64 @@
+"$schema" = 'https://starship.rs/config-schema.json'
+
+# Deliberately plain: no noctalia palette dependency (bigrig has no
+# noctalia), and the hostname is shown up front since it's easy to forget
+# which SSH session you're in.
+add_newline = false
+command_timeout = 1000
+
+format = """
+[bigrig](bold red) [$directory](bold blue)$git_branch$git_status \
+$nix_shell$fill$cmd_duration$time
+$character"""
+
+[directory]
+truncation_length = 4
+truncate_to_repo = true
+style = "bold blue"
+
+[git_branch]
+symbol = " "
+style = "bold purple"
+format = "on [$symbol$branch]($style) "
+
+[git_status]
+style = "bold yellow"
+format = "([$all_status$ahead_behind]($style) )"
+
+[nix_shell]
+disabled = false
+symbol = "❄ "
+heuristic = false
+style = "bold cyan"
+format = "via [$symbol$state]($style) "
+
+[fill]
+symbol = " "
+
+[cmd_duration]
+min_time = 1000
+show_milliseconds = false
+style = "bold yellow"
+format = "took [$duration]($style) "
+
+[time]
+disabled = false
+time_format = "%H:%M:%S"
+style = "bold white"
+format = "[$time]($style)"
+
+[character]
+success_symbol = "[❯](bold green)"
+error_symbol = "[❯](bold red)"
+
+[username]
+disabled = true
+
+[hostname]
+disabled = true
+
+[battery]
+disabled = true
+
+[package]
+disabled = true

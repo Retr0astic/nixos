@@ -40,18 +40,15 @@ machine running NixOS unstable.
 
 ## Available configurations
 
-The canonical outputs are declared in `modules/hosts/chapel.nix`. Aliases point
-to those same configuration objects; no default, stable, testing, or
-experimental configuration variant is declared by the flake.
+The outputs are declared in `modules/hosts/chapel.nix` and
+`modules/hosts/bigrig.nix`. One name maps to one build. The flake declares no
+aliases, and no default, stable, testing, or experimental variant.
 
-| Output | Type | Composition |
-| --- | --- | --- |
-| noctalia-hyprland | Canonical | Chapel + Hyprland + Noctalia |
-| caelestia-hyprland | Canonical | Chapel + Hyprland + Caelestia |
-| chapel | Alias | noctalia-hyprland |
-| chapel-hyprland-noctalia | Alias | noctalia-hyprland |
-| noctalia | Alias | noctalia-hyprland |
-| caelestia | Alias | caelestia-hyprland |
+| Output | Composition |
+| --- | --- |
+| chapel | Chapel + Hyprland + Noctalia |
+| chapel-caelestia | Chapel + Hyprland + Caelestia |
+| bigrig | Headless server, no compositor |
 
 Other useful outputs include `packages.x86_64-linux.nvf`,
 `devShells.x86_64-linux.default`, and `modules.nixos` / `modules.homeManager`,
@@ -116,13 +113,13 @@ before adapting it to another machine.
 nix flake show
 
 # Build a system without linking it into the profile
-nix build .#nixosConfigurations.noctalia-hyprland.config.system.build.toplevel --no-link
+nix build .#nixosConfigurations.chapel.config.system.build.toplevel --no-link
 
 # Test activation (revertible on reboot)
-sudo nixos-rebuild test --flake .#noctalia-hyprland
+sudo nixos-rebuild test --flake .#chapel
 
 # Persist a selected configuration after testing
-sudo nixos-rebuild switch --flake .#noctalia-hyprland
+sudo nixos-rebuild switch --flake .#chapel
 
 # Validate the flake and repository contracts
 nix flake check
@@ -132,10 +129,8 @@ nix flake update
 nix flake lock --update-input nixpkgs
 ~~~
 
-Use `.#caelestia-hyprland` for the Caelestia composition. The aliases
-`chapel`, `chapel-hyprland-noctalia`, `noctalia`, and `caelestia` are also valid
-selectors. A persistent switch, activation, reboot, or hardware change is not
-performed by this README.
+Use `.#chapel-caelestia` for the Caelestia composition. A persistent switch,
+activation, reboot, or hardware change is not performed by this README.
 
 ## Repository layout
 
@@ -150,7 +145,7 @@ performed by this README.
 │   ├── features/             # reusable system/home capabilities
 │   ├── users/                # user modules
 │   └── noctalia/             # repository-owned shell assets/plugins
-└── hosts/chapel/             # Chapel hardware, boot, and storage helpers
+└── hosts/<name>/             # generated hardware-configuration.nix only
 ~~~
 
 ## Extending the configuration

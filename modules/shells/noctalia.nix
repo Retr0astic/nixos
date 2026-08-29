@@ -2,7 +2,9 @@
   config,
   inputs,
   ...
-}: {
+}: let
+  inherit (config.flake.lib.hypr) mkLuaInline luaBind key exec;
+in {
   # Pull the home-manager side in whenever this module is selected.
   flake.modules.nixos.noctalia = {
     home-manager.sharedModules = [config.flake.modules.homeManager.noctalia];
@@ -12,19 +14,7 @@
     config,
     lib,
     ...
-  }: let
-    inherit (lib.generators) mkLuaInline;
-
-    luaBind = key: dispatcher: {
-      _args = [
-        (mkLuaInline key)
-        (mkLuaInline dispatcher)
-      ];
-    };
-
-    key = suffix: ''mainMod .. " + ${suffix}"'';
-    exec = command: ''hl.dsp.exec_cmd(${command})'';
-  in {
+  }: {
     # home-manager now ships its own programs.noctalia module upstream,
     # which collides with noctalia's own module below. Keep the
     # noctalia-provided one — this config relies on its options (e.g.

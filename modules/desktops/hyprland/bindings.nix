@@ -1,25 +1,7 @@
-{config, ...}: {
-  flake.modules.homeManager.hyprland = {lib, ...}: let
-    inherit (lib.generators) mkLuaInline;
-
-    luaBind = key: dispatcher: {
-      _args = [
-        (mkLuaInline key)
-        (mkLuaInline dispatcher)
-      ];
-    };
-
-    luaBindWith = key: dispatcher: options: {
-      _args = [
-        (mkLuaInline key)
-        (mkLuaInline dispatcher)
-        options
-      ];
-    };
-
-    key = suffix: ''mainMod .. " + ${suffix}"'';
-    exec = command: ''hl.dsp.exec_cmd(${command})'';
-  in {
+{config, ...}: let
+  inherit (config.flake.lib.hypr) luaBind luaBindWith key exec;
+in {
+  flake.modules.homeManager.hyprland = {lib, ...}: {
     wayland.windowManager.hyprland.settings.bind =
       [
         (luaBind (key "Return") (exec "terminal"))
