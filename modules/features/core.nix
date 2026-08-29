@@ -19,6 +19,12 @@
 
     services.fstrim.enable = true;
 
+    # /tmp is a directory on the root disk, not a tmpfs. Without this it is
+    # only pruned by systemd-tmpfiles after ten untouched days, which let it
+    # reach 2.5G on chapel. Not useTmpfs: that would put /tmp in RAM, and
+    # bigrig has none to spare.
+    boot.tmp.cleanOnBoot = true;
+
     # Both hosts run btrfs on root. A scrub reads every block and verifies
     # it against its checksum, which is the only way to find silent
     # corruption before you need the data. bigrig had never run one.
