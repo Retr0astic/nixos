@@ -48,6 +48,14 @@
       options = ["nofail" "compress=zstd" "noatime"];
     };
 
+    # Frigate recording clips live on /dev/sda1, the ext4 partition beside the
+    # btrfs backups partition on the same disk.
+    fileSystems."/mnt/Frigate" = {
+      device = "/dev/disk/by-uuid/3b3db63d-fb3c-4277-9611-7f79bcec57b6";
+      fsType = "ext4";
+      options = ["nofail"];
+    };
+
     # LVM VG nextcloud_immich on the 931.5G disk, LVs nextcloud_lv (200G) and
     # immich_lv (731.5G), both btrfs. LVM auto-activates the VG via its own
     # systemd/udev units; only the mountpoints need declaring here.
