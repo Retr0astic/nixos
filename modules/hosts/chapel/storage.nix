@@ -1,5 +1,12 @@
 {...}: {
   flake.modules.nixos.chapel = {lib, ...}: {
+    # One entry per btrfs device. `/` covers /home and /nix, which are
+    # subvolumes of the same vg-root. /mnt/shared is exfat.
+    services.btrfs.autoScrub.fileSystems = [
+      "/"
+      "/mnt/bigdrive"
+    ];
+
     fileSystems."/mnt/bigdrive" = {
       device = lib.mkForce "/dev/disk/by-uuid/4f47f50d-1a45-457e-8d07-68183f1afd1e";
       fsType = lib.mkForce "btrfs";

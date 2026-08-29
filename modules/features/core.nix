@@ -19,6 +19,39 @@
 
     services.fstrim.enable = true;
 
+    # Both hosts run btrfs on root. A scrub reads every block and verifies
+    # it against its checksum, which is the only way to find silent
+    # corruption before you need the data. bigrig had never run one.
+    # The per-host `fileSystems` list sits with the mounts it covers, in
+    # each host's storage aspect: one entry per device, not per subvolume,
+    # or the same disk gets scrubbed several times.
+    services.btrfs.autoScrub = {
+      enable = true;
+      interval = "monthly";
+    };
+
+    # Nothing collected old generations, so both hosts kept every build
+    # ever made. `--delete-older-than` counts from the generation date, so
+    # the current one is never a candidate.
+    nix.gc = {
+      automatic = true;
+      dates = "weekly";
+      options = "--delete-older-than 30d";
+    };
+
+    # Hard-links identical files across store paths. Separate from gc:
+    # collection removes whole paths, this deduplicates what remains.
+    nix.optimise = {
+      automatic = true;
+      dates = ["weekly"];
+    };
+
+    # Journals were unbounded and had reached 1.5G on chapel.
+    services.journald.extraConfig = ''
+      SystemMaxUse=500M
+      SystemMaxFileSize=50M
+    '';
+
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;
     networking.networkmanager.enable = true;

@@ -8,6 +8,17 @@
   flake.modules.nixos.bigrig = {...}: {
     boot.swraid.enable = true;
 
+    # One entry per btrfs device. `/` covers /home, /nix, /var and
+    # /.snapshots, which are subvolumes of the same nvme0n1p2. /mnt/storage
+    # and /mnt/Frigate are ext4 and cannot be scrubbed.
+    services.btrfs.autoScrub.fileSystems = [
+      "/"
+      "/mnt/Vault"
+      "/mnt/Nextcloud"
+      "/mnt/Immich"
+      "/mnt/backups"
+    ];
+
     # The array homehost is `vega`, not bigrig — mdadm treats a foreign
     # homehost as a reason to skip auto-assembly, not just a naming quirk.
     # `HOMEHOST <ignore>` tells mdadm to assemble by UUID regardless of which
