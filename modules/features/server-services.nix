@@ -24,10 +24,15 @@
     # container load. Memory pressure also preceded a btrfs transaction
     # abort that forced / read-only. zram gives compressed swap in RAM and
     # writes nothing to the root SSD.
+    #
+    # memoryPercent is the uncompressed capacity, not the RAM cost. zstd
+    # reaches about 3:1 on container heaps, so a 15 GiB device costs
+    # roughly 5 GiB of real memory when full. The module default of 50 is
+    # an lzo-era figure and too small for this host.
     zramSwap = {
       enable = true;
       algorithm = "zstd";
-      memoryPercent = 50;
+      memoryPercent = 100;
     };
 
     # Start sree's user systemd units (podman quadlets) without a login
