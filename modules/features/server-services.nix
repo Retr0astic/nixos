@@ -19,6 +19,16 @@
     boot.kernel.sysctl."net.ipv4.ip_unprivileged_port_start" = 80;
     networking.firewall.allowedTCPPorts = [80 443 81];
 
+    # 15 GiB of RAM with no swap let the OOM killer run during normal
+    # container load. Memory pressure also preceded a btrfs transaction
+    # abort that forced / read-only. zram gives compressed swap in RAM and
+    # writes nothing to the root SSD.
+    zramSwap = {
+      enable = true;
+      algorithm = "zstd";
+      memoryPercent = 50;
+    };
+
     # Start sree's user systemd units (podman quadlets) without a login
     # session.
     users.users.sree.linger = true;
