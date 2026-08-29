@@ -1,21 +1,11 @@
-{...}: {
+{config, ...}: let
+  inherit (config.flake.lib.hypr) mkLuaInline luaBind key exec;
+in {
   flake.modules.homeManager.sree = {
     config,
     lib,
     ...
-  }: let
-    inherit (lib.generators) mkLuaInline;
-
-    luaBind = key: dispatcher: {
-      _args = [
-        (mkLuaInline key)
-        (mkLuaInline dispatcher)
-      ];
-    };
-
-    key = suffix: ''mainMod .. " + ${suffix}"'';
-    exec = command: ''hl.dsp.exec_cmd(${command})'';
-  in {
+  }: {
     wayland.windowManager.hyprland.settings.on = lib.mkIf config.wayland.windowManager.hyprland.enable (lib.mkAfter [
       {
         _args = [

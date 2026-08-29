@@ -4,7 +4,18 @@
     home-manager.sharedModules = [config.flake.modules.homeManager.shell];
   };
 
-  flake.modules.homeManager.shell = _: {
+  flake.modules.homeManager.shell = {pkgs, ...}: {
+    # Tools with no home-manager module of their own. Anything that HAS a
+    # module goes in `programs` below instead -- do not list it twice.
+    # Shared, so bigrig gets these over SSH as well.
+    home.packages = with pkgs; [
+      fd
+      jq
+      btop
+      fastfetch
+      gh
+    ];
+
     programs = {
       fish = {
         enable = true;

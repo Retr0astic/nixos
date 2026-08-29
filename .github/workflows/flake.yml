@@ -40,19 +40,45 @@ jobs:
               - 'flake.nix'
               - 'flake.lock'
               - '.github/workflows/flake.yml'
+            # Mirrors bigrig's base list in modules/hosts/bigrig.nix. Add an
+            # aspect there and add its file here, or bigrig stops building
+            # when that aspect changes.
+            bigrig:
+              - 'hosts/bigrig/**'
+              - 'modules/hosts/bigrig.nix'
+              - 'modules/hosts/bigrig/**'
+              - 'modules/home-manager.nix'
+              - 'modules/users/sree/**'
+              - 'modules/packages/**'
+              - 'modules/features/core.nix'
+              - 'modules/features/secrets.nix'
+              - 'secrets/**'
+              - '.sops.yaml'
+              - 'modules/features/server-services.nix'
+              - 'modules/features/server-packages.nix'
+              - 'modules/features/shell.nix'
+              - 'modules/features/hardware-tools.nix'
+              - 'modules/features/ai-tools.nix'
+              - 'flake.nix'
+              - 'flake.lock'
+              - '.github/workflows/flake.yml'
 
-      # Chapel always builds. Caelestia builds only when its own files, the
-      # desktop it runs on, or the flake inputs change.
+      # Chapel always builds. Caelestia and bigrig build only when their own
+      # files, what they run on, or the flake inputs change. An empty filter
+      # output means workflow_dispatch, which builds everything.
       - name: Select build variants
         id: variants
         shell: bash
         run: |
           set -euo pipefail
-          if [ "${{ steps.filter.outputs.caelestia }}" = "false" ]; then
-            echo 'list=["chapel"]' >>"$GITHUB_OUTPUT"
-          else
-            echo 'list=["chapel","caelestia-hyprland"]' >>"$GITHUB_OUTPUT"
+          list='["chapel"]'
+          if [ "${{ steps.filter.outputs.caelestia }}" != "false" ]; then
+            list=$(printf '%s' "$list" | jq -c '. + ["chapel-caelestia"]')
           fi
+          if [ "${{ steps.filter.outputs.bigrig }}" != "false" ]; then
+            list=$(printf '%s' "$list" | jq -c '. + ["bigrig"]')
+          fi
+          echo "list=$list" >>"$GITHUB_OUTPUT"
 
   check:
     runs-on: ubuntu-24.04
@@ -84,18 +110,29 @@ jobs:
         run: nix flake check --print-build-logs --accept-flake-config
 
       # A rename or a lost alias breaks every rebuild command that names it.
+      # Only the names a person or a document actually passes to
+      # `nixos-rebuild` are required:
+      #   bigrig, chapel    a bare `--flake ~/nixos` resolves by hostname
+      #   chapel-caelestia  README.md and docs/GUIDE.md
+      # An extra name passes. Only a missing name fails, so adding a host
+      # does not break CI on an unrelated pull request.
       - name: Verify configuration names
         shell: bash
         run: |
           set -euo pipefail
-          expected='["bigrig","caelestia","caelestia-hyprland","chapel","chapel-hyprland-noctalia","noctalia","noctalia-hyprland"]'
+          required='["bigrig","chapel","chapel-caelestia"]'
 
           actual=$(nix eval --json \
             --accept-flake-config \
             --apply 'builtins.attrNames' \
             .#nixosConfigurations)
 
-          test "$actual" = "$expected"
+          missing=$(jq -c --argjson actual "$actual" '. - $actual' <<<"$required")
+          if [ "$missing" != "[]" ]; then
+            echo "::error::missing nixosConfigurations: $missing"
+            echo "present: $actual"
+            exit 1
+          fi
 
   build:
     needs:

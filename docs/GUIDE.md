@@ -46,7 +46,7 @@ sudo nixos-rebuild switch --flake ~/nixos
 sudo nixos-rebuild test --flake ~/nixos#chapel
 
 # Build the other variant
-sudo nixos-rebuild switch --flake ~/nixos#caelestia
+sudo nixos-rebuild switch --flake ~/nixos#chapel-caelestia
 
 # Build without touching the running system
 nix build ~/nixos#nixosConfigurations.chapel.config.system.build.toplevel --no-link
@@ -64,8 +64,9 @@ Two aliases exist in your fish shell already: `rebuild` and `update`.
 
 | Name | Builds |
 | --- | --- |
-| `chapel`, `noctalia`, `noctalia-hyprland`, `chapel-hyprland-noctalia` | Hyprland + Noctalia |
-| `caelestia`, `caelestia-hyprland` | Hyprland + Caelestia |
+| `chapel` | Hyprland + Noctalia |
+| `chapel-caelestia` | Hyprland + Caelestia |
+| `bigrig` | Headless server |
 
 A bare `nixos-rebuild --flake ~/nixos` picks `chapel`, because that is the
 hostname.
@@ -217,10 +218,13 @@ Run `nix flake lock`. Use it in any module as `inputs.niri`.
 ### Add a second machine
 
 1. Create `hosts/<name>/hardware-configuration.nix` with
-   `nixos-generate-config --show-hardware-config`.
-2. Create `hosts/<name>/host.module.nix` for hostname, boot, and storage.
-3. Copy `modules/hosts/chapel.nix` to `modules/hosts/<name>.nix`. Point the
-   host aspect at the new files, and list the aspects that machine needs.
+   `nixos-generate-config --show-hardware-config`. That directory holds
+   generated files only.
+2. Create `modules/hosts/<name>/host.nix` for hostname and boot, and one file
+   per further concern: `storage.nix`, `disko.nix`. Each sets
+   `flake.modules.nixos.<name>`, so `import-tree` picks it up.
+3. Copy `modules/hosts/chapel.nix` to `modules/hosts/<name>.nix`. Import the
+   generated hardware file there, and list the aspects that machine needs.
 
 ### Turn something off
 
@@ -237,13 +241,20 @@ Keep the file in all three cases. Deleting is a separate decision.
 **Trap 1: bare names inside the host lists.**
 
 ```nix
-withNoctalia = mk [m.hyprland m.noctalia];   # correct
-withNoctalia = mk (with m; [hyprland noctalia]);  # risky
+base = [m.shell m.core];         # correct
+base = with m; [shell core];     # risky
 ```
 
-A bare `noctalia` can pick up an attribute of `flake.nixosConfigurations`
-instead of the module. The error reads `expected a module, but found a value
-of type "configuration"`. Always write `m.<name>` there.
+A `let` binding beats `with`, silently and with no error:
+
+```nix
+let m = {shell = "the-aspect";}; shell = "a-let-binding";
+in (with m; [shell])   =>  ["a-let-binding"]
+in [m.shell]           =>  ["the-aspect"]
+```
+
+Always write `m.<name>`. A typo then fails with `attribute 'xhell' missing`
+instead of resolving to the wrong thing.
 
 **Trap 2: the `imports` path form.**
 
@@ -258,7 +269,7 @@ The second form is read as an option path. It produces the same confusing
 **Trap 3: the link line, once per aspect.**
 
 `home-manager.sharedModules = [config.flake.modules.homeManager.<name>]` must
-appear exactly once for each aspect. The `chapel` aspect is defined in four
+appear exactly once for each aspect. The `chapel` aspect is defined in five
 files, and only `modules/hosts/chapel.nix` carries its link line. A second copy
 imports the module twice.
 
