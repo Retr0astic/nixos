@@ -47,16 +47,21 @@
       options = ["nofail"];
     };
 
+    # systemd defaults to a 90s mount timeout. Opening a 3.6T btrfs at 97%
+    # full, striped across two spinning disks, does not reliably finish in
+    # that window: the kernel logged `open_ctree failed: -4` (EINTR) after
+    # systemd sent SIGTERM mid-mount. `nofail` already stops a slow mount
+    # from blocking boot, so the timeout only needs to be generous.
     fileSystems."/mnt/Vault" = {
       device = "/dev/disk/by-uuid/332af57b-9183-49a1-9ab8-934bf9c3fef6";
       fsType = "btrfs";
-      options = ["nofail" "compress=zstd" "noatime"];
+      options = ["nofail" "compress=zstd" "noatime" "x-systemd.mount-timeout=15min"];
     };
 
     fileSystems."/mnt/backups" = {
       device = "/dev/disk/by-uuid/cefe7aff-8f29-4d74-897d-edbb316f2506";
       fsType = "btrfs";
-      options = ["nofail" "compress=zstd" "noatime"];
+      options = ["nofail" "compress=zstd" "noatime" "x-systemd.mount-timeout=15min"];
     };
 
     # Frigate recording clips live on /dev/sda1, the ext4 partition beside the
@@ -73,13 +78,13 @@
     fileSystems."/mnt/Nextcloud" = {
       device = "/dev/disk/by-uuid/b529ce87-7114-4416-8e24-085f60592548";
       fsType = "btrfs";
-      options = ["nofail" "compress=zstd" "noatime"];
+      options = ["nofail" "compress=zstd" "noatime" "x-systemd.mount-timeout=15min"];
     };
 
     fileSystems."/mnt/Immich" = {
       device = "/dev/disk/by-uuid/3e52436a-cfa1-4d21-9fd6-be5d34dac281";
       fsType = "btrfs";
-      options = ["nofail" "compress=zstd" "noatime"];
+      options = ["nofail" "compress=zstd" "noatime" "x-systemd.mount-timeout=15min"];
     };
   };
 }
