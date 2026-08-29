@@ -15,9 +15,10 @@
     };
 
     # Rootless Nginx Proxy Manager (or similar) needs to bind 80/443 without
-    # CAP_NET_BIND_SERVICE. 81 is NPM's admin UI.
+    # CAP_NET_BIND_SERVICE. 81 is NPM's admin UI. 8083 is the Erpnext pod's
+    # frontend, reached directly on the LAN rather than through NPM.
     boot.kernel.sysctl."net.ipv4.ip_unprivileged_port_start" = 80;
-    networking.firewall.allowedTCPPorts = [80 443 81];
+    networking.firewall.allowedTCPPorts = [80 443 81 8083];
 
     # 15 GiB of RAM with no swap let the OOM killer run during normal
     # container load. Memory pressure also preceded a btrfs transaction
