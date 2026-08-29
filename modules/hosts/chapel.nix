@@ -14,6 +14,7 @@
     m.sree
     m.core
     m.core-desktop
+    m.memory
     m.secrets
     m.services
     m.graphics

@@ -14,6 +14,7 @@
     m.home-manager
     m.sree
     m.core
+    m.memory
     m.secrets
     m.server-services
     m.server-packages

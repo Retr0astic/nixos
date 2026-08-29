@@ -17,22 +17,22 @@
     # Rootless Nginx Proxy Manager (or similar) needs to bind 80/443 without
     # CAP_NET_BIND_SERVICE. 81 is NPM's admin UI. 8083 is the Erpnext pod's
     # frontend, reached directly on the LAN rather than through NPM.
-    boot.kernel.sysctl."net.ipv4.ip_unprivileged_port_start" = 80;
     networking.firewall.allowedTCPPorts = [80 443 81 8083];
 
-    # 15 GiB of RAM with no swap let the OOM killer run during normal
-    # container load. Memory pressure also preceded a btrfs transaction
-    # abort that forced / read-only. zram gives compressed swap in RAM and
-    # writes nothing to the root SSD.
+    # zram and the shared reclaim tunables live in the `memory` aspect,
+    # which chapel takes too. Only the writeback limits differ here.
     #
-    # memoryPercent is the uncompressed capacity, not the RAM cost. zstd
-    # reaches about 3:1 on container heaps, so a 15 GiB device costs
-    # roughly 5 GiB of real memory when full. The module default of 50 is
-    # an lzo-era figure and too small for this host.
-    zramSwap = {
-      enable = true;
-      algorithm = "zstd";
-      memoryPercent = 100;
+    # At the 20/10 defaults this host can hold 3 GiB of dirty pages before
+    # writeback becomes synchronous, which arrives as a stall. Halving both
+    # keeps the flush steady on a box that already runs close to its
+    # memory ceiling.
+    boot.kernel.sysctl = {
+      "vm.dirty_ratio" = 10;
+      "vm.dirty_background_ratio" = 5;
+
+      # Rootless Nginx Proxy Manager needs to bind 80/443 without
+      # CAP_NET_BIND_SERVICE.
+      "net.ipv4.ip_unprivileged_port_start" = 80;
     };
 
     # Start sree's user systemd units (podman quadlets) without a login
