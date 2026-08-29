@@ -23,8 +23,6 @@
     # session.
     users.users.sree.linger = true;
 
-    services.fstrim.enable = true;
-
     # Root filling to 100% took down the previous install. Warn early.
     systemd.services.disk-space-alert = {
       description = "Warn when / disk usage exceeds 85%";
