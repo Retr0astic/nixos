@@ -36,7 +36,7 @@
       options = ["nofail"];
     };
 
-    fileSystems."/mnt/vault" = {
+    fileSystems."/mnt/Vault" = {
       device = "/dev/disk/by-uuid/332af57b-9183-49a1-9ab8-934bf9c3fef6";
       fsType = "btrfs";
       options = ["nofail" "compress=zstd" "noatime"];
@@ -51,13 +51,13 @@
     # LVM VG nextcloud_immich on the 931.5G disk, LVs nextcloud_lv (200G) and
     # immich_lv (731.5G), both btrfs. LVM auto-activates the VG via its own
     # systemd/udev units; only the mountpoints need declaring here.
-    fileSystems."/mnt/nextcloud" = {
+    fileSystems."/mnt/Nextcloud" = {
       device = "/dev/disk/by-uuid/b529ce87-7114-4416-8e24-085f60592548";
       fsType = "btrfs";
       options = ["nofail" "compress=zstd" "noatime"];
     };
 
-    fileSystems."/mnt/immich" = {
+    fileSystems."/mnt/Immich" = {
       device = "/dev/disk/by-uuid/3e52436a-cfa1-4d21-9fd6-be5d34dac281";
       fsType = "btrfs";
       options = ["nofail" "compress=zstd" "noatime"];
