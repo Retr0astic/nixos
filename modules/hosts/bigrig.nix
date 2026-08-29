@@ -26,7 +26,7 @@
 in {
   flake.modules.nixos.bigrig = {
     imports = [
-      ../../hosts/bigrig/host.module.nix
+      ../../hosts/bigrig/hardware-configuration.nix
       inputs.disko.nixosModules.disko
     ];
   };

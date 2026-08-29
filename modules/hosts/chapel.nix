@@ -50,7 +50,7 @@
 in {
   flake.modules.nixos.chapel = {
     imports = [
-      ../../hosts/chapel/host.module.nix
+      ../../hosts/chapel/hardware-configuration.nix
       inputs.noctalia-greeter.nixosModules.default
     ];
 

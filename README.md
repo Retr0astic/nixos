@@ -145,7 +145,7 @@ activation, reboot, or hardware change is not performed by this README.
 │   ├── features/             # reusable system/home capabilities
 │   ├── users/                # user modules
 │   └── noctalia/             # repository-owned shell assets/plugins
-└── hosts/chapel/             # Chapel hardware, boot, and storage helpers
+└── hosts/<name>/             # generated hardware-configuration.nix only
 ~~~
 
 ## Extending the configuration

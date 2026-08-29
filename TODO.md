@@ -113,6 +113,10 @@ write `m.` on every entry.
 
 ## 8. Collapse the two host trees
 
+**Status:** done. `hosts/` holds `hardware-configuration.nix` only. Six files
+moved to `modules/hosts/<host>/` and each now sets
+`flake.modules.nixos.<host>` directly.
+
 **Problem:** chapel config lives in both `hosts/chapel/` and
 `modules/hosts/chapel/`. Only `hardware-configuration.nix` genuinely has to
 sit outside `modules/`, because `import-tree` would otherwise evaluate it as
@@ -138,8 +142,10 @@ touches nearly every path in the repo and would bury them in move noise.
 
 ## 11. Fix stale references
 
-- `hosts/bigrig/containers.module.nix` points at `modules/features/server.nix`.
-  The file moved to `modules/hosts/bigrig/server.nix` in `c59f86c`.
+- ~~`hosts/bigrig/containers.module.nix` points at
+  `modules/features/server.nix`.~~ Done with item 8: the comment now names
+  `modules/features/server-services.nix`, and the file itself is
+  `modules/hosts/bigrig/containers.nix`.
 - `README.md` says the repo targets one machine (bigrig exists), says CI
   builds both graphical variants (it builds chapel plus caelestia
   conditionally), and lists two outputs while the flake declares seven.
