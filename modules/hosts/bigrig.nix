@@ -32,7 +32,6 @@ in {
   };
 
   flake.nixosConfigurations.bigrig = inputs.nixpkgs.lib.nixosSystem {
-    system = "x86_64-linux";
     modules = base;
   };
 }

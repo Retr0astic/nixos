@@ -129,6 +129,9 @@ a flake-parts module.
 
 ## 9. Set `nixpkgs.hostPlatform` in `core`
 
+**Status:** done. `core` sets it. Neither `nixosSystem` call passes
+`system` any more.
+
 **Problem:** `system = "x86_64-linux"` is passed to `nixosSystem` in both
 host files.
 

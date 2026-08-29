@@ -40,7 +40,6 @@
   # Add a desktop and a shell to build one variant.
   mk = extra:
     inputs.nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
       modules = base ++ extra;
     };
 
