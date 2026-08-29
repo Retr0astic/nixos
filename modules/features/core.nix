@@ -61,6 +61,13 @@
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;
     networking.networkmanager.enable = true;
+
+    # Nothing pulls network-online.target in by default, so it never activates.
+    # podman's per-user wait unit then blocks each container start for its full
+    # 90s timeout, which also stalls the user daemon-reload during
+    # `nixos-rebuild switch`. Wanting the target activates
+    # NetworkManager-wait-online.service, which settles in a second or two.
+    systemd.targets.network-online.wantedBy = ["multi-user.target"];
     nix.settings.experimental-features = ["nix-command" "flakes"];
     nix.settings.trusted-users = ["root"];
     nixpkgs.config.allowUnfree = true;
