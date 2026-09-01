@@ -86,5 +86,14 @@
       fsType = "btrfs";
       options = ["nofail" "compress=zstd" "noatime" "x-systemd.mount-timeout=15min"];
     };
+
+    # Offline restic archive target: an external NTFS USB drive, only ever
+    # plugged in by hand. noauto + automount so its absence never blocks
+    # boot or anything else that stats /mnt/archive.
+    fileSystems."/mnt/archive" = {
+      device = "/dev/disk/by-uuid/5CE484B2E4849046";
+      fsType = "ntfs3";
+      options = ["nofail" "noauto" "x-systemd.automount"];
+    };
   };
 }
