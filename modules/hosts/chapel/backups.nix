@@ -33,7 +33,7 @@
       passwordFile = resticPasswordFile;
       initialize = true;
       timerConfig = {
-        OnCalendar = "daily";
+        OnCalendar = "14:00";
         Persistent = true;
       };
       pruneOpts = [
