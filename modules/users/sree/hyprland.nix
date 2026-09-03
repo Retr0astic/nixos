@@ -14,6 +14,7 @@ in {
             function()
               hl.exec_cmd("spotify")
               hl.exec_cmd("vesktop")
+              hl.exec_cmd("easyeffects --gapplication-service")
             end
           '')
         ];
