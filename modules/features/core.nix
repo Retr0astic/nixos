@@ -53,10 +53,10 @@
     };
 
     # Journals were unbounded and had reached 1.5G on chapel.
-    services.journald.extraConfig = ''
-      SystemMaxUse=500M
-      SystemMaxFileSize=50M
-    '';
+    services.journald.settings.Journal = {
+      SystemMaxUse = "500M";
+      SystemMaxFileSize = "50M";
+    };
 
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;
