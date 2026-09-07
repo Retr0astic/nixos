@@ -10,11 +10,13 @@
         }
         {
           match.class = "^(steam_app_.*)$";
+          immediate = true;
           content = "game";
           workspace = "name:games";
         }
         {
           match.xdg_tag = "proton-game";
+          immediate = true;
           content = "game";
           workspace = "name:games";
         }
