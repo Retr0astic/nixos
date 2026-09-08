@@ -17,7 +17,7 @@ order = [ "widgets" ]
     center = [ "session", "group:g1", "notifications" ]
     color = "tertiary"
     contact_shadow = true
-    end = [ "group:g2", "volume", "group:g4" ]
+    end = [ "group:g2", "volume" ]
     icon_color = "secondary"
     margin_edge = 10
     margin_ends = 1500
@@ -26,12 +26,12 @@ order = [ "widgets" ]
     reserve_space = false
     scale = 1.0500000081956387
     smart_auto_hide = true
-    start = [ "group:g3", "temp" ]
+    start = [ "group:g3", "temp", "cpu" ]
     thickness = 39
     widget_spacing = 4
 
         [[bar.widgets.capsule_group]]
-        accordion = true
+        accordion = false
         accordion_direction = "end"
         border = "primary"
         enabled = true
@@ -64,18 +64,6 @@ order = [ "widgets" ]
         foreground = "tertiary"
         id = "g3"
         members = [ "workspaces", "active_window" ]
-        opacity = 1.0
-        padding = 6.0
-
-        [[bar.widgets.capsule_group]]
-        accordion = true
-        accordion_direction = "start"
-        border = "primary"
-        enabled = true
-        fill = "on_primary"
-        foreground = "tertiary"
-        id = "g4"
-        members = [ "clock", "date" ]
         opacity = 1.0
         padding = 6.0
 
@@ -237,10 +225,10 @@ widget_order = [
         show_when_idle = true
 
     [desktop_widgets.widget.desktop-widget-0000000000000009]
-    box_height = 192.0
-    box_width = 384.0
-    cx = 474.0118408203125
-    cy = 818.091552734375
+    box_height = 197.31735229492188
+    box_width = 399.42340087890625
+    cx = 492.2364501953125
+    cy = 810.419677734375
     output = "DP-2"
     placement_height = 1440.0
     placement_width = 5120.0
@@ -362,6 +350,10 @@ widget_order = [
     rotation = 0.0023235976696014404
     type = "calendar"
 
+        [desktop_widgets.widget.desktop-widget-0000000000000014.settings]
+        show_events = true
+        show_week_numbers = false
+
     [desktop_widgets.widget.desktop-widget-0000000000000015]
     box_height = 141.89453125
     box_width = 257.9609375
@@ -412,8 +404,12 @@ widget_order = [
         stat2 = "gpu_vram_used"
 
 [dock]
-background_opacity = 0.74999998323619366
+background_opacity = 0.54999998770654202
 border_width = 1.5
+concave_edge_corners = false
+enabled = true
+inactive_opacity = 0.79999998211860657
+inactive_scale = 0.7500000111758709
 radius = 40
 reserve_space = false
 show_dots = true
@@ -792,12 +788,12 @@ widget_order = [
 background_opacity = 0.54999998770654202
 border = false
 offset_y = 10
-position = "bottom_center"
+position = "top_center"
 
 [osd]
 background_opacity = 0.44999998994171619
 border = false
-offset_y = 45
+offset_y = 50
 
 [plugin_settings."alexander/game-launcher"]
 browser_placement = "attached"
@@ -816,19 +812,13 @@ ha_url = "https://ha.retr0astic.com"
 panel_placement = "attached"
 
 [plugins]
-enabled = [
-    "pozzoo/hassio",
-    "yuuto/calculator",
-    "noctalia/screen_recorder",
-    "alexander/game-launcher",
-    "weinguyen/procmon",
-    "jamesfeeder/special-workspaces"
-]
+auto_update = "official"
+enabled = [ "pozzoo/hassio", "yuuto/calculator", "noctalia/screen_recorder", "weinguyen/procmon", "noctalia/wallhaven" ]
 
 [shell]
 app_icon_color = "secondary"
 avatar_path = "/home/sree/.face"
-font_family = "Noto Sans"
+font_family = "Comfortaa Medium"
 launch_apps_as_systemd_services = true
 password_style = "random"
 polkit_agent = true
@@ -868,16 +858,21 @@ settings_window_translucent = true
     [shell.session]
     grid = true
 
+    [shell.window_switcher]
+    mru = true
+
 [theme]
 builtin = "Dracula"
 community_palette = "Ayu Red"
 mode = "dark"
+pure_black_dark = true
 source = "wallpaper"
 wallpaper_scheme = "vibrant"
 
     [theme.templates]
     builtin_ids = [ "btop", "gtk3", "gtk4", "hyprland", "kcolorscheme", "kitty", "qt", "starship" ]
     community_ids = [
+        "claude-code",
         "opencode",
         "feishin",
         "spicetify",
@@ -891,9 +886,11 @@ wallpaper_scheme = "vibrant"
         "zed",
         "heroiclauncher",
         "steam",
+        "fastfetch",
         "zathura",
         "hyprtoolkit",
         "bat",
+        "fzf",
         "yazi"
     ]
 
@@ -950,8 +947,12 @@ width = 195
 color = "tertiary"
 type = "yuuto/calculator:bar"
 
+[widget.cpu]
+stat = "gpu_temp"
+
 [widget.media]
 hide_when_no_media = true
+show_progress = true
 title_scroll = "on_hover"
 
 [widget.recorder]
@@ -977,6 +978,9 @@ capsule = true
 capsule_border = "primary"
 capsule_fill = "on_secondary"
 capsule_foreground = "secondary"
+
+[widget.weather]
+show_condition = false
 
 [widget.workspaces]
 capsule = false
