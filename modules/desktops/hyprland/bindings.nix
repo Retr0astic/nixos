@@ -2,6 +2,45 @@
   inherit (config.flake.lib.hypr) luaBind luaBindWith key exec;
 in {
   flake.modules.homeManager.hyprland = {lib, ...}: {
+    wayland.windowManager.hyprland.extraConfig = ''
+      hl.define_submap("screenshot", function()
+        hl.bind("Escape", hl.dsp.submap("reset"))
+        hl.bind("w", function()
+          hl.dispatch(hl.dsp.exec_cmd("hyprshot -m window --clipboard-only"))
+          hl.dispatch(hl.dsp.submap("reset"))
+        end)
+        hl.bind("o", function()
+          hl.dispatch(hl.dsp.exec_cmd("hyprshot -m output --clipboard-only"))
+          hl.dispatch(hl.dsp.submap("reset"))
+        end)
+        hl.bind("r", function()
+          hl.dispatch(hl.dsp.exec_cmd("hyprshot -m region -z --clipboard-only"))
+          hl.dispatch(hl.dsp.submap("reset"))
+        end)
+        hl.bind("SHIFT + w", function()
+          hl.dispatch(hl.dsp.exec_cmd("hyprshot -m window"))
+          hl.dispatch(hl.dsp.submap("reset"))
+        end)
+        hl.bind("SHIFT + o", function()
+          hl.dispatch(hl.dsp.exec_cmd("hyprshot -m output"))
+          hl.dispatch(hl.dsp.submap("reset"))
+        end)
+        hl.bind("SHIFT + r", function()
+          hl.dispatch(hl.dsp.exec_cmd("hyprshot -m region -z"))
+          hl.dispatch(hl.dsp.submap("reset"))
+        end)
+      end)
+
+      hl.define_submap("group", function()
+        hl.bind("Escape", hl.dsp.submap("reset"))
+        hl.bind("t", hl.dsp.group.toggle())
+        hl.bind("n", hl.dsp.group.next())
+        hl.bind("p", hl.dsp.group.prev())
+        hl.bind("l", hl.dsp.group.lock())
+        hl.bind("m", hl.dsp.group.move_window())
+      end)
+    '';
+
     wayland.windowManager.hyprland.settings.bind =
       [
         (luaBind (key "Return") (exec "terminal"))
@@ -24,12 +63,9 @@ in {
         (luaBind (key "mouse_down") ''hl.dsp.focus({ workspace = "e+1" })'')
         (luaBind (key "mouse_up") ''hl.dsp.focus({ workspace = "e-1" })'')
 
-        (luaBind (key "print") (exec ''"hyprshot -m window --clipboard-only"''))
-        (luaBind ''"print"'' (exec ''"hyprshot -m output --clipboard-only"''))
-        (luaBind ''"SHIFT + print"'' (exec ''"hyprshot -m region -z --clipboard-only"''))
-        (luaBind ''"CTRL + print"'' (exec ''"hyprshot -m window"''))
-        (luaBind ''"CTRL + " .. mainMod .. " + print"'' (exec ''"hyprshot -m output"''))
-        (luaBind ''"CTRL + SHIFT + print"'' (exec ''"hyprshot -m region -z"''))
+        (luaBind ''"print"'' ''hl.dsp.submap("screenshot")'')
+
+        (luaBind (key "T") ''hl.dsp.submap("group")'')
 
         (luaBind (key "D") ''hl.dsp.dpms({ action = "on" })'')
         (luaBind (key "SHIFT + D") ''hl.dsp.dpms({ action = "off" })'')

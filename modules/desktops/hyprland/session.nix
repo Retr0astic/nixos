@@ -10,30 +10,11 @@
       systemd.enable = false;
     };
 
-    services.hypridle = {
-      enable = true;
-      settings = {
-        general = {
-          lock_cmd = "noctalia msg session lock";
-          before_sleep_cmd = "noctalia msg session lock";
-          after_sleep_cmd = ''hyprctl dispatch 'hl.dsp.dpms({ action = "enable" })' '';
-          ignore_dbus_inhibit = false;
-          ignore_systemd_inhibit = false;
-          ignore_wayland_inhibit = false;
-        };
-
-        listener = [
-          {
-            timeout = 600;
-            on-timeout = "noctalia msg session lock";
-          }
-          {
-            timeout = 900;
-            on-timeout = "noctalia msg session lock-and-suspend";
-          }
-        ];
-      };
-    };
+    # Idle/lock/suspend is handled by noctalia's own [idle] config
+    # (modules/noctalia/config.toml) via ext_idle_notifier_v1, including
+    # native monitor-power restore on wake. hypridle would duplicate that
+    # at the same timeouts, so it stays disabled here.
+    services.hypridle.enable = false;
 
     systemd.user.sessionVariables = {
       XDG_CURRENT_DESKTOP = "Hyprland";

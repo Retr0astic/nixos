@@ -33,6 +33,28 @@
           layout = "master";
         };
 
+        group = {
+          "col.border_active" = {
+            colors = ["rgba(ffade1ee)" "rgba(ffb5a1ee)"];
+            angle = 45;
+          };
+          "col.border_inactive" = "rgba(5d4038ee)";
+          "col.border_locked_active" = {
+            colors = ["rgba(ffade1ee)" "rgba(ffb5a1ee)"];
+            angle = 45;
+          };
+          "col.border_locked_inactive" = "rgba(5d4038ee)";
+
+          groupbar = {
+            rounding = 5;
+            "col.active" = "rgba(ffade1ee)";
+            "col.inactive" = "rgba(5d4038ee)";
+            "col.locked_active" = "rgba(ffade1ee)";
+            "col.locked_inactive" = "rgba(5d4038ee)";
+            text_color = "rgba(ffffffee)";
+          };
+        };
+
         decoration = {
           rounding = 5;
           rounding_power = 2;
