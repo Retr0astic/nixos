@@ -46,6 +46,7 @@
   # Write `m.<name>` here. A bare name would pick up the attribute below it.
   withNoctalia = mk [m.hyprland m.noctalia];
   withCaelestia = mk [m.hyprland m.caelestia];
+  withNoctaliaUmbriel = mk [m.umbriel m.noctalia];
 in {
   flake.modules.nixos.chapel = {
     imports = [
@@ -61,5 +62,6 @@ in {
   flake.nixosConfigurations = {
     chapel = withNoctalia;
     chapel-caelestia = withCaelestia;
+    chapel-umbriel = withNoctaliaUmbriel;
   };
 }

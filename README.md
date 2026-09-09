@@ -48,6 +48,7 @@ aliases, and no default, stable, testing, or experimental variant.
 | --- | --- |
 | chapel | Chapel + Hyprland + Noctalia |
 | chapel-caelestia | Chapel + Hyprland + Caelestia |
+| chapel-umbriel | Chapel + Umbriel + Noctalia |
 | bigrig | Headless server, no compositor |
 
 Other useful outputs include `packages.x86_64-linux.nvf`,
@@ -129,8 +130,9 @@ nix flake update
 nix flake lock --update-input nixpkgs
 ~~~
 
-Use `.#chapel-caelestia` for the Caelestia composition. A persistent switch,
-activation, reboot, or hardware change is not performed by this README.
+Use `.#chapel-caelestia` for the Caelestia composition, or `.#chapel-umbriel`
+for Noctalia on Umbriel instead of Hyprland. A persistent switch, activation,
+reboot, or hardware change is not performed by this README.
 
 ## Repository layout
 
