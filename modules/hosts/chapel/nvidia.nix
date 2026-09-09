@@ -29,6 +29,8 @@
     lib,
     ...
   }: {
+    # Keep these in sync with the [environment] table in
+    # modules/umbriel/config.toml, which sets the same vars for Umbriel.
     wayland.windowManager.hyprland.settings.env = lib.mkIf config.wayland.windowManager.hyprland.enable (lib.mkAfter [
       {_args = ["GBM_BACKEND" "nvidia-drm"];}
       {_args = ["__GLX_VENDOR_LIBRARY_NAME" "nvidia"];}

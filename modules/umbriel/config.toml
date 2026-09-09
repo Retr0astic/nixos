@@ -59,6 +59,15 @@ honor_restored_maximize = false                 # Honor restored maximized state
 # GTK_THEME = "Adwaita:dark"
 # QT_QPA_PLATFORMTHEME = "qt5ct"
 
+# Chapel's Nvidia card. Keep these in sync with the Hyprland side of the
+# same GPU in modules/hosts/chapel/nvidia.nix.
+GBM_BACKEND = "nvidia-drm"
+__GLX_VENDOR_LIBRARY_NAME = "nvidia"
+LIBVA_DRIVER_NAME = "nvidia"
+NVD_BACKEND = "direct"
+__GL_GSYNC_ALLOWED = "1"
+__GL_VRR_ALLOWED = "0"
+
 # Hardware events
 # These commands run when a laptop lid opens or closes. Uncomment either hook
 # to enable it.
