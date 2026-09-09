@@ -101,6 +101,12 @@ in {
       };
     };
 
+    # Umbriel glue. It applies only when umbriel is part of the same
+    # configuration, so noctalia stays usable under any other compositor.
+    home.file.".config/umbriel/config.toml" = lib.mkIf (config.programs ? umbriel && config.programs.umbriel.enable) {
+      source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/nixos/modules/umbriel/config.toml";
+    };
+
     # Starship reads the palette that noctalia writes to its cache.
     home.activation.starshipNoctaliaPalette = lib.mkIf config.programs.starship.enable (lib.hm.dag.entryAfter ["writeBoundary"] ''
       config_dir="''${XDG_CONFIG_HOME:-$HOME/.config}"
