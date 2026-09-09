@@ -31,7 +31,36 @@
       owner = "sree";
     };
 
-    home-manager.sharedModules = [config.flake.modules.homeManager.container-notify];
+    home-manager.sharedModules = [
+      config.flake.modules.homeManager.container-notify
+      config.flake.modules.homeManager.podman-auto-update
+    ];
+  };
+
+  # NixOS ships no toggle for this; podman's own auto-update timer only
+  # exists as unit files in the package, meant for a user systemd instance.
+  # Quadlet units opt in per container with `AutoUpdate=registry` (or
+  # `local`) in their [Container] section; this is what runs the check.
+  flake.modules.homeManager.podman-auto-update = {pkgs, ...}: {
+    systemd.user.services.podman-auto-update = {
+      Unit = {
+        Description = "Podman auto-update service";
+        OnFailure = "container-notify-failure@%n.service";
+      };
+      Service = {
+        Type = "oneshot";
+        ExecStart = "${pkgs.podman}/bin/podman auto-update";
+      };
+    };
+
+    systemd.user.timers.podman-auto-update = {
+      Unit.Description = "Podman auto-update timer";
+      Timer = {
+        OnCalendar = "daily";
+        Persistent = true;
+      };
+      Install.WantedBy = ["timers.target"];
+    };
   };
 
   # User-scope counterpart to restic-notify-failure@ in backups.nix, for
