@@ -15,6 +15,20 @@ in {
               hl.exec_cmd("spotify")
               hl.exec_cmd("vesktop")
               hl.exec_cmd("easyeffects --gapplication-service")
+
+              -- The "silent" rules below open windows into a special
+              -- workspace that has never been shown. Hyprland leaves such a
+              -- workspace at alpha 1, and from then on blocks solitary mode
+              -- (and so direct scanout) for every fullscreen game:
+              -- `hyprctl monitors` reports solitaryBlockedBy WORKSPACES.
+              -- Showing and hiding each one once animates it to alpha 0.
+              -- The delay lets the autostart apps map first.
+              hl.timer(function()
+                for _, ws in ipairs({"chat", "media"}) do
+                  hl.dispatch(hl.dsp.workspace.toggle_special(ws))
+                  hl.dispatch(hl.dsp.workspace.toggle_special(ws))
+                end
+              end, {timeout = 15000, type = "oneshot"})
             end
           '')
         ];
