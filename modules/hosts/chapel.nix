@@ -48,6 +48,8 @@
   withNoctalia = mk [m.hyprland m.noctalia];
   withCaelestia = mk [m.hyprland m.caelestia];
   withNoctaliaUmbriel = mk [m.umbriel m.noctalia];
+  # The noctalia build plus a second greeter entry, "Hyprland (end-4)".
+  withEnd4 = mk [m.hyprland m.noctalia m.end4];
 in {
   flake.modules.nixos.chapel = {
     imports = [
@@ -64,5 +66,6 @@ in {
     chapel = withNoctalia;
     chapel-caelestia = withCaelestia;
     chapel-umbriel = withNoctaliaUmbriel;
+    chapel-end4 = withEnd4;
   };
 }

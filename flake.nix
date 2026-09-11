@@ -36,6 +36,17 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # end-4's illogical-impulse (Quickshell) packaged for home-manager. Only
+    # its packages/qt/fonts sub-modules are used; its dotfiles module is
+    # skipped because it overwrites ~/.config wholesale (see
+    # modules/shells/end4.nix). `dotfiles` is bumped past the flake's own pin
+    # so the session matches a current end-4 install.
+    illogical-flake = {
+      url = "github:soymou/illogical-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.dotfiles.url = "git+https://github.com/end-4/dots-hyprland?submodules=1";
+    };
+
     umbriel = {
       url = "github:noctalia-dev/umbriel";
       inputs.nixpkgs.follows = "nixpkgs";
