@@ -101,11 +101,12 @@ in {
       };
     };
 
-    # Umbriel glue. It applies only when umbriel is part of the same
-    # configuration, so noctalia stays usable under any other compositor.
-    home.file.".config/umbriel/config.toml" = lib.mkIf (config.programs ? umbriel && config.programs.umbriel.enable) {
-      source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/nixos/modules/umbriel/config.toml";
-    };
+    # Umbriel glue. Deployed in every build, not only the umbriel one:
+    # noctalia's umbriel color template writes a stub config.toml whenever
+    # the file is missing. A build without umbriel would drop the link, the
+    # stub would take its place, and the next umbriel build would collide.
+    home.file.".config/umbriel/config.toml".source =
+      config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/nixos/modules/umbriel/config.toml";
 
     # Starship reads the palette that noctalia writes to its cache.
     home.activation.starshipNoctaliaPalette = lib.mkIf config.programs.starship.enable (lib.hm.dag.entryAfter ["writeBoundary"] ''

@@ -38,6 +38,21 @@
       {_args = ["NVD_BACKEND" "direct"];}
       {_args = ["__GL_GSYNC_ALLOWED" "1"];}
       {_args = ["__GL_VRR_ALLOWED" "0"];}
+      # The Samsung monitor is wired to the NVIDIA card only; the Ryzen
+      # 7700X's iGPU (amdgpu) drives nothing. Without this, Aquamarine (like
+      # wlroots, see modules/umbriel/config.toml's [drm] section) also probes
+      # and initializes a renderer on the iGPU.
+      #
+      # Must be a plain /dev/dri/cardN path, not the PCI-address by-path
+      # symlink: AQ_DRM_DEVICES uses ":" to separate multiple device paths,
+      # and by-path names like pci-0000:01:00.0-card contain a ":" of their
+      # own, so it gets split into two nonexistent paths. Aquamarine then
+      # finds no valid GPU and CBackend::create() throws, crashing Hyprland
+      # on every launch (confirmed: this broke Hyprland entirely on a fresh
+      # boot). card1 has been consistently the NVIDIA card across every
+      # reboot this session; if that ever changes, `umbriel outputs` (or
+      # `ls -l /dev/dri/by-path/`) will show the current mapping.
+      {_args = ["AQ_DRM_DEVICES" "/dev/dri/card1"];}
     ]);
   };
 }

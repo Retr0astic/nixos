@@ -22,8 +22,11 @@
 # Documentation: https://docs.noctalia.dev/umbriel/configuration/#include
 # ────────────────────────────────────────────────────────────────────────────
 
+# Keep "noctalia.toml" here. Noctalia's umbriel color template rewrites this
+# array on every theme change and copies through the symlink into this file.
+# Example: ["appearance.toml", "outputs.toml", "noctalia.toml"]
 [include]
-files = []                                      # Example: ["appearance.toml", "outputs.toml"]
+files = ["noctalia.toml"]
 
 [include.optional]
 files = []                                      # Example: ["~/.config/umbriel/noctalia.toml"]
@@ -35,7 +38,7 @@ files = []                                      # Example: ["~/.config/umbriel/n
 # ────────────────────────────────────────────────────────────────────────────
 
 [general]
-autostart = ["noctalia"]                        # Commands run once when the session starts
+autostart = ["noctalia", "spotify", "vesktop", "easyeffects --gapplication-service"] # Commands run once when the session starts
 # mod_key = "Super"                             # Force Super instead of nested-session Alt
 xwayland = true                                 # Requires xwayland-satellite; restart to change
 show_cheatsheet = true                          # Show the keybind overlay on startup
@@ -46,9 +49,16 @@ honor_restored_maximize = false                 # Honor restored maximized state
 # Changes require a restart. Use a PCI address if the GPU may start bound to vfio-pci.
 # Device paths must resolve at startup or Umbriel refuses to start.
 # Documentation: https://docs.noctalia.dev/umbriel/configuration/#drm-devices
-# [drm]
-# ignored_devices = ["/dev/dri/by-path/pci-0000:01:00.0-card"]
-# ignored_pci_addresses = ["0000:01:00.0"]
+#
+# The Samsung monitor is wired to the NVIDIA card (0000:01:00.0, /dev/dri/card1);
+# the Ryzen 7700X's iGPU (0000:10:00.0, amdgpu, /dev/dri/card0) drives nothing.
+# Without this, wlroots probes and initializes a renderer on the iGPU too
+# (visible in the logs as a stray "GLES2 renderer" on radeonsi before
+# Umbriel's real NVIDIA fx_renderer comes up) — this is the exact "hidden
+# EGL-enumerating multi-GPU renderer" the drm.ignored_pci_addresses option
+# was added to prevent.
+[drm]
+ignored_pci_addresses = ["0000:10:00.0"]
 
 # Session environment
 # Values apply only at session startup. Native sessions also publish them to
@@ -58,6 +68,10 @@ honor_restored_maximize = false                 # Honor restored maximized state
 [environment]
 # GTK_THEME = "Adwaita:dark"
 # QT_QPA_PLATFORMTHEME = "qt5ct"
+
+# Matches modules/desktops/hyprland/settings.nix. XCURSOR_SIZE/HYPRCURSOR_SIZE
+# are covered natively by input.cursor.size below instead.
+NIXOS_OZONE_WL = "1"
 
 # Chapel's Nvidia card. Keep these in sync with the Hyprland side of the
 # same GPU in modules/hosts/chapel/nvidia.nix.
@@ -108,6 +122,19 @@ __GL_VRR_ALLOWED = "0"
 # can keep a minimum number of workspaces instead, so a bar always shows them:
 # [output.DP-1]
 # min_workspaces = 3                            # Dynamic floor; rejected with a static inventory
+
+# Chapel's monitor. Keep the mode in sync with the Hyprland side of the same
+# display in modules/hosts/chapel/monitor.nix.
+[output."Samsung Electric Company LS49AG95 HNTTA00029"]
+enabled = true
+mode = "5120x1440@239.76"
+position = [0, 0]
+scale = 1
+hdr = "fullscreen"                              # Matches render.cm_auto_hdr = 2 on the Hyprland side —
+# "auto" only enables HDR when a client explicitly requests it, which most
+# games (especially over Proton) never do even in exclusive fullscreen
+vrr = "fullscreen"                              # Matches misc.vrr = 2 on the Hyprland side
+tearing = true                                  # Matches misc.allow_tearing on the Hyprland side
 
 # New scrolling columns on this output can use a different initial width. This
 # affects new columns only; existing columns keep their current size.
@@ -233,7 +260,7 @@ track_layout = "global"                         # global, or window for per-surf
 
 [input.touchpad]
 tap = true                                      # Tap-to-click
-# natural_scroll = true                         # Omit to preserve the libinput default
+natural_scroll = false                          # Matches input.touchpad.natural_scroll on the Hyprland side
 # accel_profile = "adaptive"                    # flat, adaptive, or custom <step> <points...>
 # sensitivity = 0.5                             # Pointer speed, -1.0 to 1.0
 # scroll_factor = 1.5                           # Two-finger scroll multiplier, 0.1-10.0
@@ -266,7 +293,7 @@ hide_when_typing = false                        # Keep visible while typing
 hide_timeout_ms = 0                             # Idle hide timeout, 0 disables; maximum is 3600000
 
 [input.focus]
-follows_mouse = false                           # Focus the pointer target after pointer motion
+follows_mouse = true                            # Matches input.follow_mouse = 1 on the Hyprland side
 # Refuse hover focus when revealing a window would scroll farther than this
 # many viewport widths. Omit the key for no limit.
 # follows_mouse_max_scroll = 0.5
@@ -306,11 +333,16 @@ follows_mouse = false                           # Focus the pointer target after
 # Documentation: https://docs.noctalia.dev/umbriel/scratchpads/
 # ────────────────────────────────────────────────────────────────────────────
 
-# [[scratchpad]]
-# name = "terminal"
+# Matches the three special workspaces on the Hyprland side (special:scratch,
+# special:chat, special:media).
+[[scratchpad]]
+name = "launchers"
 
-# [[scratchpad]]
-# name = "music"
+[[scratchpad]]
+name = "chat"
+
+[[scratchpad]]
+name = "media"
 
 # ─────────────────────────────── Keybinds ───────────────────────────────────
 # Bind chords to compositor actions. A configuration file replaces the built-in
@@ -323,13 +355,16 @@ follows_mouse = false                           # Focus the pointer target after
 
 # Applications and session
 "Mod+Return" = "spawn:kitty"
+"Mod+Shift+Return" = "spawn:zen"
+"Mod+E" = "spawn:nautilus"
 "Mod" = "spawn:noctalia msg panel-toggle launcher"
 "Mod+Q" = "window-close"
+"Mod+C" = "window-close"                        # Matches the close key on the Hyprland side
 
 # Noctalia panels
 "Mod+Z" = "spawn:noctalia msg panel-toggle control-center"
 "Mod+X" = "spawn:noctalia msg settings-toggle"
-"Mod+V" = "spawn:noctalia msg panel-toggle launcher clipboard"
+"Mod+Shift+C" = "spawn:noctalia msg panel-toggle launcher clipboard"
 "Mod+D" = "spawn:noctalia msg caffeine-disable"
 "Mod+Shift+D" = "spawn:noctalia msg caffeine-enable"
 
@@ -342,10 +377,10 @@ follows_mouse = false                           # Focus the pointer target after
 "Mod+Right" = "window-focus-right"
 
 # Window state and layout
-"Mod+T" = "window-toggle-floating"
+"Mod+V" = "window-toggle-floating"               # Matches the float-toggle key on the Hyprland side
 "Mod+Shift+T" = "window-focus-switch-floating"
 "Mod+P" = "window-toggle-pinned"
-"Mod+M" = "window-toggle-maximize-to-edges"
+"Mod+B" = "window-toggle-maximize-to-edges"      # Moved off M, which now matches the media scratchpad key
 
 # Overview
 "Mod+O" = { action = "overview-toggle", repeat = false }
@@ -380,6 +415,9 @@ follows_mouse = false                           # Focus the pointer target after
 "Mod+7" = "workspace-switch:7"
 "Mod+8" = "workspace-switch:8"
 "Mod+9" = "workspace-switch:9"
+"Mod+0" = "workspace-switch:10"
+"Mod+G" = "workspace-switch:10"                 # Games workspace, matching the Hyprland side in spirit —
+"Mod+Shift+G" = "window-move-to-workspace:10"   # named workspaces need a static inventory, which dynamic outputs don't have
 "Mod+Shift+1" = "window-move-to-workspace:1"
 "Mod+Shift+2" = "window-move-to-workspace:2"
 "Mod+Shift+3" = "window-move-to-workspace:3"
@@ -389,30 +427,23 @@ follows_mouse = false                           # Focus the pointer target after
 "Mod+Shift+7" = "window-move-to-workspace:7"
 "Mod+Shift+8" = "window-move-to-workspace:8"
 "Mod+Shift+9" = "window-move-to-workspace:9"
+"Mod+Shift+0" = "window-move-to-workspace:10"
 
-# Scratchpads
-# These bare actions use the implicit `default` scratchpad because no named
-# definitions are active above. A scratchpad is global: toggling it summons all
-# its windows to the output under the pointer. Only outputs with a visible
-# scratchpad receive its dim and blur backdrop.
-# Resize, maximize, fullscreen, and close actions target a scratchpad that owns
-# keyboard focus. Layout-relative window actions leave the workspace behind it
-# unchanged.
+# Scratchpads. Named mode: the Hyprland side has three distinct special
+# workspaces (scratch, chat, media), which needs three named scratchpads here
+# rather than the single implicit `default` one — every scratchpad action in
+# this file must use named form once any of them does.
 # Documentation: https://docs.noctalia.dev/umbriel/scratchpads/
-"Mod+Shift+Space" = "window-move-to-scratchpad"
-"Mod+Space" = "scratchpad-toggle"
-"Mod+Ctrl+Space" = "window-restore-from-scratchpad"
-"Mod+Tab" = "scratchpad-focus-next"
-
-# Named mode recipe: uncomment the definitions above, then replace the four
-# action values with named forms such as these. Every scratchpad action needs a
-# configured name once named mode is active.
-# "Mod+Shift+Space" = "window-move-to-scratchpad:terminal"
-# "Mod+Space" = "scratchpad-toggle:terminal"
-# "Mod+Ctrl+Space" = "window-restore-from-scratchpad:terminal"
-# "Mod+Tab" = "scratchpad-focus-next:terminal"
-# "Mod+Ctrl+Shift+M" = "window-toggle-scratchpad:music"
-# "Mod+Ctrl+M" = "scratchpad-toggle:music"
+"Mod+S" = "scratchpad-toggle:launchers"          # Matches special:scratch on the Hyprland side
+"Mod+Shift+S" = "window-move-to-scratchpad:launchers"
+"Mod+Ctrl+Space" = "window-restore-from-scratchpad:launchers"
+"Mod+Tab" = "scratchpad-focus-next:launchers"
+"Mod+A" = "scratchpad-toggle:chat"               # Matches special:chat on the Hyprland side
+"Mod+Shift+A" = "window-move-to-scratchpad:chat"
+"Mod+M" = "scratchpad-toggle:media"              # Matches special:media on the Hyprland side
+"Mod+Shift+M" = "window-move-to-scratchpad:media"
+"Mod+Ctrl+A" = "spawn:vesktop"
+"Mod+Ctrl+M" = "spawn:spotify"
 
 # Optional navigation and sizing recipes. These chords do not replace active
 # bindings above when uncommented.
@@ -457,17 +488,27 @@ follows_mouse = false                           # Focus the pointer target after
 # "submap[nudge],Escape" = "submap:reset"
 # "Escape" = "submap:reset"
 
-# Media and brightness
+# Media and brightness. Matches the wpctl/playerctl/brightnessctl commands
+# bound on the Hyprland side.
 # Documentation: https://docs.noctalia.dev/umbriel/keybinds/#example-media-and-brightness-keys
-# "XF86AudioRaiseVolume" = "spawn:wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+"
-# "XF86AudioLowerVolume" = "spawn:wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
-# "XF86AudioMute" = "spawn:wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
-# "XF86AudioPlay" = "spawn:playerctl play-pause"
-# "XF86AudioNext" = "spawn:playerctl next"
-# "XF86AudioPrev" = "spawn:playerctl previous"
+"XF86AudioRaiseVolume" = {action = "spawn:wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+", allow_when_locked = true}
+"XF86AudioLowerVolume" = {action = "spawn:wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-", allow_when_locked = true}
+"XF86AudioMute" = {action = "spawn:wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle", allow_when_locked = true}
+"XF86AudioMicMute" = {action = "spawn:wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle", allow_when_locked = true}
+"XF86AudioPlay" = {action = "spawn:playerctl play-pause", allow_when_locked = true}
+"XF86AudioPause" = {action = "spawn:playerctl play-pause", allow_when_locked = true}
+"XF86AudioNext" = {action = "spawn:playerctl next", allow_when_locked = true}
+"XF86AudioPrev" = {action = "spawn:playerctl previous", allow_when_locked = true}
 # Binds intended to work while locked use the table form.
-# "XF86MonBrightnessDown" = { action = "spawn:noctalia msg brightness-down 10", allow_when_locked = true }
-# "XF86MonBrightnessUp" = { action = "spawn:noctalia msg brightness-up 10", allow_when_locked = true }
+"XF86MonBrightnessDown" = { action = "spawn:brightnessctl -e4 -n2 set 5%-", allow_when_locked = true }
+"XF86MonBrightnessUp" = { action = "spawn:brightnessctl -e4 -n2 set 5%+", allow_when_locked = true }
+
+# Screenshots. Noctalia ships its own capture tool, so this replaces the
+# hyprshot submap bound on the Hyprland side (hyprshot needs hyprctl and
+# does not work under Umbriel).
+"Print" = "spawn:noctalia msg screenshot-region"
+"Shift+Print" = "spawn:noctalia msg screenshot-fullscreen pick"
+"Ctrl+Print" = "spawn:noctalia msg screenshot-annotate"
 
 # ─────────────────────────────── Layout ─────────────────────────────────────
 # Configure the default tiling mode and shared sizing behavior. Workspace rules
@@ -476,21 +517,23 @@ follows_mouse = false                           # Focus the pointer target after
 # ────────────────────────────────────────────────────────────────────────────
 
 [layout]
-mode = "scrolling"                              # scrolling, dwindle, or master
-gap = 8                                         # Logical pixels between tiles, 0-500
+mode = "scrolling"                              # Better fit than master for a 5120x1440 ultrawide
+gap = 4                                         # Matches general.gaps_in on the Hyprland side
 width_presets = [0.333, 0.5, 0.667]             # Width and height cycling fractions
 
 [layout.struts]
+# Matches general.gaps_out on the Hyprland side (closest approximation —
+# struts reserve edge space unconditionally rather than acting as a gap).
 # Signed logical pixels reserved after panel exclusive zones. Negative values
 # expand the tiled area beyond that edge.
-left = 0                                        # -65535 to 65535
-right = 0
-top = 0
-bottom = 0
+left = 8                                         # -65535 to 65535
+right = 8
+top = 8
+bottom = 8
 
 [layout.scrolling]
 # The strip axis is perpendicular to the output's workspace_axis.
-default_width_fraction = 0.5                    # Initial width for new columns, 0.1-1.0
+default_width_fraction = 0.6                    # Initial width for new columns, 0.1-1.0
 center_underfull_strip = true                   # Center a strip narrower than the viewport
 center_focused = "never"                        # never, always, or on_overflow
 
@@ -540,6 +583,80 @@ match.title = "^notificationtoasts_.+_desktop"
 default_position = { x = 0, y = 0, anchor = "bottom_right" }
 default_focused = false
 default_pinned = true
+
+# Rules ported from the Hyprland side (modules/desktops/hyprland/rules.nix).
+# No equivalent exists here for: mpv's idle-inhibit-while-playing, modal
+# windows auto-floating (no modal match field), or disabling HDR tonemap on
+# fullscreen games (no tonemap control) — dropped rather than guessed at.
+
+# Send games straight to a dedicated workspace.
+# Umbriel's rule matcher uses unanchored regex_search (confirmed in
+# resolve.cpp), so every pattern below is anchored with ^...$ — an unanchored
+# "steam" here previously substring-matched "steam_app_default" too, silently
+# overriding these rules since it appeared later in the file.
+[[window_rule]]
+match.app_id = "^cs2$"
+default_workspace = 10                          # Dedicated games workspace
+tearing = true                                   # Matches misc.allow_tearing on the Hyprland side, scoped to fullscreen games only
+
+# hdr = "on" overrides the output's "fullscreen" policy while a game window
+# exists. Proton launchers run windowed and re-check the display on every
+# start, so under "fullscreen" they see an SDR output and grey out HDR. This
+# keeps the output in HDR from the launcher onwards and SDR the rest of the time.
+[[window_rule]]
+match.app_id = "^steam_app_.*$"
+default_workspace = 10                          # Dedicated games workspace
+tearing = true                                    # Matches misc.allow_tearing on the Hyprland side, scoped to fullscreen games only
+hdr = "on"
+
+[[window_rule]]
+match.xdg_tag = "^proton-game$"
+default_workspace = 10                          # Dedicated games workspace
+tearing = true                                    # Matches misc.allow_tearing on the Hyprland side, scoped to fullscreen games only
+hdr = "on"
+
+[[window_rule]]
+match.app_id = "^xdg-desktop-portal-gtk$"
+default_floating = true
+
+[[window_rule]]
+match.app_id = "^imv$"
+default_floating = true
+
+# Game launchers open straight into the launchers scratchpad instead of a
+# visible workspace.
+[[window_rule]]
+match.app_id = "^heroic$"
+default_scratchpad = "launchers"
+hdr = "on"                                      # Output must already be HDR when a Proton launcher starts (see game rules above)
+
+[[window_rule]]
+match.app_id = "^steam$"
+default_scratchpad = "launchers"
+
+# Chat and media apps open hidden in their own scratchpads (unfocused, so
+# they don't steal focus on launch — matches "silent" on the Hyprland side).
+[[window_rule]]
+match.app_id = "^(vesktop|Vesktop)$"
+default_scratchpad = "chat"
+default_focused = false
+
+[[window_rule]]
+match.app_id = "^zen$"
+match.title = ".*WhatsApp.*"
+default_scratchpad = "chat"
+default_focused = false
+
+[[window_rule]]
+match.app_id = "^(Spotify|spotify)$"
+default_scratchpad = "media"
+default_focused = false
+# No idle_inhibit equivalent exists here (same gap as mpv on the Hyprland
+# side) — dropped rather than guessed at.
+
+# default_width on a tiled window only applies under layout.mode = "scrolling"
+# (or to floating windows) — a no-op under master, so no rule here. See chat
+# for the master-vs-scrolling tradeoff this runs into.
 
 # Optional positional placement recipe. Output names follow the same rules as
 # [output.*]. `default_output` scopes the workspace lookup to that output, and
@@ -677,81 +794,98 @@ blur_optimized = false
 
 [animation]
 enabled = true                                  # Master animation switch
-duration_ms = 250                               # Shared duration, 1-10000 ms
+duration_ms = 130                               # Shared duration, 1-10000 ms
 curve = "easeout"                               # Built-in or registered bezier/spring curve name
 
 # Window opening
 [animation.windows_in]
 enabled = true
-duration_ms = 150
-curve = "easeout"
+duration_ms = 150                               # Sped up from the Hyprland-matched 300ms
+curve = "md3_decel"                             # Matches windowsIn bezier on the Hyprland side
 style = "popin"                                 # popin, zoom, slide, fade, or none
-scale = 0.85                                    # Popin start scale, 0.1-1.0
+scale = 0.6                                     # Matches "popin 60%" on the Hyprland side
 # shader = "shaders/reveal.glsl"      # Replaces the built-in opening style
 
 # Window closing
 [animation.windows_out]
 enabled = true
-duration_ms = 150
-curve = "easeout"
-style = "fade"                                  # fade or slide
+duration_ms = 150                               # Sped up from the Hyprland-matched 300ms
+curve = "md3_accel"                             # Matches windowsOut bezier on the Hyprland side
+style = "fade"                                  # fade or slide — no popin-on-close here, unlike Hyprland
 # shader = "shaders/reveal.glsl"
 
 # Window movement, resizing, and floating maximize. Visible scratchpad keybind
 # resizing uses this event too.
 [animation.windows_move]
 enabled = true
-duration_ms = 250
+duration_ms = 130
 curve = "snappy"
 # shader = "shaders/squash.glsl"      # Subtle compression and settle during move/resize
 
 # Workspace switching
 [animation.workspaces]
 enabled = true
-duration_ms = 250
-curve = "easeout"
+duration_ms = 250                               # Sped up from the Hyprland-matched 700ms
+curve = "menu_decel"                            # Matches workspaces bezier on the Hyprland side
 
 # Overview opening, closing, and row settling
 [animation.overview]
 enabled = true
-duration_ms = 250
+duration_ms = 150
 curve = "easeout"
 
 # Scratchpad show, hide, and backdrop
 [animation.scratchpad]
-enabled = false
-duration_ms = 250
-curve = "easeout"
-dim = 0.5                                       # Backdrop dim amount, 0.0-1.0
+enabled = true                                  # Matches specialWorkspace.enabled on the Hyprland side
+duration_ms = 150                               # Sped up from the Hyprland-matched 300ms
+curve = "md3_decel"                             # Matches specialWorkspace bezier on the Hyprland side
+dim = 0.6                                       # Matches decoration.dim_special on the Hyprland side
 blur = false                                    # Requires appearance.blur.enabled
-scale = 0.0                                     # 0 keeps geometry; 0.1-1.0 centers and scales
+scale = 0.85                                    # 0 keeps geometry; 0.1-1.0 centers and scales — there is
+# no slide-direction option here at all (checked the Scratchpad struct in
+# config.h: enabled/duration_ms/curve/dim/blur/scale/maximize/fullscreen/
+# shader, nothing else), so "slidefadevert, 20%" can't be matched exactly.
+# This gives it some entrance motion (grow+fade) instead of appearing static.
 maximize = false                                # Maximize to usable-area edges while shown
 fullscreen = false                              # Make the scratchpad window fullscreen while shown
 
 # Focus border color
 [animation.border]
-enabled = false
-duration_ms = 250
-curve = "easeout"
+# Matches border.enabled on the Hyprland side, but currently a no-op upstream:
+# a re-entrant call in View::setFadeAlpha snaps the border color instantly
+# instead of animating it (noctalia-dev/umbriel#183, open). Configured for
+# when that lands, harmless either way in the meantime.
+enabled = true
+duration_ms = 400                               # Sped up from the Hyprland-matched 1000ms
+curve = "easeout"                               # Closest built-in match for Hyprland's "default" bezier
 
 # Unfocused window opacity
 [animation.dim_unfocused]
-enabled = false
-duration_ms = 250
+enabled = true                                  # Matches decoration.dim_inactive on the Hyprland side
+duration_ms = 130
 curve = "easeout"
-dim = 0.0                                       # 0 disables dimming; maximum is 1.0
+dim = 0.05                                      # Matches decoration.dim_strength on the Hyprland side
 
 # Layer-shell surface mapping and unmapping
 [animation.layers]
-enabled = false
-duration_ms = 250
-curve = "easeout"
+# Matches layersIn on the Hyprland side (which also had a separate, faster
+# layersOut: speed 1.6/menu_accel — no separate in/out setting here, so that
+# distinction is dropped).
+enabled = true
+duration_ms = 150
+curve = "menu_decel"
 
 # Register reusable curves by adding or uncommenting entries below.
 # Documentation: https://docs.noctalia.dev/umbriel/animation/#curves
 
 [animation.beziers]
-# myBezier = [0.05, 0.9, 0.1, 1.0]
+# Curves ported from modules/desktops/hyprland/animations.nix (only the ones
+# actually referenced below — the rest of that file's curve list is unused
+# there too).
+md3_decel = [0.05, 0.7, 0.1, 1.0]
+md3_accel = [0.3, 0.0, 0.8, 0.15]
+menu_decel = [0.1, 1.0, 0.0, 1.0]
+menu_accel = [0.38, 0.04, 1.0, 0.07]
 
 [animation.springs]
 # myBounce = { damping = 0.5, stiffness = 200 }
