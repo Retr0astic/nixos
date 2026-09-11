@@ -38,7 +38,7 @@ order = [ "widgets" ]
         fill = "on_primary"
         foreground = "tertiary"
         id = "g1"
-        members = [ "audio_visualizer", "media" ]
+        members = [ "media" ]
         opacity = 1.0
         padding = 6.0
         radius = 50.0
@@ -114,12 +114,8 @@ sidebar_section = "full"
 [desktop_widgets]
 schema_version = 2
 widget_order = [
-    "desktop-widget-000000000000000f",
-    "desktop-widget-0000000000000009",
     "desktop-widget-000000000000000e",
     "desktop-widget-0000000000000011",
-    "desktop-widget-0000000000000012",
-    "desktop-widget-0000000000000013",
     "desktop-widget-0000000000000014",
     "desktop-widget-0000000000000015",
     "desktop-widget-0000000000000016",
@@ -302,26 +298,6 @@ widget_order = [
         background_radius = 0
         center_text = true
         format = "{:%H:%M:%S}"
-
-    [desktop_widgets.widget.desktop-widget-0000000000000012]
-    box_height = 448.0
-    box_width = 384.0
-    cx = 2757.19140625
-    cy = 353.83203125
-    output = "DP-2"
-    placement_height = 1440.0
-    placement_width = 5120.0
-    rotation = 0.0
-    type = "fancy_audio_visualizer"
-
-        [desktop_widgets.widget.desktop-widget-0000000000000012.settings]
-        background = false
-        bloom_intensity = 0.90000000000000002
-        inner_diameter = 0.60000000000000009
-        ring_opacity = 0.40000000000000002
-        rotation_speed = 0.10000000000000001
-        sensitivity = 1.0
-        visualization_mode = "rings"
 
     [desktop_widgets.widget.desktop-widget-0000000000000013]
     box_height = 92.125
