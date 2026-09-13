@@ -20,12 +20,9 @@
       gnome.gnome-keyring.enable = true;
       gvfs.enable = true;
       udisks2.enable = true;
-    };
-    programs = {
-      coolercontrol.enable = true;
-      virt-manager.enable = true;
-      noctalia-greeter = {
+      displayManager.noctalia-greeter = {
         enable = true;
+        passwordless-sync-users = ["sree"];
         settings = {
           user.default = "sree";
           output.scale = 1;
@@ -42,6 +39,10 @@
           keyboard.layout = "us";
         };
       };
+    };
+    programs = {
+      coolercontrol.enable = true;
+      virt-manager.enable = true;
       gpu-screen-recorder.enable = true;
     };
     virtualisation.libvirtd = {
