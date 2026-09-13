@@ -1,7 +1,6 @@
 {config, ...}: {
   flake.modules.homeManager.hyprland = {pkgs, ...}: {
     home.packages = with pkgs; [
-      hyprshot
       cliphist
       wlsunset
     ];

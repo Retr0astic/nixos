@@ -3,34 +3,6 @@
 in {
   flake.modules.homeManager.hyprland = {lib, ...}: {
     wayland.windowManager.hyprland.extraConfig = ''
-      hl.define_submap("screenshot", function()
-        hl.bind("Escape", hl.dsp.submap("reset"))
-        hl.bind("w", function()
-          hl.dispatch(hl.dsp.exec_cmd("hyprshot -m window --clipboard-only"))
-          hl.dispatch(hl.dsp.submap("reset"))
-        end)
-        hl.bind("o", function()
-          hl.dispatch(hl.dsp.exec_cmd("hyprshot -m output --clipboard-only"))
-          hl.dispatch(hl.dsp.submap("reset"))
-        end)
-        hl.bind("r", function()
-          hl.dispatch(hl.dsp.exec_cmd("hyprshot -m region -z --clipboard-only"))
-          hl.dispatch(hl.dsp.submap("reset"))
-        end)
-        hl.bind("SHIFT + w", function()
-          hl.dispatch(hl.dsp.exec_cmd("hyprshot -m window"))
-          hl.dispatch(hl.dsp.submap("reset"))
-        end)
-        hl.bind("SHIFT + o", function()
-          hl.dispatch(hl.dsp.exec_cmd("hyprshot -m output"))
-          hl.dispatch(hl.dsp.submap("reset"))
-        end)
-        hl.bind("SHIFT + r", function()
-          hl.dispatch(hl.dsp.exec_cmd("hyprshot -m region -z"))
-          hl.dispatch(hl.dsp.submap("reset"))
-        end)
-      end)
-
       hl.define_submap("group", function()
         hl.bind("Escape", hl.dsp.submap("reset"))
         hl.bind("t", hl.dsp.group.toggle())
@@ -62,8 +34,6 @@ in {
         (luaBind (key "SHIFT + G") ''hl.dsp.window.move({ workspace = "name:games" })'')
         (luaBind (key "mouse_down") ''hl.dsp.focus({ workspace = "e+1" })'')
         (luaBind (key "mouse_up") ''hl.dsp.focus({ workspace = "e-1" })'')
-
-        (luaBind ''"print"'' ''hl.dsp.submap("screenshot")'')
 
         (luaBind (key "T") ''hl.dsp.submap("group")'')
 

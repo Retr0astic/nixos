@@ -71,6 +71,26 @@ in {
           blur = true,
           blur_popups = true,
         })
+
+        hl.define_submap("screenshot", function()
+          hl.bind("Escape", hl.dsp.submap("reset"))
+          hl.bind("r", function()
+            hl.dispatch(hl.dsp.exec_cmd("noctalia msg screenshot-region"))
+            hl.dispatch(hl.dsp.submap("reset"))
+          end)
+          hl.bind("o", function()
+            hl.dispatch(hl.dsp.exec_cmd("noctalia msg screenshot-fullscreen monitor"))
+            hl.dispatch(hl.dsp.submap("reset"))
+          end)
+          hl.bind("SHIFT + o", function()
+            hl.dispatch(hl.dsp.exec_cmd("noctalia msg screenshot-fullscreen all"))
+            hl.dispatch(hl.dsp.submap("reset"))
+          end)
+          hl.bind("a", function()
+            hl.dispatch(hl.dsp.exec_cmd("noctalia msg screenshot-annotate"))
+            hl.dispatch(hl.dsp.submap("reset"))
+          end)
+        end)
       '';
 
       settings = {
@@ -97,6 +117,7 @@ in {
           (luaBind (key "SHIFT + C") (exec ''ipc .. " panel-toggle launcher clipboard"''))
           (luaBind (key "D") (exec ''ipc .. " caffeine-disable"''))
           (luaBind (key "SHIFT + D") (exec ''ipc .. " caffeine-enable"''))
+          (luaBind ''"print"'' ''hl.dsp.submap("screenshot")'')
         ];
       };
     };

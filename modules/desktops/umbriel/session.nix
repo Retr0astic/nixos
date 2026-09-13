@@ -5,8 +5,8 @@
     programs.umbriel.enable = true;
 
     # Matches home.packages in modules/desktops/hyprland/settings.nix.
-    # hyprshot is dropped — it needs hyprctl, and its role is covered by
-    # noctalia's own screenshot commands (see the keybinds in config.toml).
+    # Screenshots go through noctalia's own commands (see the screenshot
+    # submap in modules/shells/noctalia.nix), so no hyprshot here either.
     home.packages = [pkgs.cliphist pkgs.wlsunset];
 
     services.hypridle = {
