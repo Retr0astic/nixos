@@ -50,6 +50,48 @@
       ]
       ++ extra;
 
+    # Standalone prune units for the three hourly repos. Runs on its own
+    # daily timer, independent of whether that hour's backup succeeded, so
+    # a full disk cannot block the one step that would free space.
+    hourlyPruneRepos = {
+      home = {
+        repository = "/mnt/backups/bigrig/home";
+        opts = hourlyPrune ["--keep-hourly 12"];
+      };
+      nextcloud = {
+        repository = "/mnt/backups/Nextcloud";
+        opts = hourlyPrune ["--keep-hourly 12" "--keep-yearly 7"];
+      };
+      root = {
+        repository = "/mnt/backups/bigrig/root";
+        opts = hourlyPrune ["--keep-hourly 3" "--keep-weekly 1" "--keep-yearly 7"];
+      };
+    };
+
+    mkPruneService = name: repo: {
+      description = "Prune restic repository (${name})";
+      environment = {
+        RESTIC_REPOSITORY = repo.repository;
+        RESTIC_PASSWORD_FILE = resticPasswordFile;
+        HOME = "/root";
+      };
+      serviceConfig.Type = "oneshot";
+      onFailure = ["restic-notify-failure@%n.service"];
+      script = ''
+        ${pkgs.restic}/bin/restic unlock
+        ${pkgs.restic}/bin/restic forget --prune ${lib.concatStringsSep " " repo.opts}
+      '';
+    };
+
+    mkPruneTimer = _name: {
+      description = "Daily restic prune";
+      wantedBy = ["timers.target"];
+      timerConfig = {
+        OnCalendar = "daily";
+        Persistent = true;
+      };
+    };
+
     containerExcludes = [
       "/home/sree/.local/share/containers/storage/overlay"
       "/home/sree/.local/share/containers/storage/overlay-images"
@@ -178,6 +220,14 @@
 
     services.restic.backups = {
       # --- hourly, local disk (/mnt/backups) ---
+      # pruneOpts stays empty on all three hourly jobs. The restic module
+      # runs backup, then unlock, then forget --prune, as one ordered
+      # sequence in a single service. If backup fails (e.g. disk full),
+      # systemd never runs the later steps, so prune (the one step that
+      # frees space) never fires either. That is exactly what happened on
+      # 2026-09-04: /mnt/backups filled, backup failed every hour after,
+      # and nothing ever ran forget --prune to recover. Pruning now runs
+      # as its own daily unit below, decoupled from hourly backup success.
       home = {
         paths = ["/home"];
         exclude = ["/home/.snapshots"] ++ containerExcludes;
@@ -188,7 +238,7 @@
           OnCalendar = "hourly";
           Persistent = true;
         };
-        pruneOpts = hourlyPrune ["--keep-hourly 12"];
+        pruneOpts = [];
       };
       nextcloud = {
         paths = ["/mnt/Nextcloud"];
@@ -200,7 +250,7 @@
           OnCalendar = "hourly";
           Persistent = true;
         };
-        pruneOpts = hourlyPrune ["--keep-hourly 12" "--keep-yearly 7"];
+        pruneOpts = [];
       };
       root = {
         paths = ["/"];
@@ -212,7 +262,7 @@
           OnCalendar = "hourly";
           Persistent = true;
         };
-        pruneOpts = hourlyPrune ["--keep-hourly 3" "--keep-weekly 1" "--keep-yearly 7"];
+        pruneOpts = [];
       };
 
       # --- monthly archive, /mnt/Vault (matches restic_archive.sh) ---
@@ -321,6 +371,7 @@
         "offline-immich"
       ])
       (_: notifyOnFailure)
+      // lib.mapAttrs' (name: repo: lib.nameValuePair "restic-prune-${name}" (mkPruneService name repo)) hourlyPruneRepos
       // {
         btrbk-bigrig = notifyOnFailure;
 
@@ -380,13 +431,17 @@
         };
       };
 
-    systemd.timers.backup-disk-space-alert = {
-      description = "Periodic backup-target disk usage check";
-      wantedBy = ["timers.target"];
-      timerConfig = {
-        OnBootSec = "10m";
-        OnUnitActiveSec = "1h";
+    systemd.timers =
+      lib.mapAttrs' (name: _repo: lib.nameValuePair "restic-prune-${name}" (mkPruneTimer name)) hourlyPruneRepos
+      // {
+        backup-disk-space-alert = {
+          description = "Periodic backup-target disk usage check";
+          wantedBy = ["timers.target"];
+          timerConfig = {
+            OnBootSec = "10m";
+            OnUnitActiveSec = "1h";
+          };
+        };
       };
-    };
   };
 }
