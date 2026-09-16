@@ -67,6 +67,7 @@ jobs:
               - 'modules/features/shell.nix'
               - 'modules/features/hardware-tools.nix'
               - 'modules/features/ai-tools.nix'
+              - 'modules/features/auto-upgrade.nix'
               - 'flake.nix'
               - 'flake.lock'
               - '.github/workflows/flake.yml'

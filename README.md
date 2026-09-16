@@ -257,6 +257,18 @@ pull request, pushes to main and testing, and manual dispatches. The repository
 therefore has two CI-covered branches, but the flake does not declare separate
 stable or testing configurations.
 
+A second workflow, `.github/workflows/flake-update.yml`, updates the lock file
+on a daily schedule. It opens one pull request per flake input against
+`testing`, labels each one with an urgency lane read from `.github/lanes.json`,
+and fills the body with the revision compare links and the rebuild list. One
+input per pull request keeps a revert scoped to a single bump.
+
+`main` is the branch the machines follow. `modules/features/auto-upgrade.nix`
+gives bigrig a daily `nixos-rebuild boot --flake github:Retr0astic/nixos/main`,
+which stages a generation without restarting a running service. Chapel is
+deliberately excluded: its local checkout remains the source of truth for that
+machine.
+
 ## Caveats
 
 - This is a personal configuration, not a general-purpose distribution.

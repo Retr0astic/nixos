@@ -21,6 +21,7 @@
     m.shell
     m.hardware-tools
     m.ai-tools
+    m.auto-upgrade
     m.starship-bigrig
     m.nvf
   ];

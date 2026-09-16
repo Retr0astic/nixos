@@ -1,0 +1,28 @@
+{
+  "comment": [
+    "Urgency lane per flake input, used by .github/workflows/flake-update.yml",
+    "to label each update pull request. high: the input builds the system or",
+    "holds its secrets, so a break is a machine that does not boot or does not",
+    "decrypt. medium: a break costs a desktop session. low: a break costs one",
+    "application. An input missing from this map takes the default lane."
+  ],
+  "default": "medium",
+  "inputs": {
+    "nixpkgs": "high",
+    "home-manager": "high",
+    "sops-nix": "high",
+    "disko": "high",
+    "flake-parts": "high",
+    "import-tree": "high",
+    "noctalia": "medium",
+    "noctalia-greeter": "medium",
+    "umbriel": "medium",
+    "caelestia-shell": "medium",
+    "nvf": "medium",
+    "zenBrowser": "low",
+    "spicetify-nix": "low",
+    "opends5": "low",
+    "lucidglyph": "low",
+    "illogical-flake": "low"
+  }
+}

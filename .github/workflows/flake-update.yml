@@ -1,0 +1,234 @@
+name: Flake update
+
+# One pull request per flake input, every morning.
+#
+# The pipeline is:
+#   this workflow  -> a pull request per input, against testing
+#   flake.yml      -> builds that pull request
+#   you            -> merge into testing, then fast-forward main
+#   nixos-upgrade  -> each host stages main once a day
+#                     (modules/features/auto-upgrade.nix)
+#
+# Why one input per pull request: a bulk `nix flake update` moves a dozen
+# revisions in one commit, so one bad input costs the whole batch. Commit
+# ad83a5f reverted 14 good bumps to drop a single bad one.
+#
+# The schedule only fires from the default branch. This file has to reach
+# `main` before the daily run starts. Until then, run it from the Actions tab.
+#
+# Checks on these pull requests need a token that is not GITHUB_TOKEN. A
+# pull request opened with the built-in token never starts another workflow,
+# so flake.yml would stay idle until a person pushes to the branch. Store a
+# fine-grained personal access token with `contents: write` and
+# `pull-requests: write` as the FLAKE_UPDATE_TOKEN secret. Without it this
+# workflow still runs, still gates on evaluation, and says so in its summary.
+
+on:
+  schedule:
+    # 03:00 UTC. Hosts follow main and main only moves when you merge, so
+    # this time is unrelated to the timer in auto-upgrade.nix.
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+    inputs:
+      only:
+        description: "One input name. Empty means every input."
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+# Never two update runs at once: both would push the same branches.
+concurrency:
+  group: flake-update
+  cancel-in-progress: false
+
+env:
+  BASE_BRANCH: testing
+
+jobs:
+  inputs:
+    runs-on: ubuntu-24.04
+    outputs:
+      list: ${{ steps.list.outputs.inputs }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          ref: testing
+          persist-credentials: false
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v31
+        with:
+          extra_nix_config: |
+            accept-flake-config = true
+
+      # The root node names every direct input. A `follows` entry points at a
+      # list rather than a node key, and `nix flake update` rejects it, so
+      # those are dropped here.
+      - name: List flake inputs
+        id: list
+        env:
+          ONLY: ${{ github.event.inputs.only }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -n "$ONLY" ]; then
+            printf 'inputs=%s\n' "$(jq -cn --arg i "$ONLY" '[$i]')" >>"$GITHUB_OUTPUT"
+            exit 0
+          fi
+          list=$(nix flake metadata --json --accept-flake-config |
+            jq -c '[.locks.nodes[.locks.root].inputs
+                    | to_entries[]
+                    | select(.value | type == "string")
+                    | .key]')
+          printf 'inputs=%s\n' "$list" >>"$GITHUB_OUTPUT"
+          printf 'Inputs: %s\n' "$list" >>"$GITHUB_STEP_SUMMARY"
+
+  update:
+    needs: inputs
+    if: needs.inputs.outputs.list != '[]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+
+    strategy:
+      fail-fast: false
+      # Three at a time. Each one evaluates both hosts, and a runner that
+      # swaps is slower than a queue.
+      max-parallel: 3
+      matrix:
+        input: ${{ fromJSON(needs.inputs.outputs.list) }}
+
+    steps:
+      - name: Check out ${{ env.BASE_BRANCH }}
+        uses: actions/checkout@v7
+        with:
+          ref: testing
+          fetch-depth: 0
+          token: ${{ secrets.FLAKE_UPDATE_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v31
+        with:
+          extra_nix_config: |
+            accept-flake-config = true
+
+      - name: Configure Cachix
+        uses: cachix/cachix-action@v17
+        with:
+          name: chapel
+          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+          skipPush: true
+
+      - name: Update ${{ matrix.input }}
+        id: update
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp flake.lock "$RUNNER_TEMP/flake.lock.old"
+          nix flake update "${{ matrix.input }}" --accept-flake-config
+          if git diff --quiet -- flake.lock; then
+            echo "changed=false" >>"$GITHUB_OUTPUT"
+            echo "${{ matrix.input }}: already current." >>"$GITHUB_STEP_SUMMARY"
+          else
+            echo "changed=true" >>"$GITHUB_OUTPUT"
+          fi
+
+      # The gate. `--dry-run` evaluates every module and resolves every
+      # derivation without building one, which catches the eval break that a
+      # bad bump usually is. It does not catch a compile failure: that is
+      # what flake.yml does on the pull request.
+      - name: Evaluate both hosts
+        if: steps.update.outputs.changed == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          : >"$RUNNER_TEMP/dry-run.log"
+          for host in chapel bigrig; do
+            nix build --dry-run --accept-flake-config \
+              ".#nixosConfigurations.$host.config.system.build.toplevel" \
+              2>&1 | tee -a "$RUNNER_TEMP/dry-run.log"
+          done
+
+      - name: Read the lane
+        if: steps.update.outputs.changed == 'true'
+        id: lane
+        shell: bash
+        run: |
+          set -euo pipefail
+          lane=$(jq -r --arg i "${{ matrix.input }}" \
+            '.inputs[$i] // .default' .github/lanes.json)
+          printf 'lane=%s\n' "$lane" >>"$GITHUB_OUTPUT"
+
+      - name: Write the release notes
+        if: steps.update.outputs.changed == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/lock-notes.py \
+            --old "$RUNNER_TEMP/flake.lock.old" \
+            --new flake.lock \
+            --input "${{ matrix.input }}" \
+            --lane "${{ steps.lane.outputs.lane }}" \
+            --dry-run-log "$RUNNER_TEMP/dry-run.log" \
+            >"$RUNNER_TEMP/notes.md"
+          cat "$RUNNER_TEMP/notes.md" >>"$GITHUB_STEP_SUMMARY"
+
+      - name: Push the branch
+        if: steps.update.outputs.changed == 'true'
+        id: push
+        shell: bash
+        run: |
+          set -euo pipefail
+          branch="flake-update/${{ matrix.input }}"
+          git config user.name "retr0astic"
+          git config user.email "sreejiraj2399@gmail.com"
+          git switch -c "$branch"
+          git add flake.lock
+          git commit -m "chore(flake): bump ${{ matrix.input }}"
+          # The branch is owned by this workflow, so yesterday's version of
+          # it is replaced rather than merged. The lease still refuses a push
+          # over a commit this run never saw.
+          git fetch origin "+refs/heads/$branch:refs/remotes/origin/$branch" || true
+          git push --force-with-lease -u origin "$branch"
+          printf 'branch=%s\n' "$branch" >>"$GITHUB_OUTPUT"
+
+      - name: Open or refresh the pull request
+        if: steps.update.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.FLAKE_UPDATE_TOKEN || secrets.GITHUB_TOKEN }}
+          BRANCH: ${{ steps.push.outputs.branch }}
+          LANE: ${{ steps.lane.outputs.lane }}
+          HAS_PAT: ${{ secrets.FLAKE_UPDATE_TOKEN != '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          case "$LANE" in
+            high) color="B60205" ;;
+            medium) color="FBCA04" ;;
+            *) color="0E8A16" ;;
+          esac
+          gh label create "lane:$LANE" --color "$color" \
+            --description "Update urgency lane" --force >/dev/null
+          gh label create "flake-update" --color "1D76DB" \
+            --description "Opened by the flake update workflow" --force >/dev/null
+
+          title="chore(flake): bump ${{ matrix.input }}"
+          number=$(gh pr list --head "$BRANCH" --base "$BASE_BRANCH" \
+            --state open --json number --jq '.[0].number // empty')
+          if [ -n "$number" ]; then
+            gh pr edit "$number" --title "$title" \
+              --body-file "$RUNNER_TEMP/notes.md" \
+              --add-label "flake-update" --add-label "lane:$LANE"
+          else
+            gh pr create --base "$BASE_BRANCH" --head "$BRANCH" \
+              --title "$title" --body-file "$RUNNER_TEMP/notes.md" \
+              --label "flake-update" --label "lane:$LANE"
+          fi
+
+          if [ "$HAS_PAT" != "true" ]; then
+            echo "::warning::No FLAKE_UPDATE_TOKEN secret, so flake.yml will not build this pull request. Merging into testing still builds it."
+          fi

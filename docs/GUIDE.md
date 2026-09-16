@@ -337,7 +337,86 @@ nix fmt          # alejandra, the repository formatter
 nix flake check  # evaluates every variant
 ```
 
-CI runs `nix flake check`, verifies that the four aliases resolve to their
-targets, and builds both variants. It does not check formatting, so run
-`nix fmt` yourself. CI fires on every pull request and on pushes to `main` and
-`testing`.
+CI runs `nix fmt -- --check`, `nix flake check`, verifies that the four
+configuration names resolve, and builds the variants that your change touches.
+CI fires on every pull request and on pushes to `main` and `testing`.
+
+---
+
+## 7. The update pipeline
+
+Updates arrive as pull requests. You no longer run `nix flake update` by hand.
+
+**The path an update takes**
+
+1. `.github/workflows/flake-update.yml` runs at 03:00 UTC, once per day.
+2. It bumps one input at a time and evaluates chapel and bigrig at that lock.
+3. It opens one pull request per moved input against `testing`.
+4. `.github/workflows/flake.yml` builds the pull request.
+5. You merge into `testing`, then fast-forward `main`.
+
+GitHub runs a scheduled workflow from the default branch only. The daily run
+starts after this file reaches `main`. Before that, dispatch it by hand from
+the Actions tab.
+
+Step 4 needs one secret. A pull request opened with the built-in
+`GITHUB_TOKEN` starts no other workflow, so `flake.yml` stays idle on it. Add
+a fine-grained personal access token with `contents: write` and
+`pull-requests: write` as the repository secret `FLAKE_UPDATE_TOKEN`. Without
+it the pull requests still open and still pass the evaluation gate, and the
+build runs when you merge into `testing`.
+
+**Reading the pull request**
+
+The body carries the compare link for every moved revision and the list of
+packages that would build locally. The label states the lane:
+
+| Label | Means |
+| --- | --- |
+| `lane:high` | Builds the system or holds the secrets. nixpkgs, home-manager, sops-nix, disko, flake-parts, import-tree. |
+| `lane:medium` | A break costs a desktop session. The shells, the greeter, nvf. |
+| `lane:low` | A break costs one application. |
+
+Edit `.github/lanes.json` to move an input between lanes.
+
+**Running it yourself**
+
+Use the Actions tab, or pass one input name to the manual dispatch. The same
+work by hand is two commands:
+
+```bash
+nix flake update nixpkgs
+nix build --dry-run .#nixosConfigurations.chapel.config.system.build.toplevel
+```
+
+**What the machines do**
+
+bigrig carries `m.auto-upgrade`. A timer runs `nixos-rebuild boot` against
+`github:Retr0astic/nixos/main` at 05:30 local time, with a delay of up to 45
+minutes. `boot` stages the generation and changes nothing that is running, so
+the update goes live at the next reboot.
+
+```bash
+# What is staged, and what is running
+nixos-rebuild list-generations | head -5
+
+# Did the timer fire, and did it succeed
+systemctl list-timers nixos-upgrade.timer
+systemctl is-failed nixos-upgrade.service
+journalctl -u nixos-upgrade.service -n 50
+```
+
+Chapel does not carry the aspect. Its `~/nixos` checkout is the source of
+truth for that machine, and a timer that staged `main` behind your hand
+rebuild would hand the next reboot an older generation. Add `m.auto-upgrade`
+to the chapel base list in `modules/hosts/chapel.nix` only when that stops
+being true. A variant host also sets `system.autoUpgrade.flake` itself,
+because the option is derived from the host name and `chapel-umbriel` has the
+host name `chapel`.
+
+**Two things this pipeline does not do**
+
+- It does not scan for CVEs. nixos-unstable carries fixes within days, and a
+  version-string scanner reports more noise than signal at this size.
+- It does not notify you. The pull request list is the queue. A failed
+  `nixos-upgrade.service` is silent and costs an update, never the machine.
