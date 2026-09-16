@@ -794,6 +794,7 @@ enabled = [ "pozzoo/hassio", "yuuto/calculator", "noctalia/screen_recorder", "we
 [shell]
 app_icon_color = "secondary"
 avatar_path = "/home/sree/.face"
+date_format = "%d/%m/%Y"
 font_family = "Comfortaa Medium"
 launch_apps_as_systemd_services = true
 password_style = "random"
