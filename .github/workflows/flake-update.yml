@@ -31,6 +31,11 @@ name: Flake update
 # pushed, but the pull request step fails.
 
 on:
+  # TEMPORARY, removed as soon as this run proves the token. Dispatch is only
+  # registered for a file that already sits on the default branch.
+  push:
+    branches:
+      - claude/nix-flake-update-pipeline-796umv
   schedule:
     # 03:00 UTC. Hosts follow main and main only moves when you merge, so
     # this time is unrelated to the timer in auto-upgrade.nix.
@@ -61,7 +66,7 @@ concurrency:
 # run can point both at a feature branch, which is how this workflow is
 # tested before it reaches testing.
 env:
-  BASE_BRANCH: ${{ github.event.inputs.base || 'testing' }}
+  BASE_BRANCH: ${{ github.event.inputs.base || (github.event_name == 'push' && github.ref_name) || 'testing' }}
 
 jobs:
   inputs:
@@ -91,6 +96,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          # TEMPORARY, removed with the push trigger above.
+          if [ "$GITHUB_EVENT_NAME" = "push" ]; then
+            ONLY="noctalia"
+          fi
           if [ -n "$ONLY" ]; then
             printf 'inputs=%s\n' "$(jq -cn --arg i "$ONLY" '[$i]')" >>"$GITHUB_OUTPUT"
             exit 0
