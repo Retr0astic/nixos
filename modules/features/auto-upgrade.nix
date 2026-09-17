@@ -60,11 +60,16 @@
 
       # Local time, not UTC. The workflow cron is unrelated: hosts follow
       # `main`, and `main` only moves when you merge.
-      dates = "05:30";
+      #
+      # 05:30 suits a machine that is always on. A host that sleeps at night
+      # overrides this with an hour when it is actually running. chapel does,
+      # in modules/hosts/chapel/host.nix.
+      dates = lib.mkDefault "05:30";
 
-      # The timer is persistent, so a machine that was off at 05:30 runs the
-      # job at the next boot. The delay keeps that build off the first
-      # minutes of a boot, when podman is still starting containers.
+      # The timer is persistent, so a machine that was off at its hour runs
+      # the job at the next boot instead of skipping the day. The delay keeps
+      # that build off the first minutes of a boot, when podman is still
+      # starting containers and when a desktop user is still logging in.
       randomizedDelaySec = "45min";
       persistent = true;
 

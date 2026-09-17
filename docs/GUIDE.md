@@ -405,9 +405,19 @@ nix build --dry-run .#nixosConfigurations.chapel.config.system.build.toplevel
 **What the machines do**
 
 Both hosts carry `m.auto-upgrade`. A timer runs `nixos-rebuild boot` against
-`github:Retr0astic/nixos/main` at 05:30 local time, with a delay of up to 45
-minutes. `boot` stages the generation and changes nothing that is running, so
-the update goes live at the next reboot.
+`github:Retr0astic/nixos/main`, with a delay of up to 45 minutes. `boot`
+stages the generation and changes nothing that is running, so the update goes
+live at the next reboot.
+
+| Host | Hour | Why |
+| --- | --- | --- |
+| bigrig | 05:30 | Always on, and the hour is quiet. |
+| chapel | 16:00 | A desktop is off at 05:30. Two hours after the 14:00 backup. |
+
+The timer is persistent. A host that is off at its hour runs the job at the
+next boot instead of skipping the day, which is how the restic timer in
+`modules/hosts/chapel/backups.nix` already behaves. Change chapel's hour in
+`modules/hosts/chapel/host.nix`.
 
 ```bash
 # What is staged, and what is running
