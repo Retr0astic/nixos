@@ -16,6 +16,10 @@ import re
 from datetime import datetime, timezone
 
 STORE_PATH = re.compile(r"/nix/store/[a-z0-9]{32}-(?P<name>[^\s]+)")
+# A package carries a version. The rest of a system closure is generation
+# glue: activate, etc, home-manager-path, dummy-fc-dir1, and their like. The
+# glue rebuilds on every generation and says nothing about the update.
+VERSIONED = re.compile(r"-\d")
 BUILD_CAP = 25
 
 
@@ -127,13 +131,20 @@ def rebuild_section(counts):
     built, fetched = counts
     if not built and not fetched:
         return "\n## Rebuild\n\nNothing to build, nothing to fetch.\n"
-    head = f"\n## Rebuild\n\n{len(built)} to build, {len(fetched)} to fetch.\n"
-    if not built:
+
+    packages = [name for name in built if VERSIONED.search(name)]
+    glue = len(built) - len(packages)
+    head = (
+        f"\n## Rebuild\n\n{len(packages)} packages to build, "
+        f"{len(fetched)} paths to fetch. "
+        f"{glue} generation files rebuild with any change.\n"
+    )
+    if not packages:
         return head
-    shown = built[:BUILD_CAP]
+    shown = packages[:BUILD_CAP]
     body = "\n".join(f"- {name}" for name in shown)
-    if len(built) > BUILD_CAP:
-        body += f"\n- and {len(built) - BUILD_CAP} more"
+    if len(packages) > BUILD_CAP:
+        body += f"\n- and {len(packages) - BUILD_CAP} more"
     return f"{head}\nBuilt locally, so not in the cache yet:\n\n{body}\n"
 
 
