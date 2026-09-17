@@ -92,7 +92,7 @@ jobs:
           set -euo pipefail
           # TEMPORARY, removed with the push trigger above.
           if [ "$GITHUB_EVENT_NAME" = "push" ]; then
-            ONLY="nixpkgs"
+            ONLY="noctalia"
           fi
           if [ -n "$ONLY" ]; then
             printf 'inputs=%s\n' "$(jq -cn --arg i "$ONLY" '[$i]')" >>"$GITHUB_OUTPUT"
