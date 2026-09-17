@@ -7,11 +7,18 @@
   # aspect is the last link. It fetches `main` once a day and stages what it
   # finds. It never decides what to install and it never picks a revision.
   #
-  # Not on chapel. A desktop that carries the checkout rebuilds by hand from
-  # ~/nixos, and a timer that stages `main` behind that would hand the next
-  # reboot an older generation than the one you just switched to. Add
-  # `m.auto-upgrade` to the chapel base list only after that checkout stops
-  # being the source of truth for the machine.
+  # Both hosts carry this, and both use `boot` rather than `switch`, so the
+  # timer never changes a running system.
+  #
+  # One rule follows from that on chapel. The timer stages `main`, and a
+  # rebuild from ~/nixos stages your working tree. The newer of the two wins
+  # the default boot entry, so work that only exists in that checkout loses
+  # the next reboot to `main`. Commit and push what you want to keep, which
+  # is what the pull request pipeline asks for anyway. To hold the timer off
+  # while you work on the machine for a few days:
+  #
+  #   sudo systemctl stop nixos-upgrade.timer     # until the next boot
+  #   nixos-rebuild list-generations | head -5    # what is staged now
   flake.modules.nixos.auto-upgrade = {
     config,
     lib,

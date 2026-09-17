@@ -391,7 +391,7 @@ nix build --dry-run .#nixosConfigurations.chapel.config.system.build.toplevel
 
 **What the machines do**
 
-bigrig carries `m.auto-upgrade`. A timer runs `nixos-rebuild boot` against
+Both hosts carry `m.auto-upgrade`. A timer runs `nixos-rebuild boot` against
 `github:Retr0astic/nixos/main` at 05:30 local time, with a delay of up to 45
 minutes. `boot` stages the generation and changes nothing that is running, so
 the update goes live at the next reboot.
@@ -406,13 +406,20 @@ systemctl is-failed nixos-upgrade.service
 journalctl -u nixos-upgrade.service -n 50
 ```
 
-Chapel does not carry the aspect. Its `~/nixos` checkout is the source of
-truth for that machine, and a timer that staged `main` behind your hand
-rebuild would hand the next reboot an older generation. Add `m.auto-upgrade`
-to the chapel base list in `modules/hosts/chapel.nix` only when that stops
-being true. A variant host also sets `system.autoUpgrade.flake` itself,
-because the option is derived from the host name and `chapel-umbriel` has the
-host name `chapel`.
+On chapel the timer shares the boot entry with your hand rebuild. Both write
+generations, and the newer one becomes the default. Work that exists only in
+`~/nixos` therefore loses the next reboot to `main`. Push what you want to
+keep, which is what the pull request pipeline asks for anyway. To hold the
+timer off while you work on the machine:
+
+```bash
+sudo systemctl stop nixos-upgrade.timer  # until the next boot
+```
+
+Each chapel variant states its own target in `modules/hosts/chapel.nix`. The
+aspect derives that target from the host name, and `chapel-umbriel` has the
+host name `chapel`, so a variant without its own line would wake up staged
+back to the plain chapel build.
 
 **Two things this pipeline does not do**
 

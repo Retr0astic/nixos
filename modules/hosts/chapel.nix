@@ -14,6 +14,7 @@
     m.sree
     m.core
     m.core-desktop
+    m.auto-upgrade
     m.memory
     m.secrets
     m.services
@@ -38,18 +39,28 @@
     m.opends5
   ];
 
-  # Add a desktop and a shell to build one variant.
-  mk = extra:
+  # What the update timer follows, named per variant. `m.auto-upgrade`
+  # derives that reference from the host name, and every variant here has
+  # the host name `chapel`, so a machine on `chapel-umbriel` would wake up
+  # staged back to the plain chapel build. The variant knows its own name,
+  # so it states it.
+  upgradeTarget = name: {
+    system.autoUpgrade.flake = "github:Retr0astic/nixos/main#${name}";
+  };
+
+  # Add a desktop and a shell to build one variant. The name is the flake
+  # output name below.
+  mk = name: extra:
     inputs.nixpkgs.lib.nixosSystem {
-      modules = base ++ extra;
+      modules = base ++ extra ++ [(upgradeTarget name)];
     };
 
   # Write `m.<name>` here. A bare name would pick up the attribute below it.
-  withNoctalia = mk [m.hyprland m.noctalia];
-  withCaelestia = mk [m.hyprland m.caelestia];
-  withNoctaliaUmbriel = mk [m.umbriel m.noctalia];
+  withNoctalia = mk "chapel" [m.hyprland m.noctalia];
+  withCaelestia = mk "chapel-caelestia" [m.hyprland m.caelestia];
+  withNoctaliaUmbriel = mk "chapel-umbriel" [m.umbriel m.noctalia];
   # The noctalia build plus a second greeter entry, "Hyprland (end-4)".
-  withEnd4 = mk [m.hyprland m.noctalia m.end4];
+  withEnd4 = mk "chapel-end4" [m.hyprland m.noctalia m.end4];
 in {
   flake.modules.nixos.chapel = {
     imports = [

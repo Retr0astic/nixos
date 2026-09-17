@@ -264,10 +264,12 @@ and fills the body with the revision compare links and the rebuild list. One
 input per pull request keeps a revert scoped to a single bump.
 
 `main` is the branch the machines follow. `modules/features/auto-upgrade.nix`
-gives bigrig a daily `nixos-rebuild boot --flake github:Retr0astic/nixos/main`,
-which stages a generation without restarting a running service. Chapel is
-deliberately excluded: its local checkout remains the source of truth for that
-machine.
+gives both hosts a daily `nixos-rebuild boot --flake github:Retr0astic/nixos/main`,
+which stages a generation without restarting a running service. Each chapel
+variant passes its own output name, because all of them share the host name
+`chapel`. On chapel the timer competes with a hand rebuild from `~/nixos`: the
+newer generation takes the default boot entry, so local work that is never
+pushed loses the next reboot to `main`.
 
 ## Caveats
 
