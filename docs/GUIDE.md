@@ -355,6 +355,15 @@ Updates arrive as pull requests. You no longer run `nix flake update` by hand.
 4. `.github/workflows/flake.yml` builds the pull request.
 5. You merge into `testing`, then fast-forward `main`.
 
+**When one input cannot move alone**
+
+Inputs are coupled. On 2026-09-15 nixpkgs removed the `buildGo125Module`
+alias, and the locked sops-nix still called it, so a lone nixpkgs bump could
+never evaluate. A `lane:high` input that fails the gate gets one more attempt
+with every input moving together. The title then reads `bump <input> with
+every input`, and the body says why. A `lane:medium` or `lane:low` input
+that fails the gate opens nothing, and the workflow run goes red.
+
 GitHub runs a scheduled workflow from the default branch only. The daily run
 starts after this file reaches `main`. Before that, dispatch it by hand from
 the Actions tab.

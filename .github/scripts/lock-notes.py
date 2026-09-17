@@ -143,6 +143,7 @@ def main():
     parser.add_argument("--new", required=True)
     parser.add_argument("--input", required=True)
     parser.add_argument("--lane", default="medium")
+    parser.add_argument("--grouped", default="false")
     parser.add_argument("--dry-run-log")
     args = parser.parse_args()
 
@@ -154,8 +155,13 @@ def main():
     direct = [row for row in rows if row[0] == args.input]
     indirect = len(rows) - len(direct)
 
-    print(f"Lane **{args.lane}**. One input per pull request, so a revert here")
-    print("costs this bump and no other.\n")
+    if args.grouped == "true":
+        print(f"Lane **{args.lane}**. `{args.input}` does not evaluate on its own")
+        print("at this revision, so every input moved together. A revert here")
+        print("costs the whole set.\n")
+    else:
+        print(f"Lane **{args.lane}**. One input per pull request, so a revert here")
+        print("costs this bump and no other.\n")
     print(table(rows))
     if indirect:
         print(f"\n{indirect} other nodes moved with it.")

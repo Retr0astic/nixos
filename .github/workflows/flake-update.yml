@@ -141,38 +141,7 @@ jobs:
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
           skipPush: true
 
-      - name: Update ${{ matrix.input }}
-        id: update
-        shell: bash
-        run: |
-          set -euo pipefail
-          cp flake.lock "$RUNNER_TEMP/flake.lock.old"
-          nix flake update "${{ matrix.input }}" --accept-flake-config
-          if git diff --quiet -- flake.lock; then
-            echo "changed=false" >>"$GITHUB_OUTPUT"
-            echo "${{ matrix.input }}: already current." >>"$GITHUB_STEP_SUMMARY"
-          else
-            echo "changed=true" >>"$GITHUB_OUTPUT"
-          fi
-
-      # The gate. `--dry-run` evaluates every module and resolves every
-      # derivation without building one, which catches the eval break that a
-      # bad bump usually is. It does not catch a compile failure: that is
-      # what flake.yml does on the pull request.
-      - name: Evaluate both hosts
-        if: steps.update.outputs.changed == 'true'
-        shell: bash
-        run: |
-          set -euo pipefail
-          : >"$RUNNER_TEMP/dry-run.log"
-          for host in chapel bigrig; do
-            nix build --dry-run --accept-flake-config \
-              ".#nixosConfigurations.$host.config.system.build.toplevel" \
-              2>&1 | tee -a "$RUNNER_TEMP/dry-run.log"
-          done
-
       - name: Read the lane
-        if: steps.update.outputs.changed == 'true'
         id: lane
         shell: bash
         run: |
@@ -180,6 +149,65 @@ jobs:
           lane=$(jq -r --arg i "${{ matrix.input }}" \
             '.inputs[$i] // .default' .github/lanes.json)
           printf 'lane=%s\n' "$lane" >>"$GITHUB_OUTPUT"
+
+      # Update, then gate.
+      #
+      # The gate runs `nix build --dry-run`, which evaluates every module and
+      # resolves every derivation without building one. That catches the eval
+      # break a bad bump usually is. It does not catch a compile failure:
+      # flake.yml does that on the pull request.
+      #
+      # One input cannot always move alone. On 2026-09-15 nixpkgs removed the
+      # `buildGo125Module` alias, and the locked sops-nix still called it, so
+      # a lone nixpkgs bump could never evaluate again. A high lane input that
+      # fails the gate therefore gets one more attempt with every input moving
+      # together, which is the bulk update this workflow otherwise replaces.
+      # The pull request says so, and the notes name every node that moved.
+      - name: Update ${{ matrix.input }} and evaluate
+        id: update
+        shell: bash
+        run: |
+          set -uo pipefail
+
+          evaluate() {
+            : >"$RUNNER_TEMP/dry-run.log"
+            for host in chapel bigrig; do
+              nix build --dry-run --accept-flake-config \
+                ".#nixosConfigurations.$host.config.system.build.toplevel" \
+                2>&1 | tee -a "$RUNNER_TEMP/dry-run.log" || return 1
+            done
+            return 0
+          }
+
+          cp flake.lock "$RUNNER_TEMP/flake.lock.old"
+          nix flake update "${{ matrix.input }}" --accept-flake-config || exit 1
+
+          if git diff --quiet -- flake.lock; then
+            echo "changed=false" >>"$GITHUB_OUTPUT"
+            echo "${{ matrix.input }}: already current." >>"$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          echo "changed=true" >>"$GITHUB_OUTPUT"
+
+          if evaluate; then
+            echo "grouped=false" >>"$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if [ "${{ steps.lane.outputs.lane }}" != "high" ]; then
+            echo "::error::${{ matrix.input }} does not evaluate on its own."
+            exit 1
+          fi
+
+          echo "::notice::${{ matrix.input }} does not evaluate alone. Retrying with every input."
+          git checkout -- flake.lock
+          nix flake update --accept-flake-config || exit 1
+          if git diff --quiet -- flake.lock; then
+            echo "::error::Nothing moved in the group update."
+            exit 1
+          fi
+          evaluate || exit 1
+          echo "grouped=true" >>"$GITHUB_OUTPUT"
 
       - name: Write the release notes
         if: steps.update.outputs.changed == 'true'
@@ -191,6 +219,7 @@ jobs:
             --new flake.lock \
             --input "${{ matrix.input }}" \
             --lane "${{ steps.lane.outputs.lane }}" \
+            --grouped "${{ steps.update.outputs.grouped }}" \
             --dry-run-log "$RUNNER_TEMP/dry-run.log" \
             >"$RUNNER_TEMP/notes.md"
           cat "$RUNNER_TEMP/notes.md" >>"$GITHUB_STEP_SUMMARY"
@@ -206,7 +235,16 @@ jobs:
           git config user.email "sreejiraj2399@gmail.com"
           git switch -c "$branch"
           git add flake.lock
-          git commit -m "chore(flake): bump ${{ matrix.input }}"
+          if [ "${{ steps.update.outputs.grouped }}" = "true" ]; then
+            printf '%s\n\n%s\n' \
+              "chore(flake): bump ${{ matrix.input }} with every input" \
+              "${{ matrix.input }} does not evaluate alone at this revision, so every input moved together." \
+              >"$RUNNER_TEMP/commit-msg"
+          else
+            printf '%s\n' "chore(flake): bump ${{ matrix.input }}" \
+              >"$RUNNER_TEMP/commit-msg"
+          fi
+          git commit -F "$RUNNER_TEMP/commit-msg"
           # The branch is owned by this workflow, so yesterday's version of
           # it is replaced rather than merged. The lease still refuses a push
           # over a commit this run never saw.
@@ -235,6 +273,9 @@ jobs:
             --description "Opened by the flake update workflow" --force >/dev/null
 
           title="chore(flake): bump ${{ matrix.input }}"
+          if [ "${{ steps.update.outputs.grouped }}" = "true" ]; then
+            title="chore(flake): bump ${{ matrix.input }} with every input"
+          fi
           number=$(gh pr list --head "$BRANCH" --base "$BASE_BRANCH" \
             --state open --json number --jq '.[0].number // empty')
           if [ -n "$number" ]; then
