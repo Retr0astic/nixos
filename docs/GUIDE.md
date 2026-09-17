@@ -368,12 +368,16 @@ GitHub runs a scheduled workflow from the default branch only. The daily run
 starts after this file reaches `main`. Before that, dispatch it by hand from
 the Actions tab.
 
-Step 4 needs one secret. A pull request opened with the built-in
-`GITHUB_TOKEN` starts no other workflow, so `flake.yml` stays idle on it. Add
-a fine-grained personal access token with `contents: write` and
-`pull-requests: write` as the repository secret `FLAKE_UPDATE_TOKEN`. Without
-it the pull requests still open and still pass the evaluation gate, and the
-build runs when you merge into `testing`.
+Steps 3 and 4 need one secret. The built-in `GITHUB_TOKEN` fails twice here:
+GitHub refuses `gh pr create` from Actions unless you tick Settings ->
+Actions -> General -> Workflow permissions -> allow Actions to create pull
+requests, and a pull request opened with that token starts no other workflow,
+so `flake.yml` never builds it. Add a fine-grained personal access token with
+`contents: write` and `pull-requests: write` as the repository secret
+`FLAKE_UPDATE_TOKEN`. Both problems then disappear.
+
+Without the secret the update and the gate still run and the branch is still
+pushed. Only the pull request step fails, and its error names the branch.
 
 **Reading the pull request**
 
