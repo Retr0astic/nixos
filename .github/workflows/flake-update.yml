@@ -34,6 +34,10 @@ on:
         description: "One input name. Empty means every input."
         required: false
         default: ""
+      base:
+        description: "Branch to update and to target. Default testing."
+        required: false
+        default: "testing"
 
 permissions:
   contents: write
@@ -45,8 +49,12 @@ concurrency:
   group: flake-update
   cancel-in-progress: false
 
+# The branch this run updates, and the branch its pull requests target. The
+# scheduled run has no dispatch input, so it falls back to testing. A manual
+# run can point both at a feature branch, which is how this workflow is
+# tested before it reaches testing.
 env:
-  BASE_BRANCH: testing
+  BASE_BRANCH: ${{ github.event.inputs.base || 'testing' }}
 
 jobs:
   inputs:
@@ -57,7 +65,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v7
         with:
-          ref: testing
+          ref: ${{ env.BASE_BRANCH }}
           persist-credentials: false
 
       - name: Install Nix
@@ -103,10 +111,10 @@ jobs:
         input: ${{ fromJSON(needs.inputs.outputs.list) }}
 
     steps:
-      - name: Check out ${{ env.BASE_BRANCH }}
+      - name: Check out the base branch
         uses: actions/checkout@v7
         with:
-          ref: testing
+          ref: ${{ env.BASE_BRANCH }}
           fetch-depth: 0
           token: ${{ secrets.FLAKE_UPDATE_TOKEN || secrets.GITHUB_TOKEN }}
 
