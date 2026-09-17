@@ -68,10 +68,14 @@ in {
           repeating = true;
         })
 
-        (luaBindWith ''"XF86AudioNext"'' (exec ''"playerctl next"'') {locked = true;})
-        (luaBindWith ''"XF86AudioPause"'' (exec ''"playerctl play-pause"'') {locked = true;})
-        (luaBindWith ''"XF86AudioPlay"'' (exec ''"playerctl play-pause"'') {locked = true;})
-        (luaBindWith ''"XF86AudioPrev"'' (exec ''"playerctl previous"'') {locked = true;})
+        # `--player=playerctld,%any` asks the playerctld daemon first, which
+        # answers for whichever player was active last. A bare `playerctl`
+        # takes the first player on the bus instead, so the music app keeps
+        # the keys while a video plays. See modules/features/media.nix.
+        (luaBindWith ''"XF86AudioNext"'' (exec ''"playerctl --player=playerctld,%any next"'') {locked = true;})
+        (luaBindWith ''"XF86AudioPause"'' (exec ''"playerctl --player=playerctld,%any play-pause"'') {locked = true;})
+        (luaBindWith ''"XF86AudioPlay"'' (exec ''"playerctl --player=playerctld,%any play-pause"'') {locked = true;})
+        (luaBindWith ''"XF86AudioPrev"'' (exec ''"playerctl --player=playerctld,%any previous"'') {locked = true;})
       ]
       ++ (lib.concatLists (lib.genList (
           i: let

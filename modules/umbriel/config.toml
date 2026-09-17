@@ -495,10 +495,10 @@ name = "media"
 "XF86AudioLowerVolume" = {action = "spawn:wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-", allow_when_locked = true}
 "XF86AudioMute" = {action = "spawn:wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle", allow_when_locked = true}
 "XF86AudioMicMute" = {action = "spawn:wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle", allow_when_locked = true}
-"XF86AudioPlay" = {action = "spawn:playerctl play-pause", allow_when_locked = true}
-"XF86AudioPause" = {action = "spawn:playerctl play-pause", allow_when_locked = true}
-"XF86AudioNext" = {action = "spawn:playerctl next", allow_when_locked = true}
-"XF86AudioPrev" = {action = "spawn:playerctl previous", allow_when_locked = true}
+"XF86AudioPlay" = {action = "spawn:playerctl --player=playerctld,%any play-pause", allow_when_locked = true}
+"XF86AudioPause" = {action = "spawn:playerctl --player=playerctld,%any play-pause", allow_when_locked = true}
+"XF86AudioNext" = {action = "spawn:playerctl --player=playerctld,%any next", allow_when_locked = true}
+"XF86AudioPrev" = {action = "spawn:playerctl --player=playerctld,%any previous", allow_when_locked = true}
 # Binds intended to work while locked use the table form.
 "XF86MonBrightnessDown" = { action = "spawn:brightnessctl -e4 -n2 set 5%-", allow_when_locked = true }
 "XF86MonBrightnessUp" = { action = "spawn:brightnessctl -e4 -n2 set 5%+", allow_when_locked = true }

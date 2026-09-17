@@ -100,7 +100,8 @@ in {
         lxqt.pavucontrol-qt
         wireplumber
         libdbusmenu-gtk3
-        playerctl
+        # playerctl comes from services.playerctld in
+        # modules/features/media.nix, which every chapel variant carries.
         brightnessctl
         ddcutil
         axel
