@@ -15,6 +15,7 @@
     m.core
     m.core-desktop
     m.auto-upgrade
+    m.accept-updates
     m.memory
     m.secrets
     m.services
