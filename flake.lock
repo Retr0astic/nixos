@@ -202,11 +202,11 @@
     "lucidglyph": {
       "flake": false,
       "locked": {
-        "lastModified": 1789154518,
-        "narHash": "sha256-hYUxJDaMbbzEL7g94fCLFkXvKUJdavz2QwXeES183uk=",
+        "lastModified": 1789498464,
+        "narHash": "sha256-bOns0BSTV8rsN7URGLSX9kIgt3yY6nIT3bLkVmYAyCc=",
         "owner": "maximilionus",
         "repo": "lucidglyph",
-        "rev": "d49244a6f15ba011336c2f8583e90074a6d749f7",
+        "rev": "f289f0145fc4c3e1de0850c294b56a9955070b12",
         "type": "github"
       },
       "original": {
