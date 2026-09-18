@@ -63,7 +63,10 @@ inputs=$(jq -r '.[].headRefName | sub("^flake-update/"; "")' <<<"$pulls")
 numbers=$(jq -r '.[].number' <<<"$pulls")
 
 echo "accept-updates: applying $count update(s):"
-echo "$inputs" | sed 's/^/  - /'
+while read -r name; do
+  [ -n "$name" ] || continue
+  echo "  - $name"
+done <<<"$inputs"
 
 # `git worktree add` refuses a path that already exists, so mktemp makes the
 # parent and git makes the leaf.

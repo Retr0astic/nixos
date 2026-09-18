@@ -4,7 +4,7 @@
       name = "accept-updates";
       # nix itself is not listed: the script uses the caller's own client
       # rather than a second copy pulled in by this closure.
-      runtimeInputs = with pkgs; [git gh jq coreutils gnused];
+      runtimeInputs = with pkgs; [git gh jq coreutils];
       text = builtins.readFile ./_accept-updates/accept-updates.sh;
     };
 in {
