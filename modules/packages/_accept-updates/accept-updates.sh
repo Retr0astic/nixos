@@ -118,9 +118,24 @@ if [ "$promote" = 0 ]; then
 fi
 
 echo "accept-updates: waiting for CI on testing"
-sleep 10
-run=$(gh run list --branch testing --workflow flake.yml --limit 1 \
-  --json databaseId --jq '.[0].databaseId')
+
+# Match the run to this exact commit. Taking the newest run instead would
+# watch the previous push whenever registration lags.
+run=""
+for _ in $(seq 1 12); do
+  run=$(gh run list --branch testing --workflow flake.yml --limit 10 \
+    --json databaseId,headSha \
+    --jq "[.[] | select(.headSha == \"$sha\")] | .[0].databaseId // empty")
+  [ -n "$run" ] && break
+  sleep 10
+done
+
+if [ -z "$run" ]; then
+  echo "accept-updates: no CI run appeared for ${sha:0:7}." >&2
+  echo "accept-updates: testing carries the commit. main is unchanged." >&2
+  exit 1
+fi
+
 gh run watch "$run" --exit-status
 
 git push --quiet origin "$sha:main"

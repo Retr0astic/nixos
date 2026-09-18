@@ -392,7 +392,25 @@ packages that would build locally. The label states the lane:
 
 Edit `.github/lanes.json` to move an input between lanes.
 
-**Running it yourself**
+**Taking the updates**
+
+Merging the pull requests one by one does not work well: each one rewrites
+`flake.lock`, so the second merge fights the first. Take the set in one pass
+instead.
+
+From chapel:
+
+```bash
+accept              # apply every open update, push to testing, close them
+accept --promote    # also move main once CI on testing is green
+accept --skip-high  # leave lane:high for yourself
+```
+
+From a browser or the GitHub mobile app: Actions -> Accept updates -> Run
+workflow, with the same two switches as checkboxes. Both front ends run the
+same script, `modules/packages/_accept-updates/accept-updates.sh`.
+
+**Running the updater yourself**
 
 Use the Actions tab, or pass one input name to the manual dispatch. The same
 work by hand is two commands:
