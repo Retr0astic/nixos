@@ -258,10 +258,10 @@ therefore has two CI-covered branches, but the flake does not declare separate
 stable or testing configurations.
 
 A second workflow, `.github/workflows/flake-update.yml`, updates the lock file
-on a daily schedule. It opens one pull request per flake input against
-`testing`, labels each one with an urgency lane read from `.github/lanes.json`,
-and fills the body with the revision compare links and the rebuild list. One
-input per pull request keeps a revert scoped to a single bump.
+on a daily schedule. It opens one pull request against `testing` with every
+input that moved. The body groups the inputs by the urgency lanes in
+`.github/lanes.json`, with the revision compare links and the rebuild list. An
+input that does not evaluate stays at its old revision, and the body names it.
 
 `main` is the branch the machines follow. `modules/features/auto-upgrade.nix`
 gives both hosts a daily `nixos-rebuild boot --flake github:Retr0astic/nixos/main`,

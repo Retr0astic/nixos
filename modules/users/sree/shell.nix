@@ -42,9 +42,6 @@
     programs.fish.shellAliases = {
       rebuild = "sudo nixos-rebuild switch --flake ${checkout}";
       update = "cd ${checkout} && nix flake update && sudo nixos-rebuild switch --flake .";
-      # Take every open flake update in one pass instead of one pull request
-      # at a time. `accept --promote` also moves main once CI is green.
-      accept = "accept-updates";
     };
   };
 }

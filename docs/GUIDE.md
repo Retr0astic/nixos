@@ -345,24 +345,32 @@ CI fires on every pull request and on pushes to `main` and `testing`.
 
 ## 7. The update pipeline
 
-Updates arrive as pull requests. You no longer run `nix flake update` by hand.
+Updates arrive as one pull request a day. You no longer run `nix flake
+update` by hand.
 
 **The path an update takes**
 
 1. `.github/workflows/flake-update.yml` runs at 03:00 UTC, once per day.
-2. It bumps one input at a time and evaluates chapel and bigrig at that lock.
-3. It opens one pull request per moved input against `testing`.
+2. It moves every input and evaluates chapel and bigrig at that lock.
+3. It opens or refreshes one pull request, `flake-update/daily`, against
+   `testing`.
 4. `.github/workflows/flake.yml` builds the pull request.
-5. You merge into `testing`, then fast-forward `main`.
+5. You read the body, merge into `testing`, then fast-forward `main`.
 
-**When one input cannot move alone**
+An unmerged pull request is refreshed the next morning, so updates collect in
+it until you merge. Pull requests from the old one-per-input workflow close
+on the first run.
 
-Inputs are coupled. On 2026-09-15 nixpkgs removed the `buildGo125Module`
-alias, and the locked sops-nix still called it, so a lone nixpkgs bump could
-never evaluate. A `lane:high` input that fails the gate gets one more attempt
-with every input moving together. The title then reads `bump <input> with
-every input`, and the body says why. A `lane:medium` or `lane:low` input
-that fails the gate opens nothing, and the workflow run goes red.
+**When an input does not evaluate**
+
+If the full lock does not evaluate, the run moves the inputs one at a time.
+It keeps each input that evaluates and repeats the pass while it makes
+progress. Inputs are coupled. On 2026-09-15 nixpkgs removed the
+`buildGo125Module` alias, and the locked sops-nix still called it. The
+second pass takes nixpkgs after sops-nix moves.
+
+An input that never evaluates stays at its old revision. The body names it
+under "Held back", and the run goes red. The other inputs still arrive.
 
 GitHub runs a scheduled workflow from the default branch only. The daily run
 starts after this file reaches `main`. Before that, dispatch it by hand from
@@ -381,39 +389,38 @@ pushed. Only the pull request step fails, and its error names the branch.
 
 **Reading the pull request**
 
-The body carries the compare link for every moved revision and the list of
-packages that would build locally. The label states the lane:
+The body has one table per lane. Each row carries the compare link for the
+moved revision. The rebuild list names the packages that would build locally.
 
-| Label | Means |
+| Lane | Means |
 | --- | --- |
-| `lane:high` | Builds the system or holds the secrets. nixpkgs, home-manager, sops-nix, disko, flake-parts, import-tree. |
-| `lane:medium` | A break costs a desktop session. The shells, the greeter, nvf. |
-| `lane:low` | A break costs one application. |
+| high | Builds the system or holds the secrets. nixpkgs, home-manager, sops-nix, disko, flake-parts, import-tree. |
+| medium | A break costs a desktop session. The shells, the greeter, nvf. |
+| low | A break costs one application. |
 
 Edit `.github/lanes.json` to move an input between lanes.
 
 **Taking the updates**
 
-Merging the pull requests one by one does not work well: each one rewrites
-`flake.lock`, so the second merge fights the first. Take the set in one pass
-instead.
+1. Read the body. Open the compare links you care about.
+2. Merge the pull request into `testing`.
+3. Fast-forward `main` when you trust the result:
 
-From chapel:
+   ```bash
+   git push origin origin/testing:main
+   ```
 
-```bash
-accept              # apply every open update, push to testing, close them
-accept --promote    # also move main once CI on testing is green
-accept --skip-high  # leave lane:high for yourself
-```
+**Dropping one input**
 
-From a browser or the GitHub mobile app: Actions -> Accept updates -> Run
-workflow, with the same two switches as checkboxes. Both front ends run the
-same script, `modules/packages/_accept-updates/accept-updates.sh`.
+A red build check, or a change you do not want, means one input must wait.
+Run Actions -> Flake update -> Run workflow, and put its name in `hold`.
+Separate several names with spaces or commas. The run rebuilds the branch
+without those inputs and rewrites the body. The next scheduled run takes
+them again.
 
 **Running the updater yourself**
 
-Use the Actions tab, or pass one input name to the manual dispatch. The same
-work by hand is two commands:
+Use the Actions tab. The same check by hand for one input is two commands:
 
 ```bash
 nix flake update nixpkgs
@@ -466,5 +473,6 @@ back to the plain chapel build.
 
 - It does not scan for CVEs. nixos-unstable carries fixes within days, and a
   version-string scanner reports more noise than signal at this size.
-- It does not notify you. The pull request list is the queue. A failed
+- It does not notify you outside GitHub. The open pull request is the queue,
+  and a red run means an input was held back. A failed
   `nixos-upgrade.service` is silent and costs an update, never the machine.

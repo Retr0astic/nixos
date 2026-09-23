@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Render the release notes for one flake.lock update.
+"""Render the release notes for the daily flake.lock update.
 
 Called by .github/workflows/flake-update.yml with the lock file from before
-`nix flake update <input>` and the one from after it. Prints markdown on
-stdout: one row per moved node, a compare link where the source is a forge
-that has one, and the rebuild list that `nix build --dry-run` reported.
+the update and the one from after it. Prints markdown on stdout: one table
+per lane with a compare link for every moved input, the transitive nodes that
+moved with them, the inputs held back, and the rebuild list that
+`nix build --dry-run` reported.
 
 Standard library only. The runner has no other dependency installed.
 """
@@ -87,6 +88,14 @@ def changes(old, new):
     return rows
 
 
+LANES = ("high", "medium", "low")
+LANE_TEXT = {
+    "high": "builds the system or holds its secrets",
+    "medium": "a break costs a desktop session",
+    "low": "a break costs one application",
+}
+
+
 def table(rows):
     lines = [
         "| Input | From | To | Locked | Source |",
@@ -152,33 +161,55 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--old", required=True)
     parser.add_argument("--new", required=True)
-    parser.add_argument("--input", required=True)
-    parser.add_argument("--lane", default="medium")
-    parser.add_argument("--grouped", default="false")
+    parser.add_argument("--lanes", required=True)
+    # NAME=REASON, once per input that stayed at its old revision.
+    parser.add_argument("--held", action="append", default=[])
     parser.add_argument("--dry-run-log")
     args = parser.parse_args()
 
-    rows = changes(load(args.old), load(args.new))
-    if not rows:
-        print(f"`{args.input}` did not move.")
-        return
+    config = load(args.lanes)
+    new = load(args.new)
+    names = set(root_inputs(new).values())
+    rows = changes(load(args.old), new)
 
-    direct = [row for row in rows if row[0] == args.input]
-    indirect = len(rows) - len(direct)
+    direct = [row for row in rows if row[0] in names]
+    indirect = [row for row in rows if row[0] not in names]
+    lanes = {
+        row[0]: config["inputs"].get(row[0], config["default"]) for row in direct
+    }
 
-    if args.grouped == "true":
-        print(f"Lane **{args.lane}**. `{args.input}` does not evaluate on its own")
-        print("at this revision, so every input moved together. A revert here")
-        print("costs the whole set.\n")
+    if direct:
+        print(f"{len(direct)} inputs moved. Merge to take all of them.\n")
     else:
-        print(f"Lane **{args.lane}**. One input per pull request, so a revert here")
-        print("costs this bump and no other.\n")
-    print(table(rows))
+        print("No input moved.\n")
+
+    for lane in LANES:
+        group = [row for row in direct if lanes[row[0]] == lane]
+        if not group:
+            continue
+        print(f"## Lane {lane}: {LANE_TEXT[lane]}\n")
+        print(table(group))
+        print()
+
     if indirect:
-        print(f"\n{indirect} other nodes moved with it.")
+        count = len(indirect)
+        print(f"<details><summary>{count} transitive nodes moved with them</summary>\n")
+        print(table(indirect))
+        print("\n</details>\n")
+
+    if args.held:
+        print("## Held back\n")
+        print("These inputs stay at their old revision.\n")
+        for item in args.held:
+            name, _, reason = item.partition("=")
+            print(f"- `{name}`: {reason}")
+        print()
+
     print(rebuild_section(rebuilds(args.dry_run_log)))
     print("Both host configurations evaluate at this lock. A green build check")
-    print("on this pull request means they also build.")
+    print("on this pull request means they also build.\n")
+    print("To drop an input from this pull request, run the Flake update")
+    print("workflow with its name in `hold`. The run rewrites this branch.")
 
 
 if __name__ == "__main__":

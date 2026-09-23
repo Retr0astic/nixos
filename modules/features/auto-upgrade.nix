@@ -2,7 +2,7 @@
   # Pull-based delivery of an update that already passed review.
   #
   # The chain is: .github/workflows/flake-update.yml opens one pull request
-  # per flake input, flake.yml builds that pull request, you merge it into
+  # a day with every moved input, flake.yml builds it, you merge it into
   # `testing`, and you fast-forward `main` when you trust the result. This
   # aspect is the last link. It fetches `main` once a day and stages what it
   # finds. It never decides what to install and it never picks a revision.
