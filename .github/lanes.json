@@ -1,7 +1,7 @@
 {
   "comment": [
     "Urgency lane per flake input, used by .github/workflows/flake-update.yml",
-    "to label each update pull request. high: the input builds the system or",
+    "to group the inputs in the daily update pull request. high: the input builds the system or",
     "holds its secrets, so a break is a machine that does not boot or does not",
     "decrypt. medium: a break costs a desktop session. low: a break costs one",
     "application. An input missing from this map takes the default lane."

@@ -1,17 +1,29 @@
 name: Flake update
 
-# One pull request per flake input, every morning.
+# One pull request per day that carries every flake input that moved.
 #
 # The pipeline is:
-#   this workflow  -> a pull request per input, against testing
+#   this workflow  -> one pull request, flake-update/daily, against testing
 #   flake.yml      -> builds that pull request
-#   you            -> merge into testing, then fast-forward main
+#   you            -> read the body, merge into testing, then fast-forward main
 #   nixos-upgrade  -> each host stages main once a day
 #                     (modules/features/auto-upgrade.nix)
 #
-# Why one input per pull request: a bulk `nix flake update` moves a dozen
-# revisions in one commit, so one bad input costs the whole batch. Commit
-# ad83a5f reverted 14 good bumps to drop a single bad one.
+# The body lists every moved input by lane with a compare link, so one merge
+# is one review. An unmerged pull request is refreshed in place the next
+# morning, so updates collect in it until you take them.
+#
+# A bad input does not block the rest. The run first moves every input
+# together. When that lock does not evaluate, it moves them one at a time on
+# top of each other and keeps the ones that evaluate. It repeats that pass
+# while it makes progress, because inputs are coupled: on 2026-09-15 nixpkgs
+# removed the `buildGo125Module` alias, and the locked sops-nix still called
+# it, so nixpkgs only evaluates after sops-nix moves. An input that never
+# evaluates stays at its old revision, the body names it under "Held back",
+# and the run goes red.
+#
+# To drop an input you do not want, dispatch this workflow with its name in
+# `hold`. The run rebuilds the branch without it.
 #
 # The schedule only fires from the default branch. This file has to reach
 # `main` before the daily run starts. Until then, run it from the Actions tab.
@@ -37,8 +49,8 @@ on:
     - cron: "0 3 * * *"
   workflow_dispatch:
     inputs:
-      only:
-        description: "One input name. Empty means every input."
+      hold:
+        description: "Inputs to leave at their old revision, separated by spaces or commas."
         required: false
         default: ""
       base:
@@ -49,73 +61,26 @@ on:
 permissions:
   contents: write
   pull-requests: write
-  issues: write
 
-# Never two update runs at once: both would push the same branches.
+# Never two update runs at once: both would push the same branch.
 concurrency:
   group: flake-update
   cancel-in-progress: false
 
-# The branch this run updates, and the branch its pull requests target. The
+# The branch this run updates, and the branch its pull request targets. The
 # scheduled run has no dispatch input, so it falls back to testing. A manual
-# run can point both at a feature branch, which is how this workflow is
-# tested before it reaches testing.
+# run can point it at a feature branch, which is how this workflow is tested
+# before it reaches testing.
 env:
   BASE_BRANCH: ${{ github.event.inputs.base || 'testing' }}
+  BRANCH: flake-update/daily
 
 jobs:
-  inputs:
-    runs-on: ubuntu-24.04
-    outputs:
-      list: ${{ steps.list.outputs.inputs }}
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v7
-        with:
-          ref: ${{ env.BASE_BRANCH }}
-          persist-credentials: false
-
-      - name: Install Nix
-        uses: cachix/install-nix-action@v31
-        with:
-          extra_nix_config: |
-            accept-flake-config = true
-
-      # The root node names every direct input. A `follows` entry points at a
-      # list rather than a node key, and `nix flake update` rejects it, so
-      # those are dropped here.
-      - name: List flake inputs
-        id: list
-        env:
-          ONLY: ${{ github.event.inputs.only }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          if [ -n "$ONLY" ]; then
-            printf 'inputs=%s\n' "$(jq -cn --arg i "$ONLY" '[$i]')" >>"$GITHUB_OUTPUT"
-            exit 0
-          fi
-          list=$(nix flake metadata --json --accept-flake-config |
-            jq -c '[.locks.nodes[.locks.root].inputs
-                    | to_entries[]
-                    | select(.value | type == "string")
-                    | .key]')
-          printf 'inputs=%s\n' "$list" >>"$GITHUB_OUTPUT"
-          printf 'Inputs: %s\n' "$list" >>"$GITHUB_STEP_SUMMARY"
-
   update:
-    needs: inputs
-    if: needs.inputs.outputs.list != '[]'
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
-
-    strategy:
-      fail-fast: false
-      # Three at a time. Each one evaluates both hosts, and a runner that
-      # swaps is slower than a queue.
-      max-parallel: 3
-      matrix:
-        input: ${{ fromJSON(needs.inputs.outputs.list) }}
+    # The one-at-a-time fallback evaluates both hosts once per input and
+    # pass. The common case, where everything moves together, takes minutes.
+    timeout-minutes: 180
 
     steps:
       - name: Check out the base branch
@@ -138,30 +103,14 @@ jobs:
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
           skipPush: true
 
-      - name: Read the lane
-        id: lane
-        shell: bash
-        run: |
-          set -euo pipefail
-          lane=$(jq -r --arg i "${{ matrix.input }}" \
-            '.inputs[$i] // .default' .github/lanes.json)
-          printf 'lane=%s\n' "$lane" >>"$GITHUB_OUTPUT"
-
-      # Update, then gate.
-      #
       # The gate runs `nix build --dry-run`, which evaluates every module and
       # resolves every derivation without building one. That catches the eval
       # break a bad bump usually is. It does not catch a compile failure:
       # flake.yml does that on the pull request.
-      #
-      # One input cannot always move alone. On 2026-09-15 nixpkgs removed the
-      # `buildGo125Module` alias, and the locked sops-nix still called it, so
-      # a lone nixpkgs bump could never evaluate again. A high lane input that
-      # fails the gate therefore gets one more attempt with every input moving
-      # together, which is the bulk update this workflow otherwise replaces.
-      # The pull request says so, and the notes name every node that moved.
-      - name: Update ${{ matrix.input }} and evaluate
+      - name: Update and evaluate
         id: update
+        env:
+          HOLD: ${{ github.event.inputs.hold }}
         shell: bash
         run: |
           set -uo pipefail
@@ -171,120 +120,186 @@ jobs:
             for host in chapel bigrig; do
               nix build --dry-run --accept-flake-config \
                 ".#nixosConfigurations.$host.config.system.build.toplevel" \
-                2>&1 | tee -a "$RUNNER_TEMP/dry-run.log" || return 1
+                >>"$RUNNER_TEMP/dry-run.log" 2>&1 || {
+                tail -n 20 "$RUNNER_TEMP/dry-run.log"
+                return 1
+              }
             done
             return 0
           }
 
-          cp flake.lock "$RUNNER_TEMP/flake.lock.old"
-          nix flake update "${{ matrix.input }}" --accept-flake-config || exit 1
+          # The root node names every direct input. A `follows` entry points
+          # at a list rather than a node key, and `nix flake update` rejects
+          # it, so those are dropped here.
+          all=$(nix flake metadata --json --accept-flake-config |
+            jq -r '.locks.nodes[.locks.root].inputs
+                   | to_entries[]
+                   | select(.value | type == "string")
+                   | .key') || exit 1
 
+          held="$RUNNER_TEMP/held.txt"
+          : >"$held"
+          pending=()
+          for name in $all; do
+            if printf '%s\n' ${HOLD//,/ } | grep -qxF "$name"; then
+              echo "$name=held by request" >>"$held"
+            else
+              pending+=("$name")
+            fi
+          done
+
+          cp flake.lock "$RUNNER_TEMP/flake.lock.old"
+          echo "failed=false" >>"$GITHUB_OUTPUT"
+
+          if [ "${#pending[@]}" -gt 0 ]; then
+            nix flake update "${pending[@]}" --accept-flake-config || exit 1
+          fi
           if git diff --quiet -- flake.lock; then
             echo "changed=false" >>"$GITHUB_OUTPUT"
-            echo "${{ matrix.input }}: already current." >>"$GITHUB_STEP_SUMMARY"
+            echo "Every input is current." >>"$GITHUB_STEP_SUMMARY"
             exit 0
           fi
+
+          if ! evaluate; then
+            echo "::notice::The full update does not evaluate. Moving inputs one at a time."
+            cp "$RUNNER_TEMP/flake.lock.old" flake.lock
+            progress=1
+            while [ "$progress" = 1 ] && [ "${#pending[@]}" -gt 0 ]; do
+              progress=0
+              retry=()
+              for name in "${pending[@]}"; do
+                cp flake.lock "$RUNNER_TEMP/flake.lock.keep"
+                if ! nix flake update "$name" --accept-flake-config; then
+                  cp "$RUNNER_TEMP/flake.lock.keep" flake.lock
+                  retry+=("$name")
+                  continue
+                fi
+                # Current already, or moved by an earlier input.
+                if cmp -s flake.lock "$RUNNER_TEMP/flake.lock.keep"; then
+                  continue
+                fi
+                if evaluate; then
+                  echo "$name: kept."
+                  progress=1
+                else
+                  echo "$name: does not evaluate yet."
+                  cp "$RUNNER_TEMP/flake.lock.keep" flake.lock
+                  retry+=("$name")
+                fi
+              done
+              pending=("${retry[@]}")
+            done
+
+            for name in "${pending[@]}"; do
+              echo "::error::$name does not evaluate at this lock. It stays at its old revision."
+              echo "$name=does not evaluate at this lock" >>"$held"
+              echo "failed=true" >>"$GITHUB_OUTPUT"
+            done
+
+            if cmp -s flake.lock "$RUNNER_TEMP/flake.lock.old"; then
+              echo "changed=false" >>"$GITHUB_OUTPUT"
+              exit 0
+            fi
+            # The rebuild list in the notes comes from the final lock.
+            evaluate || exit 1
+          fi
+
           echo "changed=true" >>"$GITHUB_OUTPUT"
-
-          if evaluate; then
-            echo "grouped=false" >>"$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          if [ "${{ steps.lane.outputs.lane }}" != "high" ]; then
-            echo "::error::${{ matrix.input }} does not evaluate on its own."
-            exit 1
-          fi
-
-          echo "::notice::${{ matrix.input }} does not evaluate alone. Retrying with every input."
-          git checkout -- flake.lock
-          nix flake update --accept-flake-config || exit 1
-          if git diff --quiet -- flake.lock; then
-            echo "::error::Nothing moved in the group update."
-            exit 1
-          fi
-          evaluate || exit 1
-          echo "grouped=true" >>"$GITHUB_OUTPUT"
 
       - name: Write the release notes
         if: steps.update.outputs.changed == 'true'
         shell: bash
         run: |
           set -euo pipefail
+          held=()
+          while IFS= read -r line; do
+            held+=(--held "$line")
+          done <"$RUNNER_TEMP/held.txt"
           python3 .github/scripts/lock-notes.py \
             --old "$RUNNER_TEMP/flake.lock.old" \
             --new flake.lock \
-            --input "${{ matrix.input }}" \
-            --lane "${{ steps.lane.outputs.lane }}" \
-            --grouped "${{ steps.update.outputs.grouped }}" \
+            --lanes .github/lanes.json \
             --dry-run-log "$RUNNER_TEMP/dry-run.log" \
+            "${held[@]}" \
             >"$RUNNER_TEMP/notes.md"
           cat "$RUNNER_TEMP/notes.md" >>"$GITHUB_STEP_SUMMARY"
 
       - name: Push the branch
         if: steps.update.outputs.changed == 'true'
-        id: push
         shell: bash
         run: |
           set -euo pipefail
-          branch="flake-update/${{ matrix.input }}"
           git config user.name "retr0astic"
           git config user.email "sreejiraj2399@gmail.com"
-          git switch -c "$branch"
+          git switch -c "$BRANCH"
           git add flake.lock
-          if [ "${{ steps.update.outputs.grouped }}" = "true" ]; then
-            printf '%s\n\n%s\n' \
-              "chore(flake): bump ${{ matrix.input }} with every input" \
-              "${{ matrix.input }} does not evaluate alone at this revision, so every input moved together." \
-              >"$RUNNER_TEMP/commit-msg"
-          else
-            printf '%s\n' "chore(flake): bump ${{ matrix.input }}" \
-              >"$RUNNER_TEMP/commit-msg"
-          fi
+          moved=$(python3 - "$RUNNER_TEMP/flake.lock.old" flake.lock <<'PY'
+          import json, sys
+          old, new = (json.load(open(p)) for p in sys.argv[1:])
+          root = new["nodes"][new["root"]]["inputs"]
+          for name, key in sorted(root.items()):
+              if isinstance(key, str):
+                  before = old["nodes"].get(key, {}).get("locked")
+                  if before != new["nodes"][key].get("locked"):
+                      print(name)
+          PY
+          )
+          count=$(printf '%s\n' "$moved" | grep -c . || true)
+          printf 'chore(flake): update %s input(s)\n\n%s\n' \
+            "$count" "$(printf '%s\n' "$moved" | paste -sd ' ' -)" \
+            >"$RUNNER_TEMP/commit-msg"
+          head -1 "$RUNNER_TEMP/commit-msg" >"$RUNNER_TEMP/title"
           git commit -F "$RUNNER_TEMP/commit-msg"
           # The branch is owned by this workflow, so yesterday's version of
           # it is replaced rather than merged. The lease still refuses a push
           # over a commit this run never saw.
-          git fetch origin "+refs/heads/$branch:refs/remotes/origin/$branch" || true
-          git push --force-with-lease -u origin "$branch"
-          printf 'branch=%s\n' "$branch" >>"$GITHUB_OUTPUT"
+          git fetch origin "+refs/heads/$BRANCH:refs/remotes/origin/$BRANCH" || true
+          git push --force-with-lease -u origin "$BRANCH"
 
       - name: Open or refresh the pull request
-        if: steps.update.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ secrets.FLAKE_UPDATE_TOKEN || secrets.GITHUB_TOKEN }}
-          BRANCH: ${{ steps.push.outputs.branch }}
-          LANE: ${{ steps.lane.outputs.lane }}
+          CHANGED: ${{ steps.update.outputs.changed }}
           HAS_PAT: ${{ secrets.FLAKE_UPDATE_TOKEN != '' }}
         shell: bash
         run: |
           set -euo pipefail
-          case "$LANE" in
-            high) color="B60205" ;;
-            medium) color="FBCA04" ;;
-            *) color="0E8A16" ;;
-          esac
-          gh label create "lane:$LANE" --color "$color" \
-            --description "Update urgency lane" --force >/dev/null
           gh label create "flake-update" --color "1D76DB" \
             --description "Opened by the flake update workflow" --force >/dev/null
 
-          title="chore(flake): bump ${{ matrix.input }}"
-          if [ "${{ steps.update.outputs.grouped }}" = "true" ]; then
-            title="chore(flake): bump ${{ matrix.input }} with every input"
-          fi
           number=$(gh pr list --head "$BRANCH" --base "$BASE_BRANCH" \
             --state open --json number --jq '.[0].number // empty')
+
+          # The pull requests the per-input version of this workflow opened.
+          # The daily one replaces them.
+          gh pr list --label flake-update --state open \
+            --json number,headRefName \
+            --jq ".[] | select(.headRefName != \"$BRANCH\") | .number" |
+            while read -r old; do
+              gh pr close "$old" --delete-branch \
+                --comment "Replaced by the daily update pull request." >/dev/null
+            done
+
+          if [ "$CHANGED" != "true" ]; then
+            # Nothing moved against the base, so an open pull request only
+            # carries a lock the base already has.
+            if [ -n "$number" ]; then
+              gh pr close "$number" --delete-branch \
+                --comment "Nothing left to update against $BASE_BRANCH." >/dev/null
+            fi
+            exit 0
+          fi
+
+          title=$(cat "$RUNNER_TEMP/title")
           if [ -n "$number" ]; then
             gh pr edit "$number" --title "$title" \
-              --body-file "$RUNNER_TEMP/notes.md" \
-              --add-label "flake-update" --add-label "lane:$LANE"
+              --body-file "$RUNNER_TEMP/notes.md" --add-label "flake-update"
             exit 0
           fi
 
           if gh pr create --base "$BASE_BRANCH" --head "$BRANCH" \
             --title "$title" --body-file "$RUNNER_TEMP/notes.md" \
-            --label "flake-update" --label "lane:$LANE"; then
+            --label "flake-update"; then
             if [ "$HAS_PAT" != "true" ]; then
               echo "::warning::No FLAKE_UPDATE_TOKEN secret, so flake.yml will not build this pull request. Merging into the base branch still builds it."
             fi
@@ -295,3 +310,9 @@ jobs:
           # pull request by hand, or fix the permission and rerun.
           echo "::error::Could not open the pull request. Add a FLAKE_UPDATE_TOKEN secret, or tick Settings -> Actions -> General -> Allow GitHub Actions to create and approve pull requests. Branch $BRANCH is pushed and ready."
           exit 1
+
+      # Last, so the pull request with the good inputs still opens. A red run
+      # is the signal that an input needs a look.
+      - name: Fail on a held-back input
+        if: steps.update.outputs.failed == 'true'
+        run: exit 1
