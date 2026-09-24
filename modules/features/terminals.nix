@@ -9,6 +9,7 @@
       kitty = {
         enable = true;
         settings = {
+          remember_window_size = false;
           text_composition_strategy = 1.7;
           dynamic_background_opacity = true;
           background_opacity = "0.45";
