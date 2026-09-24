@@ -39,6 +39,10 @@
       Install.WantedBy = ["default.target"];
     };
 
+    programs.fish.interactiveShellInit = ''
+      set -g fish_greeting
+    '';
+
     programs.fish.shellAliases = {
       rebuild = "sudo nixos-rebuild switch --flake ${checkout}";
       update = "cd ${checkout} && nix flake update && sudo nixos-rebuild switch --flake .";
