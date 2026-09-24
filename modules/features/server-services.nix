@@ -19,6 +19,13 @@
     # frontend, reached directly on the LAN rather than through NPM.
     networking.firewall.allowedTCPPorts = [80 443 81 8083];
 
+    # Home Assistant runs with NetworkMode=host, so LocalTuya's discovery
+    # broadcasts land on bigrig's own firewall. 6666 is unencrypted
+    # (protocol <3.1) discovery, 6667 is encrypted (protocol 3.1+)
+    # discovery. TCP 6668 (device control) is outbound from bigrig to each
+    # light, so it needs no inbound rule here.
+    networking.firewall.allowedUDPPorts = [6666 6667];
+
     # zram and the shared reclaim tunables live in the `memory` aspect,
     # which chapel takes too. Only the writeback limits differ here.
     #
