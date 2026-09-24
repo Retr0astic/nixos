@@ -2,6 +2,7 @@
   flake.modules.nixos.chapel = {pkgs, ...}: {
     services.udev.packages = [pkgs.openrgb-with-all-plugins];
     hardware.i2c.enable = true;
+    users.users.sree.extraGroups = ["i2c"];
     boot.kernelModules = [
       "i2c-dev"
       "i2c-piix4"

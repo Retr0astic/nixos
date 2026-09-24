@@ -26,10 +26,10 @@
 # array on every theme change and copies through the symlink into this file.
 # Example: ["appearance.toml", "outputs.toml", "noctalia.toml"]
 [include]
-files = ["noctalia.toml"]
+files = []
 
 [include.optional]
-files = []                                      # Example: ["~/.config/umbriel/noctalia.toml"]
+files = ["noctalia.toml"]                                      # Example: ["~/.config/umbriel/noctalia.toml"]
 
 # ─────────────────────────────── General ────────────────────────────────────
 # Configure startup commands, session behavior, environment variables, and
