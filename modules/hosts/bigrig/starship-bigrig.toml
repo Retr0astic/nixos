@@ -1,36 +1,92 @@
 "$schema" = 'https://starship.rs/config-schema.json'
 
-# Deliberately plain: no noctalia palette dependency (bigrig has no
-# noctalia), and the hostname is shown up front since it's easy to forget
-# which SSH session you're in.
-add_newline = false
+# Powerline-style prompt: no noctalia palette dependency (bigrig has no
+# noctalia). Segments render as solid blocks that flow into each other via
+# matching foreground/background colors, so keep bg colors in step when you
+# edit a segment.
+add_newline = true
 command_timeout = 1000
+palette = "flashy"
+
+[palettes.flashy]
+os_bg = "#89b4fa"
+os_fg = "#1e1e2e"
+dir_bg = "#313244"
+dir_fg = "#cdd6f4"
+git_bg = "#f38ba8"
+git_fg = "#1e1e2e"
+status_bg = "#fab387"
+status_fg = "#1e1e2e"
+lang_bg = "#a6e3a1"
+lang_fg = "#1e1e2e"
+nix_bg = "#94e2d5"
+nix_fg = "#1e1e2e"
+time_fg = "#6c7086"
+dur_fg = "#f9e2af"
 
 format = """
-[bigrig](bold red) [$directory](bold blue)$git_branch$git_status \
-$nix_shell$fill$cmd_duration$time
+[](os_bg)[  bigrig ](fg:os_fg bg:os_bg)[](fg:os_bg bg:dir_bg)\
+[ $directory ](fg:dir_fg bg:dir_bg)[](fg:dir_bg bg:git_bg)\
+$git_branch$git_status$git_metrics\
+$nodejs$rust$python$golang$lua\
+$nix_shell\
+[](fg:nix_bg)
+$fill$cmd_duration$time
 $character"""
 
 [directory]
 truncation_length = 4
 truncate_to_repo = true
-style = "bold blue"
+style = "fg:dir_fg bg:dir_bg"
+format = "[ $path ]($style)"
 
 [git_branch]
 symbol = " "
-style = "bold purple"
-format = "on [$symbol$branch]($style) "
+style = "fg:git_fg bg:git_bg"
+format = "[[$symbol$branch ](fg:git_fg bg:git_bg)]($style)"
 
 [git_status]
-style = "bold yellow"
-format = "([$all_status$ahead_behind]($style) )"
+style = "fg:status_fg bg:status_bg"
+format = "[[($all_status$ahead_behind )](fg:status_fg bg:status_bg)]($style)"
+
+[git_metrics]
+disabled = false
+only_nonzero_diffs = true
+added_style = "fg:lang_bg bg:status_bg"
+deleted_style = "fg:git_bg bg:status_bg"
+format = "[[($added )($deleted )](bg:status_bg)]($style)"
+
+[nodejs]
+symbol = " "
+style = "fg:lang_fg bg:lang_bg"
+format = "[[$symbol($version )](fg:lang_fg bg:lang_bg)]($style)"
+
+[rust]
+symbol = " "
+style = "fg:lang_fg bg:lang_bg"
+format = "[[$symbol($version )](fg:lang_fg bg:lang_bg)]($style)"
+
+[python]
+symbol = " "
+style = "fg:lang_fg bg:lang_bg"
+format = "[[$symbol($version )](fg:lang_fg bg:lang_bg)]($style)"
+
+[golang]
+symbol = " "
+style = "fg:lang_fg bg:lang_bg"
+format = "[[$symbol($version )](fg:lang_fg bg:lang_bg)]($style)"
+
+[lua]
+symbol = " "
+style = "fg:lang_fg bg:lang_bg"
+format = "[[$symbol($version )](fg:lang_fg bg:lang_bg)]($style)"
 
 [nix_shell]
 disabled = false
-symbol = "❄ "
+symbol = " "
 heuristic = false
-style = "bold cyan"
-format = "via [$symbol$state]($style) "
+style = "fg:nix_fg bg:nix_bg"
+format = "[[$symbol$state ](fg:nix_fg bg:nix_bg)]($style)"
 
 [fill]
 symbol = " "
@@ -38,18 +94,19 @@ symbol = " "
 [cmd_duration]
 min_time = 1000
 show_milliseconds = false
-style = "bold yellow"
-format = "took [$duration]($style) "
+style = "fg:dur_fg"
+format = "[ $duration]($style) "
 
 [time]
 disabled = false
 time_format = "%H:%M:%S"
-style = "bold white"
+style = "fg:time_fg"
 format = "[$time]($style)"
 
 [character]
 success_symbol = "[❯](bold green)"
 error_symbol = "[❯](bold red)"
+vimcmd_symbol = "[❮](bold green)"
 
 [username]
 disabled = true
