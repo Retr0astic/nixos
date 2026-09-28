@@ -5,14 +5,19 @@
       modesetting.enable = true;
       powerManagement.enable = true;
       open = true;
-      package = config.boot.kernelPackages.nvidiaPackages.bleeding_edge; #.mkDriver{
-      #  version = "610.43.02";
-      #  sha256_64bit = "sha256:0qvllxnb20arjhw3bxdz0hw521di9ib75hldzx97gpscpdaa0d1h";
-      #  sha256_aarch64 = "sha256:0qvllxnb20arjhw3bxdz0hw521di9ib75hldzx97gpscpdaa0d1h";
-      #  openSha256 = "sha256-hP5NVZZ4vGsACHLmUDKq4uckpd/kn1GxCSYnnJfAuBs=";
-      #  settingsSha256 = "sha256-0YAhufRgjDW+uR+kjaTb154fibpcDw8QowfrucoZsKE=";
-      #  persistencedSha256 = "sha256:0nd0bf2s9b2ic8a0rcscddasddkryx2qf6mx4861bv44wblm513z";
-      #    };
+      # Pinned to 610.57.04 (nixpkgs `new_feature` as of 2026-09-18).
+      # 615.71.09 hangs Hyprland in the kernel when the Samsung monitor
+      # drops the DP link (power off or deep sleep) and comes back: the
+      # compositor spins at 100% system time and the display stays black
+      # until reboot. Return to `bleeding_edge` once a newer driver lands.
+      package = config.boot.kernelPackages.nvidiaPackages.mkDriver {
+        version = "610.57.04";
+        sha256_64bit = "sha256-suk1xmuDuwDAyFe8jg7g/VLekoa0DJzB7sKafOfrEW0=";
+        sha256_aarch64 = "sha256-QCefrMBCmpOwuOyXv1k5Gj0iB2CYlPgnG3JToUw/j54=";
+        openSha256 = "sha256-rQHOOOY4KL92Ww3KDwh+j4eGU7oNAH8LutZC5wmFnPo=";
+        settingsSha256 = "sha256-ZEMo8I8Zc2Tq6RVDNYpAH+f094dUaZiBqO+5f6lIjRI=";
+        persistencedSha256 = "sha256-aXmD2VY1RLlgAnlHhOUMWzvMyhI6JTClcFLm4imF/mA=";
+      };
     };
     systemd.services.nvidia-power-limit = {
       description = "Set NVIDIA GPU Power Limit";
