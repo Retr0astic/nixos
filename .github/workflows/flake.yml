@@ -24,72 +24,36 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v7
         with:
-          fetch-depth: 0
           persist-credentials: false
 
-      - name: Detect changed paths
-        id: filter
-        if: github.event_name != 'workflow_dispatch'
-        uses: dorny/paths-filter@v3
+      - name: Install Nix
+        uses: cachix/install-nix-action@v31
         with:
-          filters: |
-            caelestia:
-              - 'modules/shells/caelestia.nix'
-              - 'modules/desktops/hyprland.nix'
-              - 'modules/desktops/hyprland/**'
-              - 'flake.nix'
-              - 'flake.lock'
-              - '.github/workflows/flake.yml'
-            umbriel:
-              - 'modules/shells/noctalia.nix'
-              - 'modules/desktops/umbriel.nix'
-              - 'modules/desktops/umbriel/**'
-              - 'modules/umbriel/**'
-              - 'flake.nix'
-              - 'flake.lock'
-              - '.github/workflows/flake.yml'
-            # Mirrors bigrig's base list in modules/hosts/bigrig.nix. Add an
-            # aspect there and add its file here, or bigrig stops building
-            # when that aspect changes.
-            bigrig:
-              - 'hosts/bigrig/**'
-              - 'modules/hosts/bigrig.nix'
-              - 'modules/hosts/bigrig/**'
-              - 'modules/home-manager.nix'
-              - 'modules/users/sree/**'
-              - 'modules/packages/**'
-              - 'modules/features/core.nix'
-              - 'modules/features/secrets.nix'
-              - 'secrets/**'
-              - '.sops.yaml'
-              - 'modules/features/server-services.nix'
-              - 'modules/features/server-packages.nix'
-              - 'modules/features/shell.nix'
-              - 'modules/features/hardware-tools.nix'
-              - 'modules/features/ai-tools.nix'
-              - 'modules/features/auto-upgrade.nix'
-              - 'flake.nix'
-              - 'flake.lock'
-              - '.github/workflows/flake.yml'
+          extra_nix_config: |
+            accept-flake-config = true
 
-      # Chapel always builds. Caelestia, umbriel, and bigrig build only when
-      # their own files, what they run on, or the flake inputs change. An
-      # empty filter output means workflow_dispatch, which builds everything.
+      # Build a variant only when its toplevel is not in the chapel cache.
+      # Nix derives the output path from every input, so this needs no list
+      # of paths per variant, and a new variant is picked up by name. A build
+      # that failed pushed no toplevel, so the next run builds it again.
+      # workflow_dispatch builds everything.
       - name: Select build variants
         id: variants
         shell: bash
         run: |
           set -euo pipefail
-          list='["chapel"]'
-          if [ "${{ steps.filter.outputs.caelestia }}" != "false" ]; then
-            list=$(printf '%s' "$list" | jq -c '. + ["chapel-caelestia"]')
-          fi
-          if [ "${{ steps.filter.outputs.umbriel }}" != "false" ]; then
-            list=$(printf '%s' "$list" | jq -c '. + ["chapel-umbriel"]')
-          fi
-          if [ "${{ steps.filter.outputs.bigrig }}" != "false" ]; then
-            list=$(printf '%s' "$list" | jq -c '. + ["bigrig"]')
-          fi
+          list='[]'
+          names=$(nix eval --json --apply builtins.attrNames .#nixosConfigurations)
+          for v in $(jq -r '.[]' <<<"$names"); do
+            out=$(nix eval --raw \
+              ".#nixosConfigurations.$v.config.system.build.toplevel.outPath")
+            if [ "${{ github.event_name }}" = workflow_dispatch ] ||
+              ! nix path-info --store https://chapel.cachix.org "$out" >/dev/null 2>&1; then
+              list=$(jq -c --arg v "$v" '. + [$v]' <<<"$list")
+            else
+              echo "$v: cached, skipped"
+            fi
+          done
           echo "list=$list" >>"$GITHUB_OUTPUT"
 
   check:
@@ -150,6 +114,8 @@ jobs:
     needs:
       - check
       - changes
+    # An empty matrix fails the job, so skip it when every variant is cached.
+    if: needs.changes.outputs.variants != '[]'
     runs-on: ubuntu-24.04
     timeout-minutes: 90
 

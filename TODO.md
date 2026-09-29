@@ -26,8 +26,9 @@ one job.
 
 ## 2. CI never builds bigrig
 
-**Status:** done. `.github/workflows/flake.yml` carries a `bigrig` paths
-filter and adds `bigrig` to the build matrix.
+**Status:** done. `.github/workflows/flake.yml` builds every
+`nixosConfigurations` entry whose toplevel is not in the chapel cache. No
+paths filter remains.
 
 **Problem:** the build matrix is `["chapel"]` or
 `["chapel","caelestia-hyprland"]`. bigrig appears only in the name
