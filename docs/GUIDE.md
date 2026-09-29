@@ -355,7 +355,8 @@ update` by hand.
 3. It opens or refreshes one pull request, `flake-update/daily`, against
    `testing`.
 4. `.github/workflows/flake.yml` builds the pull request.
-5. You read the body, merge into `testing`, then fast-forward `main`.
+5. You read the body and merge into `testing`.
+6. `flake.yml` builds `testing` and fast-forwards `main` when that passes.
 
 An unmerged pull request is refreshed the next morning, so updates collect in
 it until you merge. Pull requests from the old one-per-input workflow close
@@ -404,11 +405,12 @@ Edit `.github/lanes.json` to move an input between lanes.
 
 1. Read the body. Open the compare links you care about.
 2. Merge the pull request into `testing`.
-3. Fast-forward `main` when you trust the result:
 
-   ```bash
-   git push origin origin/testing:main
-   ```
+chapel stages the merge at its next timer run. The `promote` job in
+`flake.yml` fast-forwards `main` after `testing` passes CI, and bigrig stages
+it at its next run. A red build leaves `main`, and so bigrig, where it was.
+If `main` gains a commit that `testing` lacks, `promote` goes red. Merge
+`main` into `testing` to fix it.
 
 **Dropping one input**
 
@@ -429,8 +431,10 @@ nix build --dry-run .#nixosConfigurations.chapel.config.system.build.toplevel
 
 **What the machines do**
 
-Both hosts carry `m.auto-upgrade`. A timer runs `nixos-rebuild boot` against
-`github:Retr0astic/nixos/main`, with a delay of up to 45 minutes. `boot`
+Both hosts carry `m.auto-upgrade`. A timer runs `nixos-rebuild boot` with a
+delay of up to 45 minutes. bigrig builds `github:Retr0astic/nixos/main`.
+chapel builds `github:Retr0astic/nixos/testing`, so the desktop takes each
+merge before the server does. `boot`
 stages the generation and changes nothing that is running, so the update goes
 live at the next reboot.
 
@@ -456,7 +460,7 @@ journalctl -u nixos-upgrade.service -n 50
 
 On chapel the timer shares the boot entry with your hand rebuild. Both write
 generations, and the newer one becomes the default. Work that exists only in
-`~/nixos` therefore loses the next reboot to `main`. Push what you want to
+`~/nixos` therefore loses the next reboot to `testing`. Push what you want to
 keep, which is what the pull request pipeline asks for anyway. To hold the
 timer off while you work on the machine:
 

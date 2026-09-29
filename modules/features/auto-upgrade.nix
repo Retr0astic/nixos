@@ -2,18 +2,22 @@
   # Pull-based delivery of an update that already passed review.
   #
   # The chain is: .github/workflows/flake-update.yml opens one pull request
-  # a day with every moved input, flake.yml builds it, you merge it into
-  # `testing`, and you fast-forward `main` when you trust the result. This
-  # aspect is the last link. It fetches `main` once a day and stages what it
-  # finds. It never decides what to install and it never picks a revision.
+  # a day with every moved input, flake.yml builds it, and you merge it into
+  # `testing`. flake.yml builds `testing` again and fast-forwards `main` when
+  # that passes. This aspect is the last link. It fetches a branch once a
+  # day and stages what it finds. It never decides what to install and it
+  # never picks a revision.
+  #
+  # bigrig follows `main`. chapel follows `testing` as the canary, set in
+  # modules/hosts/chapel.nix.
   #
   # Both hosts carry this, and both use `boot` rather than `switch`, so the
   # timer never changes a running system.
   #
-  # One rule follows from that on chapel. The timer stages `main`, and a
+  # One rule follows from that on chapel. The timer stages `testing`, and a
   # rebuild from ~/nixos stages your working tree. The newer of the two wins
   # the default boot entry, so work that only exists in that checkout loses
-  # the next reboot to `main`. Commit and push what you want to keep, which
+  # the next reboot to `testing`. Commit and push what you want to keep, which
   # is what the pull request pipeline asks for anyway. To hold the timer off
   # while you work on the machine for a few days:
   #
@@ -59,7 +63,7 @@
       upgrade = false;
 
       # Local time, not UTC. The workflow cron is unrelated: hosts follow
-      # `main`, and `main` only moves when you merge.
+      # a branch, and a branch only moves when you merge or push.
       #
       # 05:30 suits a machine that is always on. A host that sleeps at night
       # overrides this with an hour when it is actually running. chapel does,

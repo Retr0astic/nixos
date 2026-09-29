@@ -159,3 +159,41 @@ jobs:
           out=$(nix eval --raw --accept-flake-config \
             .#nixosConfigurations.${{ matrix.variant }}.config.system.build.toplevel.outPath)
           nix-store --query --requisites "$out" | cachix push chapel
+
+  # Fast-forward `main` to the `testing` commit this run checked and built.
+  # bigrig follows `main`, so a commit reaches the server only after CI
+  # passes on it. chapel follows `testing` and gets it first.
+  #
+  # The push is a plain fast-forward. If `main` has a commit that `testing`
+  # lacks, the push fails and the job goes red. Merge `main` into `testing`
+  # to fix it.
+  #
+  # With FLAKE_UPDATE_TOKEN the push to `main` starts this workflow again.
+  # Every toplevel is already in the cache, so that run builds nothing.
+  promote:
+    needs:
+      - changes
+      - check
+      - build
+    # `build` is skipped when every variant is cached. That still counts as
+    # a pass.
+    if: >-
+      always()
+      && github.event_name == 'push'
+      && github.ref == 'refs/heads/testing'
+      && needs.changes.result == 'success'
+      && needs.check.result == 'success'
+      && (needs.build.result == 'success' || needs.build.result == 'skipped')
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.FLAKE_UPDATE_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Fast-forward main
+        run: git push origin "${{ github.sha }}:refs/heads/main"

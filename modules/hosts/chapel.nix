@@ -44,8 +44,11 @@
   # the host name `chapel`, so a machine on `chapel-umbriel` would wake up
   # staged back to the plain chapel build. The variant knows its own name,
   # so it states it.
+  #
+  # chapel follows `testing`, not `main`: the desktop is the canary. bigrig
+  # stays on `main`, which flake.yml moves only after `testing` builds.
   upgradeTarget = name: {
-    system.autoUpgrade.flake = "github:Retr0astic/nixos/main#${name}";
+    system.autoUpgrade.flake = "github:Retr0astic/nixos/testing#${name}";
   };
 
   # Add a desktop and a shell to build one variant. The name is the flake

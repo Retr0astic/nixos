@@ -263,13 +263,14 @@ input that moved. The body groups the inputs by the urgency lanes in
 `.github/lanes.json`, with the revision compare links and the rebuild list. An
 input that does not evaluate stays at its old revision, and the body names it.
 
-`main` is the branch the machines follow. `modules/features/auto-upgrade.nix`
-gives both hosts a daily `nixos-rebuild boot --flake github:Retr0astic/nixos/main`,
-which stages a generation without restarting a running service. Each chapel
+`modules/features/auto-upgrade.nix` gives both hosts a daily `nixos-rebuild
+boot`, which stages a generation without restarting a running service. chapel
+follows `testing` as the canary. bigrig follows `main`, which the `promote` job
+in `flake.yml` fast-forwards after `testing` passes CI. Each chapel
 variant passes its own output name, because all of them share the host name
 `chapel`. On chapel the timer competes with a hand rebuild from `~/nixos`: the
 newer generation takes the default boot entry, so local work that is never
-pushed loses the next reboot to `main`.
+pushed loses the next reboot to `testing`.
 
 ## Caveats
 

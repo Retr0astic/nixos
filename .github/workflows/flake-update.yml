@@ -5,8 +5,9 @@ name: Flake update
 # The pipeline is:
 #   this workflow  -> one pull request, flake-update/daily, against testing
 #   flake.yml      -> builds that pull request
-#   you            -> read the body, merge into testing, then fast-forward main
-#   nixos-upgrade  -> each host stages main once a day
+#   you            -> read the body, merge into testing
+#   flake.yml      -> builds testing, then fast-forwards main
+#   nixos-upgrade  -> chapel stages testing, bigrig stages main, once a day
 #                     (modules/features/auto-upgrade.nix)
 #
 # The body lists every moved input by lane with a compare link, so one merge
@@ -44,7 +45,7 @@ name: Flake update
 
 on:
   schedule:
-    # 03:00 UTC. Hosts follow main and main only moves when you merge, so
+    # 03:00 UTC. Hosts follow a branch that moves only when you merge, so
     # this time is unrelated to the timer in auto-upgrade.nix.
     - cron: "0 3 * * *"
   workflow_dispatch:
