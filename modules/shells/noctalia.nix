@@ -117,6 +117,7 @@ in {
           (luaBind (key "SHIFT + C") (exec ''ipc .. " panel-toggle launcher clipboard"''))
           (luaBind (key "D") (exec ''ipc .. " caffeine-disable"''))
           (luaBind (key "SHIFT + D") (exec ''ipc .. " caffeine-enable"''))
+          (luaBind ''"ALT + Tab"'' (exec ''ipc .. " window-switcher"''))
           (luaBind ''"print"'' ''hl.dsp.submap("screenshot")'')
         ];
       };
