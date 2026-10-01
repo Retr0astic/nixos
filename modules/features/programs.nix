@@ -10,7 +10,6 @@
       options = {
         selection-clipboard = "clipboard";
         adjust-open = "width";
-        recolor = true;
       };
     };
   };
