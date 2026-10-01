@@ -37,6 +37,10 @@
           float = true;
         }
         {
+          match.class = "^(libreoffice-.*)$";
+          suppress_event = "maximize";
+        }
+        {
           match.fullscreen = true;
           match.content = "game";
           tonemap = "off";
