@@ -19,7 +19,7 @@ in {
     # which collides with noctalia's own module below. Keep the
     # noctalia-provided one — this config relies on its options (e.g.
     # systemd.enable) which the upstream module doesn't necessarily match.
-    disabledModules = ["${inputs.home-manager}/modules/programs/noctalia.nix"];
+    disabledModules = ["${inputs.home-manager}/modules/programs/noctalia"];
     imports = [inputs.noctalia.homeModules.default];
 
     programs.noctalia = {
