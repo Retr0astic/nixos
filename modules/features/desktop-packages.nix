@@ -14,6 +14,7 @@
       [
         # Communication
         vesktop
+        ferdium
 
         # Files and sync
         bitwarden-desktop
