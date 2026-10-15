@@ -8,16 +8,17 @@
   # day and stages what it finds. It never decides what to install and it
   # never picks a revision.
   #
-  # bigrig follows `main`. chapel follows `testing` as the canary, set in
-  # modules/hosts/chapel.nix.
+  # Both hosts follow `main`, which flake.yml moves only after it builds
+  # `testing`. chapel is still the canary, because its timer runs at 16:00
+  # and bigrig's at 05:30. chapel sets its target in modules/hosts/chapel.nix.
   #
   # Both hosts carry this, and both use `boot` rather than `switch`, so the
   # timer never changes a running system.
   #
-  # One rule follows from that on chapel. The timer stages `testing`, and a
+  # One rule follows from that on chapel. The timer stages `main`, and a
   # rebuild from ~/nixos stages your working tree. The newer of the two wins
   # the default boot entry, so work that only exists in that checkout loses
-  # the next reboot to `testing`. Commit and push what you want to keep, which
+  # the next reboot to `main`. Commit and push what you want to keep, which
   # is what the pull request pipeline asks for anyway. To hold the timer off
   # while you work on the machine for a few days:
   #
@@ -81,6 +82,9 @@
       # race that one and delete the closure this job just fetched.
       runGarbageCollection = false;
     };
+
+    # A stuck fetch or a source build must not hold the machine for days.
+    systemd.services.nixos-upgrade.serviceConfig.TimeoutStartSec = "4h";
 
     # The unit reports only to the journal. A failed build leaves the
     # running system untouched, so a silent failure costs an update, never

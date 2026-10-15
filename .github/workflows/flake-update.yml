@@ -74,7 +74,7 @@ concurrency:
 # before it reaches testing.
 env:
   BASE_BRANCH: ${{ github.event.inputs.base || 'testing' }}
-  BRANCH: flake-update/daily
+  BRANCH: ${{ (github.event.inputs.base || 'testing') == 'testing' && 'flake-update/daily' || format('flake-update/daily-{0}', github.event.inputs.base) }}
 
 jobs:
   update:
@@ -84,12 +84,23 @@ jobs:
     timeout-minutes: 180
 
     steps:
+      # `main` moves only through the promote job in flake.yml. A pull
+      # request against it would reach bigrig without that gate.
+      - name: Refuse the main branch
+        run: |
+          if [ "$BASE_BRANCH" = main ]; then
+            echo "::error::base must not be main. Use testing, or a feature branch."
+            exit 1
+          fi
+
+      # The build below runs code from unreviewed inputs. The token stays out
+      # of the checkout, and only the push step gets it.
       - name: Check out the base branch
         uses: actions/checkout@v7
         with:
           ref: ${{ env.BASE_BRANCH }}
           fetch-depth: 0
-          token: ${{ secrets.FLAKE_UPDATE_TOKEN || secrets.GITHUB_TOKEN }}
+          persist-credentials: false
 
       - name: Install Nix
         uses: cachix/install-nix-action@v31
@@ -212,7 +223,10 @@ jobs:
           # usual source of a build break. The substituters make a build of
           # an unchanged closure fast.
           compile() {
-            for host in chapel bigrig; do
+            local names host
+            names=$(nix eval --json --accept-flake-config \
+              --apply builtins.attrNames .#nixosConfigurations) || return 1
+            for host in $(jq -r '.[]' <<<"$names"); do
               nix build --no-link --accept-flake-config --print-build-logs \
                 ".#nixosConfigurations.$host.config.system.build.toplevel" ||
                 return 1
@@ -264,6 +278,8 @@ jobs:
 
       - name: Push the branch
         if: steps.update.outputs.changed == 'true'
+        env:
+          PUSH_TOKEN: ${{ secrets.FLAKE_UPDATE_TOKEN || secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
           set -euo pipefail
@@ -291,6 +307,8 @@ jobs:
           # The branch is owned by this workflow, so yesterday's version of
           # it is replaced rather than merged. The lease still refuses a push
           # over a commit this run never saw.
+          git remote set-url origin \
+            "https://x-access-token:${PUSH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           git fetch origin "+refs/heads/$BRANCH:refs/remotes/origin/$BRANCH" || true
           git push --force-with-lease -u origin "$BRANCH"
 
@@ -311,8 +329,8 @@ jobs:
           # The pull requests the per-input version of this workflow opened.
           # The daily one replaces them.
           gh pr list --label flake-update --state open \
-            --json number,headRefName \
-            --jq ".[] | select(.headRefName != \"$BRANCH\") | .number" |
+            --json number,headRefName,baseRefName \
+            --jq ".[] | select(.headRefName != \"$BRANCH\" and .baseRefName == \"$BASE_BRANCH\") | .number" |
             while read -r old; do
               gh pr close "$old" --delete-branch \
                 --comment "Replaced by the daily update pull request." >/dev/null

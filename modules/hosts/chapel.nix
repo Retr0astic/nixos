@@ -45,10 +45,12 @@
   # staged back to the plain chapel build. The variant knows its own name,
   # so it states it.
   #
-  # chapel follows `testing`, not `main`: the desktop is the canary. bigrig
-  # stays on `main`, which flake.yml moves only after `testing` builds.
+  # chapel follows `main`, like bigrig. flake.yml moves `main` only after it
+  # builds `testing`, so no host stages a commit that CI has not built. The
+  # timers still make chapel the canary: it runs at 16:00 and bigrig at
+  # 05:30, so chapel stages a new `main` commit first.
   upgradeTarget = name: {
-    system.autoUpgrade.flake = "github:Retr0astic/nixos/testing#${name}";
+    system.autoUpgrade.flake = "github:Retr0astic/nixos/main#${name}";
   };
 
   # Add a desktop and a shell to build one variant. The name is the flake
