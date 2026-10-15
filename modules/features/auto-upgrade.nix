@@ -82,6 +82,9 @@
       runGarbageCollection = false;
     };
 
+    # A stuck fetch or a source build must not hold the machine for days.
+    systemd.services.nixos-upgrade.serviceConfig.TimeoutStartSec = "4h";
+
     # The unit reports only to the journal. A failed build leaves the
     # running system untouched, so a silent failure costs an update, never
     # the machine:

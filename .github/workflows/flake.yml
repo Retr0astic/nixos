@@ -18,6 +18,7 @@ concurrency:
 jobs:
   changes:
     runs-on: ubuntu-24.04
+    timeout-minutes: 30
     outputs:
       variants: ${{ steps.variants.outputs.list }}
     steps:
@@ -32,7 +33,9 @@ jobs:
           extra_nix_config: |
             accept-flake-config = true
 
-      # Build a variant only when its toplevel is not in the chapel cache.
+      # Build a variant only when its whole closure is in the chapel cache.
+      # `-r` checks every requisite, so a push that stopped halfway does not
+      # count as cached.
       # Nix derives the output path from every input, so this needs no list
       # of paths per variant, and a new variant is picked up by name. A build
       # that failed pushed no toplevel, so the next run builds it again.
@@ -48,7 +51,7 @@ jobs:
             out=$(nix eval --raw \
               ".#nixosConfigurations.$v.config.system.build.toplevel.outPath")
             if [ "${{ github.event_name }}" = workflow_dispatch ] ||
-              ! nix path-info --store https://chapel.cachix.org "$out" >/dev/null 2>&1; then
+              ! nix path-info -r --store https://chapel.cachix.org "$out" >/dev/null 2>&1; then
               list=$(jq -c --arg v "$v" '. + [$v]' <<<"$list")
             else
               echo "$v: cached, skipped"
@@ -90,13 +93,14 @@ jobs:
       # `nixos-rebuild` are required:
       #   bigrig, chapel                    a bare `--flake ~/nixos` resolves by hostname
       #   chapel-caelestia, chapel-umbriel  README.md and docs/GUIDE.md
+      #   chapel-end4                       its own upgrade timer names it
       # An extra name passes. Only a missing name fails, so adding a host
       # does not break CI on an unrelated pull request.
       - name: Verify configuration names
         shell: bash
         run: |
           set -euo pipefail
-          required='["bigrig","chapel","chapel-caelestia","chapel-umbriel"]'
+          required='["bigrig","chapel","chapel-caelestia","chapel-umbriel","chapel-end4"]'
 
           actual=$(nix eval --json \
             --accept-flake-config \
@@ -109,6 +113,40 @@ jobs:
             echo "present: $actual"
             exit 1
           fi
+
+  # Each host's update timer follows a flake reference that ends in
+  # `#<name>`. A renamed variant or a copied line would leave a machine on
+  # the wrong build, and nothing else notices.
+  upgrade-targets:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v31
+        with:
+          extra_nix_config: |
+            accept-flake-config = true
+
+      - name: Verify upgrade targets
+        shell: bash
+        run: |
+          set -euo pipefail
+          names=$(nix eval --json --accept-flake-config \
+            --apply builtins.attrNames .#nixosConfigurations)
+          for v in $(jq -r '.[]' <<<"$names"); do
+            target=$(nix eval --raw --accept-flake-config \
+              ".#nixosConfigurations.$v.config.system.autoUpgrade.flake")
+            if [ "${target#*#}" != "$v" ]; then
+              echo "::error::$v follows '$target', which names a different build"
+              exit 1
+            fi
+          done
 
   build:
     needs:
@@ -151,8 +189,14 @@ jobs:
             --no-link \
             --print-build-logs
 
+      # A branch from a fork, or any other unreviewed branch, must not write
+      # to the cache that the hosts trust.
       - name: Push to Cachix
-        if: always()
+        if: >-
+          always()
+          && (github.event_name != 'pull_request'
+          || (github.head_ref == 'flake-update/daily'
+          && github.event.pull_request.head.repo.full_name == github.repository))
         continue-on-error: true
         run: |
           set -euo pipefail
@@ -174,6 +218,7 @@ jobs:
     needs:
       - changes
       - check
+      - upgrade-targets
       - build
     # `build` is skipped when every variant is cached. That still counts as
     # a pass.
@@ -183,8 +228,10 @@ jobs:
       && github.ref == 'refs/heads/testing'
       && needs.changes.result == 'success'
       && needs.check.result == 'success'
+      && needs.upgrade-targets.result == 'success'
       && (needs.build.result == 'success' || needs.build.result == 'skipped')
     runs-on: ubuntu-24.04
+    timeout-minutes: 15
     permissions:
       contents: write
 
