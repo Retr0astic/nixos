@@ -104,10 +104,10 @@ jobs:
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
           skipPush: true
 
-      # The gate runs `nix build --dry-run`, which evaluates every module and
-      # resolves every derivation without building one. That catches the eval
-      # break a bad bump usually is. It does not catch a compile failure:
-      # flake.yml does that on the pull request.
+      # The first gate runs `nix build --dry-run`, which evaluates every
+      # module and resolves every derivation without building one. That
+      # catches the eval break a bad bump usually is. The second gate builds
+      # both hosts and catches the rest, such as a stale source hash.
       - name: Update and evaluate
         id: update
         env:
@@ -203,6 +203,43 @@ jobs:
             fi
             # The rebuild list in the notes comes from the final lock.
             evaluate || exit 1
+          fi
+
+          # The dry run cannot see a fixed-output hash that no longer matches
+          # (2026-10-13: typescript-language-server in nixpkgs). Build both
+          # hosts for real. When that fails, nixpkgs goes back to its old
+          # revision and the other inputs stay, because a package set is the
+          # usual source of a build break. The substituters make a build of
+          # an unchanged closure fast.
+          compile() {
+            for host in chapel bigrig; do
+              nix build --no-link --accept-flake-config --print-build-logs \
+                ".#nixosConfigurations.$host.config.system.build.toplevel" ||
+                return 1
+            done
+          }
+
+          if ! compile; then
+            echo "::notice::The new lock does not build. Moving nixpkgs back."
+            key=$(jq -r '.nodes[.root].inputs.nixpkgs | select(type == "string")' \
+              "$RUNNER_TEMP/flake.lock.old")
+            if [ -z "$key" ]; then
+              echo "::error::The old lock has no nixpkgs node to restore."
+              exit 1
+            fi
+            jq --arg k "$key" --slurpfile old "$RUNNER_TEMP/flake.lock.old" \
+              '.nodes[$k] = $old[0].nodes[$k]' flake.lock >"$RUNNER_TEMP/flake.lock.new"
+            cp "$RUNNER_TEMP/flake.lock.new" flake.lock
+            if ! evaluate || ! compile; then
+              echo "::error::The lock does not build with the old nixpkgs either."
+              exit 1
+            fi
+            echo "nixpkgs=does not build at this lock" >>"$held"
+            echo "failed=true" >>"$GITHUB_OUTPUT"
+            if cmp -s flake.lock "$RUNNER_TEMP/flake.lock.old"; then
+              echo "changed=false" >>"$GITHUB_OUTPUT"
+              exit 0
+            fi
           fi
 
           echo "changed=true" >>"$GITHUB_OUTPUT"
