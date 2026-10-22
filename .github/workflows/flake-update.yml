@@ -243,12 +243,40 @@ jobs:
             fi
             jq --arg k "$key" --slurpfile old "$RUNNER_TEMP/flake.lock.old" \
               '.nodes[$k] = $old[0].nodes[$k]' flake.lock >"$RUNNER_TEMP/flake.lock.new"
+            cp flake.lock "$RUNNER_TEMP/flake.lock.full"
             cp "$RUNNER_TEMP/flake.lock.new" flake.lock
-            if ! evaluate || ! compile; then
-              echo "::error::The lock does not build with the old nixpkgs either."
-              exit 1
+            if evaluate && compile; then
+              echo "nixpkgs=does not build at this lock" >>"$held"
+            else
+              # nixpkgs is not the cause. Put the full update back and move
+              # one input at a time back to its old revision. Keep the first
+              # one that makes both hosts build, and hold that input.
+              echo "::notice::The lock does not build with the old nixpkgs either. Moving inputs back one at a time."
+              cp "$RUNNER_TEMP/flake.lock.full" flake.lock
+              culprit=
+              for name in $(jq -r '.nodes[.root].inputs | to_entries[]
+                                   | select(.value | type == "string") | .key' flake.lock); do
+                key=$(jq -r --arg n "$name" '.nodes[.root].inputs[$n]' flake.lock)
+                if jq -e --arg k "$key" --slurpfile old "$RUNNER_TEMP/flake.lock.old" \
+                  '.nodes[$k].locked == $old[0].nodes[$k].locked' flake.lock >/dev/null; then
+                  continue
+                fi
+                jq --arg k "$key" --slurpfile old "$RUNNER_TEMP/flake.lock.old" \
+                  '.nodes[$k] = $old[0].nodes[$k]' "$RUNNER_TEMP/flake.lock.full" \
+                  >flake.lock
+                if evaluate && compile; then
+                  culprit=$name
+                  break
+                fi
+                cp "$RUNNER_TEMP/flake.lock.full" flake.lock
+              done
+              if [ -z "$culprit" ]; then
+                echo "::error::No single input explains the build failure."
+                exit 1
+              fi
+              echo "::error::$culprit does not build at this lock. It stays at its old revision."
+              echo "$culprit=does not build at this lock" >>"$held"
             fi
-            echo "nixpkgs=does not build at this lock" >>"$held"
             echo "failed=true" >>"$GITHUB_OUTPUT"
             if cmp -s flake.lock "$RUNNER_TEMP/flake.lock.old"; then
               echo "changed=false" >>"$GITHUB_OUTPUT"
