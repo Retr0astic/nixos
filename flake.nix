@@ -55,6 +55,8 @@
     illogical-flake = {
       url = "github:soymou/illogical-flake";
       inputs.nixpkgs.follows = "nixpkgs";
+      # Its own quickshell pin does not compile against Qt 6.12.
+      inputs.quickshell.follows = "caelestia-shell/quickshell";
       inputs.dotfiles.url = "git+https://github.com/end-4/dots-hyprland?submodules=1";
     };
 

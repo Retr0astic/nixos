@@ -167,7 +167,10 @@
           "nixpkgs"
         ],
         "nur": "nur",
-        "quickshell": "quickshell_2"
+        "quickshell": [
+          "caelestia-shell",
+          "quickshell"
+        ]
       },
       "locked": {
         "lastModified": 1779068758,
@@ -400,27 +403,6 @@
         "ref": "refs/heads/master",
         "rev": "2b4501a282689792b62e94f3fb30d8f512324fe6",
         "revCount": 875,
-        "type": "git",
-        "url": "https://git.outfoxxed.me/outfoxxed/quickshell"
-      },
-      "original": {
-        "type": "git",
-        "url": "https://git.outfoxxed.me/outfoxxed/quickshell"
-      }
-    },
-    "quickshell_2": {
-      "inputs": {
-        "nixpkgs": [
-          "illogical-flake",
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1778488696,
-        "narHash": "sha256-QSWgYuZUCNUJ/cxmaq83WkcT7lHQDDfsPVgH+96kIl0=",
-        "ref": "refs/heads/master",
-        "rev": "7d1c9a9c6721606b129829134d6f614f015621e2",
-        "revCount": 818,
         "type": "git",
         "url": "https://git.outfoxxed.me/outfoxxed/quickshell"
       },
