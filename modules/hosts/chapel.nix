@@ -36,7 +36,9 @@
     m.audio
     m.nvf
     m.spicetify
-    m.opends5
+    # m.opends5 is off until OpenDS5's vds_hcd module ships a .ko.cer:
+    # nixpkgs now merges a certificate for every external module, and
+    # its absence fails the module tree build (NixOS/nixpkgs#575192).
   ];
 
   # What the update timer follows, named per variant. `m.auto-upgrade`
