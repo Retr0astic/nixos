@@ -17,14 +17,22 @@
     # Rootless Nginx Proxy Manager (or similar) needs to bind 80/443 without
     # CAP_NET_BIND_SERVICE. 81 is NPM's admin UI. 8083 is the Erpnext pod's
     # frontend, reached directly on the LAN rather than through NPM.
-    networking.firewall.allowedTCPPorts = [80 443 81 8083];
+    # 1883 is the Mosquitto broker published by the smarthome pod; chapel's
+    # HASS.Agent (Windows) and go-hass-agent (Linux) connect to it from the
+    # LAN for their command buttons.
+    networking.firewall.allowedTCPPorts = [80 443 81 1883 8083];
 
     # Home Assistant runs with NetworkMode=host, so LocalTuya's discovery
     # broadcasts land on bigrig's own firewall. 6666 is unencrypted
     # (protocol <3.1) discovery, 6667 is encrypted (protocol 3.1+)
     # discovery. TCP 6668 (device control) is outbound from bigrig to each
     # light, so it needs no inbound rule here.
-    networking.firewall.allowedUDPPorts = [6666 6667];
+    #
+    # 5353 is mDNS. Avahi (whose openFirewall would cover it) only runs on
+    # chapel, so without this the replies Home Assistant's zeroconf gets
+    # back are dropped and every Cast device (Bose soundbar, LG C2, Mi Box)
+    # stays unavailable.
+    networking.firewall.allowedUDPPorts = [5353 6666 6667];
 
     # zram and the shared reclaim tunables live in the `memory` aspect,
     # which chapel takes too. Only the writeback limits differ here.
