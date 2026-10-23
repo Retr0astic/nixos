@@ -34,6 +34,17 @@
     caelestia-shell = {
       url = "github:caelestia-dots/shell";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.caelestia-cli.follows = "caelestia-cli";
+    };
+
+    # Tracked here, not through caelestia-shell's own lock, so the daily
+    # update moves it. The shell's lock lags the CLI, and on 2026-10-23 it
+    # still pinned a CLI that does not build on current nixpkgs (the
+    # setuptools-scm version moved to `env`, caelestia-dots/cli#185).
+    caelestia-cli = {
+      url = "github:caelestia-dots/cli";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.caelestia-shell.follows = "";
     };
 
     # end-4's illogical-impulse (Quickshell) packaged for home-manager. Only

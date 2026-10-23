@@ -2,20 +2,17 @@
   "nodes": {
     "caelestia-cli": {
       "inputs": {
-        "caelestia-shell": [
-          "caelestia-shell"
-        ],
+        "caelestia-shell": [],
         "nixpkgs": [
-          "caelestia-shell",
           "nixpkgs"
         ]
       },
       "locked": {
-        "lastModified": 1792255116,
-        "narHash": "sha256-eG+ssQCNLOBbqK8zKaQ77Qv/Yoq1bzazuZtHPgCTxNg=",
+        "lastModified": 1792729203,
+        "narHash": "sha256-7FVljQI8cFmzJFlpv/hwtqE1UzhXxvN6+y2MmiU/UUQ=",
         "owner": "caelestia-dots",
         "repo": "cli",
-        "rev": "287802be3fbdbb81c8234587f9ccdd667505f6f9",
+        "rev": "d3f0bff45e2a8d8fbbafcd6e111aacb2c02deb8d",
         "type": "github"
       },
       "original": {
@@ -26,7 +23,9 @@
     },
     "caelestia-shell": {
       "inputs": {
-        "caelestia-cli": "caelestia-cli",
+        "caelestia-cli": [
+          "caelestia-cli"
+        ],
         "m3shapes": "m3shapes",
         "nixpkgs": [
           "nixpkgs"
@@ -432,6 +431,7 @@
     },
     "root": {
       "inputs": {
+        "caelestia-cli": "caelestia-cli",
         "caelestia-shell": "caelestia-shell",
         "disko": "disko",
         "flake-parts": "flake-parts",
