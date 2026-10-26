@@ -10,7 +10,6 @@
       claude-code
       codex
       opencode
-      mcp-nixos
       herdr
     ];
   };
