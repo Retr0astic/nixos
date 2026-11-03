@@ -67,7 +67,7 @@ in {
           ps.cffi
           ps.click
           ps.dbus-python
-          ps.kde-material-you-colors
+          (ps.kde-material-you-colors or pkgs.kde-material-you-colors)
           ps.libsass
           ps.loguru
           ps.material-color-utilities
