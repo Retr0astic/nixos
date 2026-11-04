@@ -19,6 +19,8 @@
           immediate = true;
           content = "game";
           workspace = "name:games";
+          fullscreen = true;
+          suppress_event = "maximize";
         }
         {
           match.class = "mpv";
