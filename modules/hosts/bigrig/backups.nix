@@ -97,6 +97,10 @@
       "/home/sree/.local/share/containers/storage/overlay-images"
       "/home/sree/.local/share/containers/storage/overlay-containers"
       "/home/sree/.local/share/containers/storage/overlay-layers"
+      "/home/erp/.local/share/containers/storage/overlay"
+      "/home/erp/.local/share/containers/storage/overlay-images"
+      "/home/erp/.local/share/containers/storage/overlay-containers"
+      "/home/erp/.local/share/containers/storage/overlay-layers"
       # Jellyfin's /cache volume (image cache, metadata cache, and
       # transcode temp files under .../jellyfin-cache/_data/transcodes).
       # All regenerated on demand, not worth the churn in backups.
