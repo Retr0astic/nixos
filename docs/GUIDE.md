@@ -68,6 +68,7 @@ Two aliases exist in your fish shell already: `rebuild` and `update`.
 | `chapel` | Hyprland + Noctalia |
 | `chapel-caelestia` | Hyprland + Caelestia |
 | `chapel-umbriel` | Umbriel + Noctalia |
+| `chapel-end4` | Hyprland + Noctalia, plus an end-4 session |
 | `bigrig` | Headless server |
 
 A bare `nixos-rebuild --flake ~/nixos` picks `chapel`, because that is the

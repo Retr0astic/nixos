@@ -34,8 +34,8 @@ machine running NixOS unstable.
   NVIDIA, monitor/HDR, OpenRGB, Steam, Gamescope, Gamemode, Heroic, and related
   gaming tooling.
 - **CI and caches:** `.github/workflows/flake.yml` checks pull requests and
-  main/testing, builds both graphical-shell variants, verifies aliases, and
-  configures the chapel Cachix cache. The flake also declares trusted
+  main/testing, builds every configuration that is not in the chapel cache,
+  verifies the configuration names, and pushes the result to that cache. The flake also declares trusted
   substituters for Chapel, NVF, and Noctalia.
 
 ## Available configurations
@@ -49,6 +49,7 @@ aliases, and no default, stable, testing, or experimental variant.
 | chapel | Chapel + Hyprland + Noctalia |
 | chapel-caelestia | Chapel + Hyprland + Caelestia |
 | chapel-umbriel | Chapel + Umbriel + Noctalia |
+| chapel-end4 | Chapel + Hyprland + Noctalia, plus an end-4 session |
 | bigrig | Headless server, no compositor |
 
 Other useful outputs include `packages.x86_64-linux.nvf`,
