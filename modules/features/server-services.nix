@@ -6,6 +6,12 @@
     services.openssh = {
       enable = true;
       openFirewall = true;
+      # Keys only. The key for sree and erp is in modules/hosts/bigrig/host.nix.
+      settings = {
+        PasswordAuthentication = false;
+        KbdInteractiveAuthentication = false;
+        PermitRootLogin = "no";
+      };
     };
 
     virtualisation.podman = {

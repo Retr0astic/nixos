@@ -6,7 +6,7 @@
 # uid, gid, and the subuid range are pinned like the other users in host.nix,
 # so restored volumes keep correct ownership.
 {...}: {
-  flake.modules.nixos.bigrig = {...}: {
+  flake.modules.nixos.bigrig = {config, ...}: {
     users.groups.erp.gid = 1002;
     users.users.erp = {
       isNormalUser = true;
@@ -26,9 +26,8 @@
           count = 65536;
         }
       ];
-      openssh.authorizedKeys.keys = [
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJj+EmkhR8opwF5DsQlGtjeZh5aM3BoX2GKszpbY9bfu sree2399@gmail.com"
-      ];
+      # The same keys as sree, written once in host.nix.
+      openssh.authorizedKeys.keys = config.users.users.sree.openssh.authorizedKeys.keys;
     };
 
     # ERP_ROOT of install-quadlets.sh: the container logs live here.

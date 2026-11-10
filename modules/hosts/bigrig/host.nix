@@ -3,21 +3,6 @@
     networking.hostName = "bigrig";
     time.timeZone = "Asia/Dubai";
 
-    # TODO (do this before wiping the old system): copy its Samba config —
-    # it defines the share-to-user mapping (sree/vicky/media/paperless) and
-    # is not worth reconstructing from memory once gone.
-    #   cp -a /mnt/root/etc/samba /mnt/backup/
-
-    # TODO (do this before nixos-install, not after): `secrets` requires
-    # sops.age.sshKeyPaths to decrypt passwd/sree, and that secret is
-    # `neededForUsers = true`. On a headless box there is no greeter to fall
-    # back to, so if bigrig boots once without a working key it cannot log in.
-    # Generate the host key on the ISO first:
-    #   ssh-keygen -t ed25519 -f /mnt/etc/ssh/ssh_host_ed25519_key -N ""
-    #   ssh-to-age < /mnt/etc/ssh/ssh_host_ed25519_key.pub
-    # add the result to .sops.yaml, run `sops updatekeys secrets/secrets.yaml`,
-    # commit, and only then run nixos-install.
-
     # systemd-boot and efi.canTouchEfiVariables come from the shared `core`
     # module. No XBOOTLDR split and no LUKS here, unlike chapel: bigrig has one
     # plain ESP and no encrypted root.
@@ -25,8 +10,10 @@
 
     system.stateVersion = "26.05";
 
-    # Second way in, in case passwd/sree fails to decrypt (see the sops note
-    # above).
+    # The only way in over SSH: `server-services` turns password login off.
+    # It is also the way in when passwd/sree fails to decrypt. That secret
+    # is `neededForUsers`, and a headless host has no greeter to fall back
+    # to.
     users.users.sree.openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJj+EmkhR8opwF5DsQlGtjeZh5aM3BoX2GKszpbY9bfu sree2399@gmail.com"
     ];
