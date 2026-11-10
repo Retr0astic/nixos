@@ -29,14 +29,16 @@
     archivePasswordFile = config.sops.secrets.restic_archive_password.path;
     notifyCredentialsFile = config.sops.secrets.restic_notify_credentials.path;
 
-    # keep-* policy lifted straight from .autorestic.yml / restic_archive.sh.
+    # keep-* policy lifted straight from .autorestic.yml / restic_archive.sh,
+    # minus its `--keep-within 14d`. That rule kept every hourly snapshot for
+    # 14 days, about 340 per repository. Snapshots share their data, so this
+    # costs little space, but nothing needs that many.
     hourlyPrune = extra:
       [
         "--keep-last 5"
         "--keep-daily 7"
         "--keep-weekly 8"
         "--keep-monthly 12"
-        "--keep-within 14d"
       ]
       ++ extra;
 
@@ -86,26 +88,51 @@
     mkPruneTimer = _name: {
       description = "Daily restic prune";
       wantedBy = ["timers.target"];
+      # 00:30, not midnight. At 00:00 the hourly backup holds the
+      # repository lock, and the prune failed on it on 2026-11-10.
       timerConfig = {
-        OnCalendar = "daily";
+        OnCalendar = "*-*-* 00:30:00";
         Persistent = true;
       };
     };
 
-    containerExcludes = [
-      "/home/sree/.local/share/containers/storage/overlay"
-      "/home/sree/.local/share/containers/storage/overlay-images"
-      "/home/sree/.local/share/containers/storage/overlay-containers"
-      "/home/sree/.local/share/containers/storage/overlay-layers"
-      "/home/erp/.local/share/containers/storage/overlay"
-      "/home/erp/.local/share/containers/storage/overlay-images"
-      "/home/erp/.local/share/containers/storage/overlay-containers"
-      "/home/erp/.local/share/containers/storage/overlay-layers"
-      # Jellyfin's /cache volume (image cache, metadata cache, and
-      # transcode temp files under .../jellyfin-cache/_data/transcodes).
-      # All regenerated on demand, not worth the churn in backups.
-      "/home/sree/.local/share/containers/storage/volumes/jellyfin-cache"
-    ];
+    containerExcludes =
+      [
+        "/home/sree/.local/share/containers/storage/overlay"
+        "/home/sree/.local/share/containers/storage/overlay-images"
+        "/home/sree/.local/share/containers/storage/overlay-containers"
+        "/home/sree/.local/share/containers/storage/overlay-layers"
+        "/home/erp/.local/share/containers/storage/overlay"
+        "/home/erp/.local/share/containers/storage/overlay-images"
+        "/home/erp/.local/share/containers/storage/overlay-containers"
+        "/home/erp/.local/share/containers/storage/overlay-layers"
+        # Jellyfin's /cache volume (image cache, metadata cache, and
+        # transcode temp files under .../jellyfin-cache/_data/transcodes).
+        # All regenerated on demand, not worth the churn in backups.
+        "/home/sree/.local/share/containers/storage/volumes/jellyfin-cache"
+      ]
+      # Volume data that a container downloads or rebuilds on its own. Together
+      # about 97G of the 126G of volumes on 2026-11-10, which left the home
+      # repository too large for the 279G /mnt/backups.
+      ++ map (p: "/home/sree/.local/share/containers/storage/volumes/${p}") [
+        # Model weights, pulled again with `ollama pull`. 61G.
+        "ollama/_data/models"
+        # PlatformIO toolchains and firmware build output. 4.4G.
+        "esphome/_data/.esphome/platformio"
+        "esphome/_data/.esphome/build"
+        # Scrub thumbnails, generated again from the media. 5.8G.
+        "jellyfin/_data/data/trickplay"
+        # The apps' own database copies. restic already holds the live
+        # database next to them. 7.5G and 6.8G.
+        "jellyfin/_data/data/backups"
+        "slskd/_data/data/backups"
+        # The search history cache, not the transfer record. 8G.
+        "slskd/_data/data/search.db"
+        # Models that Immich and ledgerlens download on first use.
+        "immich_model-cache"
+        "ledgerlens-docling-models"
+        "ledgerlens-huggingface-cache"
+      ];
 
     rootExcludes = [
       "/home"
