@@ -14,6 +14,7 @@
       btop
       fastfetch
       gh
+      rsync
     ];
 
     programs = {

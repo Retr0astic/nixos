@@ -12,9 +12,6 @@
       vim
       git
       wget
-      # TODO: verify. Carried over from the old system-packages list with no
-      # recorded reason. Drop it if nothing regresses.
-      bubblewrap
     ];
 
     services.fstrim.enable = true;
@@ -71,7 +68,6 @@
     nix.settings.experimental-features = ["nix-command" "flakes"];
     nix.settings.trusted-users = ["root"];
     nixpkgs.config.allowUnfree = true;
-    nixpkgs.config.permittedInsecurePackages = ["pnpm-10.29.2" "electron-39.8.10" "electron-40.10.5"];
     programs.nix-ld = {
       enable = true;
       libraries = [];

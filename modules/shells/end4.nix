@@ -95,6 +95,9 @@ in {
 
       # From illogical-flake's packages.nix, minus gnome-icon-theme and the
       # fish/kitty/starship toggles (configured elsewhere in this repo).
+      # Also minus what the chapel base list already installs: adw-gtk3,
+      # cliphist, ddcutil, easyeffects, gnome-keyring, jq, libsecret, mpv,
+      # rsync and wget.
       home.packages = with pkgs; [
         cava
         lxqt.pavucontrol-qt
@@ -103,20 +106,14 @@ in {
         # playerctl comes from services.playerctld in
         # modules/features/media.nix, which every chapel variant carries.
         brightnessctl
-        ddcutil
         axel
         bc
-        cliphist
         curl
-        rsync
-        wget
         libqalculate
         ripgrep
-        jq
         foot
         fuzzel
         matugen
-        mpv
         mpvpaper
         swappy
         wf-recorder
@@ -136,7 +133,6 @@ in {
         ffmpeg
         gnome-settings-daemon
         libnotify
-        easyeffects
         grim
         hyprlock
         hypridle
@@ -147,7 +143,6 @@ in {
         libportal-gtk4
         gobject-introspection
         sassc
-        adw-gtk3
         customPkgs.illogical-impulse-oneui4-icons
         papirus-icon-theme
         adwaita-icon-theme
@@ -157,7 +152,6 @@ in {
         # modules/hosts/chapel/python.nix. ii reaches it through the fake
         # venv below and the qs wrapper from qt.nix.
         eza
-        gnome-keyring
         kdePackages.bluedevil
         kdePackages.plasma-nm
         kdePackages.polkit-kde-agent-1
@@ -165,7 +159,6 @@ in {
         kdePackages.kirigami
         libsForQt5.qtgraphicaleffects
         libsForQt5.qtsvg
-        libsecret
       ];
 
       # ii's Python scripts activate this venv path (set by end-4's own
