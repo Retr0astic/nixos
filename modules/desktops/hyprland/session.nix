@@ -1,7 +1,5 @@
-{config, ...}: {
-  flake.modules.homeManager.hyprland = {lib, ...}: let
-    inherit (lib.generators) mkLuaInline;
-  in {
+{...}: {
+  flake.modules.homeManager.hyprland = {...}: {
     wayland.windowManager.hyprland = {
       enable = true;
       package = null;

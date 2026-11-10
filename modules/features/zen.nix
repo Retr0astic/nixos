@@ -1,8 +1,4 @@
-{
-  config,
-  inputs,
-  ...
-}: {
+{inputs, ...}: {
   flake.modules.nixos.zen = let
     zenBrowser = inputs.zenBrowser;
   in

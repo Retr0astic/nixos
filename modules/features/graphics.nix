@@ -1,5 +1,5 @@
 {...}: {
-  flake.modules.nixos.graphics = {config, ...}: {
+  flake.modules.nixos.graphics = {...}: {
     hardware.graphics = {
       enable = true;
       enable32Bit = true;

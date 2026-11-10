@@ -85,6 +85,11 @@ jobs:
       - name: Check formatting
         run: nix fmt -- --check .
 
+      # An unused binding is usually a leftover from a move. `--inputs-from`
+      # takes deadnix from the locked nixpkgs, not from the registry.
+      - name: Check for unused bindings
+        run: nix run --inputs-from . nixpkgs#deadnix -- --fail .
+
       - name: Check flake
         run: nix flake check --print-build-logs --accept-flake-config
 

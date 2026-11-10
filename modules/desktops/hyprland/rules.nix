@@ -1,4 +1,4 @@
-{config, ...}: {
+{...}: {
   flake.modules.homeManager.hyprland = {...}: {
     wayland.windowManager.hyprland.settings = {
       window_rule = [

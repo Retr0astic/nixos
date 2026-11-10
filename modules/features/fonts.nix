@@ -1,8 +1,4 @@
-{
-  config,
-  inputs,
-  ...
-}: {
+{inputs, ...}: {
   flake.modules.nixos.fonts = let
     lucidglyph = inputs.lucidglyph;
   in
