@@ -96,9 +96,10 @@ in {
       # From illogical-flake's packages.nix, minus gnome-icon-theme and the
       # fish/kitty/starship toggles (configured elsewhere in this repo).
       # Also minus what the chapel base list already installs: adw-gtk3,
-      # cliphist, ddcutil, easyeffects, gnome-keyring, jq, libsecret, mpv,
+      # ddcutil, easyeffects, gnome-keyring, jq, libsecret, mpv,
       # rsync, wget and wl-clipboard.
       home.packages = with pkgs; [
+        cliphist
         cava
         lxqt.pavucontrol-qt
         wireplumber

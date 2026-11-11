@@ -7,7 +7,7 @@
     # Matches home.packages in modules/desktops/hyprland/settings.nix.
     # Screenshots go through noctalia's own commands (see the screenshot
     # submap in modules/shells/noctalia.nix), so no hyprshot here either.
-    home.packages = [pkgs.cliphist pkgs.wlsunset];
+    home.packages = [pkgs.wl-clipboard pkgs.wlsunset];
 
     services.hypridle = {
       enable = true;

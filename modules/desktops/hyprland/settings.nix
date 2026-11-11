@@ -1,7 +1,6 @@
 {...}: {
   flake.modules.homeManager.hyprland = {pkgs, ...}: {
     home.packages = with pkgs; [
-      cliphist
       wl-clipboard
       wlsunset
     ];
