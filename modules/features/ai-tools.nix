@@ -8,7 +8,6 @@
   flake.modules.homeManager.ai-tools = {pkgs, ...}: {
     home.packages = with pkgs; [
       claude-code
-      codex
       opencode
       herdr
     ];
