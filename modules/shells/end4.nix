@@ -97,7 +97,7 @@ in {
       # fish/kitty/starship toggles (configured elsewhere in this repo).
       # Also minus what the chapel base list already installs: adw-gtk3,
       # cliphist, ddcutil, easyeffects, gnome-keyring, jq, libsecret, mpv,
-      # rsync and wget.
+      # rsync, wget and wl-clipboard.
       home.packages = with pkgs; [
         cava
         lxqt.pavucontrol-qt
@@ -138,7 +138,6 @@ in {
         hypridle
         hyprsunset
         wayland-protocols
-        wl-clipboard
         libsoup_3
         libportal-gtk4
         gobject-introspection
