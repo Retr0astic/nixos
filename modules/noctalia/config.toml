@@ -781,7 +781,6 @@ video_codec = "hevc"
 [plugin_settings."pozzoo/hassio"]
 entity_manager_open_near_click = true
 entity_manager_placement = "attached"
-ha_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiI3NWRhOTgyMGJjMGU0MmNlOWQ5YzM3ZjAxODEzYjExMSIsImlhdCI6MTc4Njc4NzcxOCwiZXhwIjoyMTAyMTQ3NzE4fQ.fW8H_maOYU_-y1YljOcvigdNAs3vgfO3w861HcBDfqk"
 ha_url = "https://ha.retr0astic.com"
 
 [plugin_settings."weinguyen/procmon"]

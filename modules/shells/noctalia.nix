@@ -4,10 +4,24 @@
   ...
 }: let
   inherit (config.flake.lib.hypr) mkLuaInline luaBind key exec;
+
+  # The hassio plugin token stays out of the public config.toml. sops renders
+  # it here, and config.toml pulls it in with [include].
+  hassioTokenFile = "/run/secrets/rendered/noctalia-hassio.toml";
 in {
   # Pull the home-manager side in whenever this module is selected.
-  flake.modules.nixos.noctalia = {
+  flake.modules.nixos.noctalia = osArgs: {
     home-manager.sharedModules = [config.flake.modules.homeManager.noctalia];
+
+    sops.secrets.hassio_token = {};
+    sops.templates."noctalia-hassio.toml" = {
+      path = hassioTokenFile;
+      owner = "sree";
+      content = ''
+        [plugin_settings."pozzoo/hassio"]
+        ha_token = "${osArgs.config.sops.placeholder.hassio_token}"
+      '';
+    };
   };
 
   flake.modules.homeManager.noctalia = {
@@ -34,7 +48,13 @@ in {
         return 1
       end
 
-      if noctalia config export >$tmp
+      # Export flattens the include into the output. Drop the token and put
+      # the [include] back so the secret never lands in git.
+      if begin
+          printf '%s\n' '[include]' 'files = ["${hassioTokenFile}"]' ""
+          noctalia config export | string match -rv '^\s*ha_token\s*='
+          test $pipestatus[1] -eq 0
+        end >$tmp
         mv -- $tmp ${config.home.homeDirectory}/nixos/modules/noctalia/config.toml
         if test $status -eq 0
           echo "noctalia-config: exported configuration"
