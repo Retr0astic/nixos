@@ -1,3 +1,6 @@
+[include]
+files = ["/run/secrets/rendered/noctalia-hassio.toml"]
+
 [audio]
 enable_sounds = true
 
