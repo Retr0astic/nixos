@@ -88,12 +88,15 @@
     };
 
     # Offline restic archive target: an external NTFS USB drive, only ever
-    # plugged in by hand. noauto + automount so its absence never blocks
-    # boot or anything else that stats /mnt/archive.
+    # plugged in by hand. noauto so its absence never blocks boot. No
+    # x-systemd.automount: an automount only mounts on access, so plugging
+    # the drive in never activated the mount and restic-archive-autorun
+    # (backups.nix) never fired. That unit now hangs off the device unit
+    # and pulls the mount in itself.
     fileSystems."/mnt/archive" = {
       device = "/dev/disk/by-uuid/5CE484B2E4849046";
       fsType = "ntfs3";
-      options = ["nofail" "noauto" "x-systemd.automount"];
+      options = ["nofail" "noauto"];
     };
   };
 }

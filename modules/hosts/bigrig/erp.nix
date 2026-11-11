@@ -4,13 +4,16 @@
 # Its quadlets come from the ERP repo (podman/install-quadlets.sh), not here.
 #
 # uid, gid, and the subuid range are pinned like the other users in host.nix,
-# so restored volumes keep correct ownership.
+# so restored volumes keep correct ownership. 1003, not 1002: gid 1002 is
+# vaultshare (samba.nix), the group that owns /mnt/Vault/share. NixOS does
+# not move an existing user, so the 1002 -> 1003 move ran by hand with
+# usermod/groupmod on 2026-11-11.
 {...}: {
   flake.modules.nixos.bigrig = {config, ...}: {
-    users.groups.erp.gid = 1002;
+    users.groups.erp.gid = 1003;
     users.users.erp = {
       isNormalUser = true;
-      uid = 1002;
+      uid = 1003;
       group = "erp";
       # Start the ERP user units (podman quadlets) without a login session.
       linger = true;

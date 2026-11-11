@@ -67,6 +67,10 @@
           "directory mask" = "0775";
           "write list" = ["sree" "vicky"];
           "valid users" = ["@sree" "@vicky"];
+          # Samba's write list only lifts its own read-only flag; the
+          # filesystem still decides. Files land in the shared group so
+          # both users can write each other's files.
+          "force group" = "vaultshare";
         };
 
         Paperless_Consume = {
@@ -87,10 +91,20 @@
     # actually write there through the share above.
     users.users.sree.extraGroups = ["paperless"];
 
+    # /mnt/Vault/share is group-owned by gid 1002, a shared group from the
+    # Fedora box that never got recreated here. Without it vicky only had
+    # "other" r-x on the share root, so every SMB write was denied.
+    users.groups.vaultshare = {
+      gid = 1002;
+      members = ["sree" "vicky"];
+    };
+
     # /home/sree/share never existed on this box (Fedora's did) — the other
     # five share paths already exist.
     systemd.tmpfiles.rules = [
       "d /home/sree/share 0755 sree sree -"
+      # setgid so new entries made outside Samba also inherit vaultshare.
+      "z /mnt/Vault/share 2775 sree vaultshare -"
     ];
   };
 }

@@ -79,9 +79,16 @@
       };
       serviceConfig.Type = "oneshot";
       onFailure = ["restic-notify-failure@%n.service"];
+      # forget and prune are separate on purpose. `forget --prune` only
+      # prunes when forget actually removed a snapshot. While backups are
+      # failing no new snapshots arrive, "--keep-within 14d" of the newest
+      # keeps every old one, so prune never ran and the packs orphaned by
+      # each failed backup piled up until the disk was full (2026-09-01 to
+      # 2026-10-20). A standalone prune always drops unreferenced packs.
       script = ''
         ${pkgs.restic}/bin/restic unlock
-        ${pkgs.restic}/bin/restic forget --prune ${lib.concatStringsSep " " repo.opts}
+        ${pkgs.restic}/bin/restic forget --retry-lock 2h ${lib.concatStringsSep " " repo.opts}
+        ${pkgs.restic}/bin/restic prune --retry-lock 2h
       '';
     };
 
@@ -110,6 +117,9 @@
         # transcode temp files under .../jellyfin-cache/_data/transcodes).
         # All regenerated on demand, not worth the churn in backups.
         "/home/sree/.local/share/containers/storage/volumes/jellyfin-cache"
+        # Transcode temp files in the config volume; they vanish mid-backup
+        # and turn the run into a restic exit 3 (2026-10-22).
+        "/home/sree/.local/share/containers/storage/volumes/jellyfin/_data/transcodes"
       ]
       # Volume data that a container downloads or rebuilds on its own. Together
       # about 97G of the 126G of volumes on 2026-11-10, which left the home
@@ -134,9 +144,17 @@
         "ledgerlens-huggingface-cache"
       ];
 
+    # Device unit for the offline archive drive (fileSystems."/mnt/archive"
+    # in storage.nix); udev activates it when the drive is plugged in.
+    archiveDevice = "dev-disk-by\\x2duuid-5CE484B2E4849046.device";
+    offlineUnits = map (n: "restic-backups-offline-${n}") ["root" "home" "nextcloud" "immich"];
+
     rootExcludes = [
       "/home"
       "/.snapshots"
+      # Rebuildable from the flake; nix GC deletes paths mid-backup and
+      # turns the run into a restic exit 3 (2026-10-26).
+      "/nix/store"
       "/mnt"
       "/proc"
       "/tmp"
@@ -269,6 +287,8 @@
           OnCalendar = "hourly";
           Persistent = true;
         };
+        # Wait out the nightly prune's lock rather than failing the hour.
+        extraBackupArgs = ["--retry-lock 1h"];
         pruneOpts = [];
       };
       nextcloud = {
@@ -281,6 +301,8 @@
           OnCalendar = "hourly";
           Persistent = true;
         };
+        # Wait out the nightly prune's lock rather than failing the hour.
+        extraBackupArgs = ["--retry-lock 1h"];
         pruneOpts = [];
       };
       root = {
@@ -293,6 +315,8 @@
           OnCalendar = "hourly";
           Persistent = true;
         };
+        # Wait out the nightly prune's lock rather than failing the hour.
+        extraBackupArgs = ["--retry-lock 1h"];
         pruneOpts = [];
       };
 
@@ -402,6 +426,9 @@
         "offline-immich"
       ])
       (_: notifyOnFailure)
+      # Offline jobs pull in (and wait for) the noauto /mnt/archive mount,
+      # and fail cleanly instead of writing anywhere if the drive is absent.
+      // lib.genAttrs offlineUnits (_: notifyOnFailure // {unitConfig.RequiresMountsFor = "/mnt/archive";})
       // lib.mapAttrs' (name: repo: lib.nameValuePair "restic-prune-${name}" (mkPruneService name repo)) hourlyPruneRepos
       // {
         btrbk-bigrig = notifyOnFailure;
@@ -442,22 +469,39 @@
           '';
         };
 
-        # Starts the four offline-* restic jobs as soon as /mnt/archive.mount
-        # comes up (drive plugged in, or already-connected at boot). wantedBy
-        # on a mount unit works the same way as wantedBy on a target: systemd
-        # pulls this in whenever that mount activates.
+        # Runs the four offline-* restic jobs when the archive drive is
+        # plugged in (or already connected at boot). Hangs off the drive's
+        # device unit, which udev activates on connect, rather than the
+        # mount: /mnt/archive is noauto, so nothing else would mount it.
+        # Jobs run one at a time so they don't fight over one USB disk,
+        # then the drive is unmounted and a notification says whether it
+        # is safe to unplug.
         restic-archive-autorun = {
-          description = "Start the offline restic archive backups on drive connect";
-          after = ["mnt-archive.mount"];
-          requires = ["mnt-archive.mount"];
-          wantedBy = ["mnt-archive.mount"];
-          serviceConfig.Type = "oneshot";
+          description = "Run the offline restic archive backups on drive connect";
+          wantedBy = [archiveDevice];
+          after = [archiveDevice];
+          bindsTo = [archiveDevice];
+          serviceConfig = {
+            Type = "oneshot";
+            TimeoutStartSec = "infinity";
+          };
           script = ''
-            ${pkgs.curl}/bin/curl --config ${notifyCredentialsFile} \
-              -d "Archive drive connected, starting offline backups" https://notify.retr0astic.com/backups
-            for u in restic-backups-offline-root restic-backups-offline-home restic-backups-offline-nextcloud restic-backups-offline-immich; do
-              ${pkgs.systemd}/bin/systemctl start --no-block "$u"
+            notify() {
+              ${pkgs.curl}/bin/curl --config ${notifyCredentialsFile} \
+                -d "$1" https://notify.retr0astic.com/backups || true
+            }
+            notify "Archive drive connected, starting offline backups. Do not remove the drive."
+            failed=""
+            for u in ${lib.concatStringsSep " " offlineUnits}; do
+              ${pkgs.systemd}/bin/systemctl start "$u" || failed="$failed $u"
             done
+            ${pkgs.systemd}/bin/systemctl stop mnt-archive.mount || failed="$failed (unmount)"
+            if [ -z "$failed" ]; then
+              notify "Offline backups finished and drive unmounted. Safe to unplug."
+            else
+              notify "Offline backups finished with failures:$failed. Check journalctl before unplugging."
+              exit 1
+            fi
           '';
         };
       };

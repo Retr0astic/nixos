@@ -46,17 +46,18 @@
       Unit = {
         Description = "Podman auto-update service";
         OnFailure = "container-notify-failure@%n.service";
-        # Home-manager activation restarts any changed user unit on every
-        # rebuild, which would pull images outside the timer. This unit
-        # should only run when podman-auto-update.timer fires (an indirect,
-        # dependency-driven start); RefuseManualStart blocks the direct
-        # `systemctl start` that activation issues, without blocking the
-        # timer.
+        # This unit should only run when podman-auto-update.timer fires (an
+        # indirect, dependency-driven start), never a direct
+        # `systemctl start`. RefuseManualStart enforces that, but it also
+        # makes home-manager activation's own restart-if-changed start fail
+        # on every rebuild that touches this unit, so X-RestartIfChanged
+        # tells activation to skip restarting it entirely.
         RefuseManualStart = true;
       };
       Service = {
         Type = "oneshot";
         ExecStart = "${pkgs.podman}/bin/podman auto-update";
+        X-RestartIfChanged = false;
       };
     };
 
