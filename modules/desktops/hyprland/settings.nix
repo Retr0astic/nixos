@@ -83,6 +83,7 @@
             input_methods = true;
             input_methods_ignorealpha = 0.8;
           };
+          wobble.enabled = true;
           dim_inactive = true;
           dim_strength = 0.05;
         };
