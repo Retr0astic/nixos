@@ -18,6 +18,9 @@
         ExecStart = "/run/current-system/sw/bin/nvidia-smi -pl 314";
       };
     };
+    # Holds the clocks above idle. At P8 (405 MHz memory) the reclock on the
+    # next workspace switch shows as a stutter at 5120x1440@240.
+    services.lact.enable = true;
   };
 
   flake.modules.homeManager.chapel = {
