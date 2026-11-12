@@ -25,8 +25,10 @@
 # Keep "noctalia.toml" here. Noctalia's umbriel color template rewrites this
 # array on every theme change and copies through the symlink into this file.
 # Example: ["appearance.toml", "outputs.toml", "noctalia.toml"]
+# noctalia-binds.toml comes from modules/shells/noctalia.nix: the noctalia
+# keybinds and layer rule, as on the Hyprland side.
 [include]
-files = []
+files = ["noctalia-binds.toml"]
 
 [include.optional]
 files = ["noctalia.toml"]                                      # Example: ["~/.config/umbriel/noctalia.toml"]
@@ -359,15 +361,10 @@ name = "media"
 "Mod+Return" = "spawn kitty"
 "Mod+Shift+Return" = "spawn zen"
 "Mod+E" = "spawn nautilus"
-"Mod" = "spawn noctalia msg panel-toggle launcher"
 "Mod+Q" = "window-close"
 "Mod+C" = "window-close"                        # Matches the close key on the Hyprland side
 
 # Noctalia panels
-"Alt+Tab" = "spawn noctalia msg window-switcher"
-"Mod+Z" = "spawn noctalia msg panel-toggle control-center"
-"Mod+X" = "spawn noctalia msg settings-toggle"
-"Mod+Shift+C" = "spawn noctalia msg panel-toggle launcher clipboard"
 # Mod+D and Mod+Shift+D run three binds each on the Hyprland side: DPMS,
 # caffeine and the OpenRGB profile (modules/hosts/chapel/openrgb.nix).
 "Mod+D" = "spawn umbriel msg dpms-on; noctalia msg caffeine-disable; openrgb --profile Default"
@@ -404,10 +401,8 @@ name = "media"
 "Mod+Shift+Right" = "column-move-right"
 "Mod+F" = "window-toggle-fullscreen"             # Exit restores the previous layout size immediately
 "Mod+Ctrl+F" = "window-toggle-maximize"
-"Mod+R" = "spawn noctalia msg panel-toggle launcher" # Matches the launcher key on the Hyprland side
 "Mod+Ctrl+R" = "window-cycle-primary-extent"
 "Mod+Ctrl+Shift+R" = "window-cycle-primary-extent-back"
-"Mod+Comma" = "spawn noctalia msg settings-toggle" # Matches the settings key on the Hyprland side
 "Mod+Ctrl+Comma" = "window-consume-left"
 "Mod+Ctrl+Period" = "window-consume-right"
 "Mod+WheelUp" = { action = "workspace-previous", cooldown_ms = 150 } # Matches mouse_up on the Hyprland side
@@ -524,15 +519,6 @@ name = "media"
 # Screenshots. Noctalia ships its own capture tool, so this replaces the
 # hyprshot submap bound on the Hyprland side (hyprshot needs hyprctl and
 # does not work under Umbriel).
-# Screenshot submap, matching the one on the Hyprland side.
-"Print" = { action = "submap screenshot", repeat = false }
-"submap[screenshot],R" = { action = "spawn noctalia msg screenshot-region", submap = "reset" }
-"submap[screenshot],O" = { action = "spawn noctalia msg screenshot-fullscreen monitor", submap = "reset" }
-"submap[screenshot],Shift+O" = { action = "spawn noctalia msg screenshot-fullscreen all", submap = "reset" }
-"submap[screenshot],A" = { action = "spawn noctalia msg screenshot-annotate", submap = "reset" }
-"submap[screenshot],Escape" = "submap reset"
-"Shift+Print" = "spawn noctalia msg screenshot-fullscreen pick"
-"Ctrl+Print" = "spawn noctalia msg screenshot-annotate"
 
 # ─────────────────────────────── Layout ─────────────────────────────────────
 # Configure the default tiling mode and shared sizing behavior. Workspace rules
@@ -808,12 +794,8 @@ default_focused = false
 # Documentation: https://docs.noctalia.dev/umbriel/layer-rules/
 # ────────────────────────────────────────────────────────────────────────────
 
-[[layer_rule]]
-match.namespace = "^noctalia-(bar-[^\"]+|notification|dock|panel|attached-panel|osd|desktop-widget-[^\"]*)$"
-blur = true
-blur_ignore_alpha = 0.5
-blur_popups = true
-blur_optimized = false
+# The noctalia layer rule lives in modules/shells/noctalia.nix, which writes
+# noctalia-binds.toml next to this file.
 
 # ────────────────────────────── Animation ───────────────────────────────────
 # Parent values provide defaults for every event table. Nested values override

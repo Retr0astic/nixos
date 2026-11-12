@@ -27,6 +27,7 @@ in {
   flake.modules.homeManager.noctalia = {
     config,
     lib,
+    pkgs,
     ...
   }: {
     # home-manager now ships its own programs.noctalia module upstream,
@@ -149,6 +150,50 @@ in {
     # stub would take its place, and the next umbriel build would collide.
     home.file.".config/umbriel/config.toml".source =
       config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/nixos/modules/umbriel/config.toml";
+
+    # The same binds and layer rule as the Hyprland glue above. config.toml
+    # pulls this file in with [include]; Umbriel merges [keybinds] by key.
+    # Mod+D and Mod+Shift+D stay in config.toml, since they also run DPMS
+    # and OpenRGB.
+    home.file.".config/umbriel/noctalia-binds.toml".source = (pkgs.formats.toml {}).generate "noctalia-binds.toml" {
+      keybinds = let
+        ipc = "spawn noctalia msg";
+        shot = cmd: {
+          action = "${ipc} ${cmd}";
+          submap = "reset";
+        };
+      in {
+        "Mod" = "${ipc} panel-toggle launcher";
+        "Mod+R" = "${ipc} panel-toggle launcher";
+        "Mod+Z" = "${ipc} panel-toggle control-center";
+        "Mod+Comma" = "${ipc} settings-toggle";
+        "Mod+X" = "${ipc} settings-toggle";
+        "Mod+Shift+C" = "${ipc} panel-toggle launcher clipboard";
+        "Alt+Tab" = "${ipc} window-switcher";
+
+        "Print" = {
+          action = "submap screenshot";
+          repeat = false;
+        };
+        "submap[screenshot],R" = shot "screenshot-region";
+        "submap[screenshot],O" = shot "screenshot-fullscreen monitor";
+        "submap[screenshot],Shift+O" = shot "screenshot-fullscreen all";
+        "submap[screenshot],A" = shot "screenshot-annotate";
+        "submap[screenshot],Escape" = "submap reset";
+        "Shift+Print" = "${ipc} screenshot-fullscreen pick";
+        "Ctrl+Print" = "${ipc} screenshot-annotate";
+      };
+
+      layer_rule = [
+        {
+          match.namespace = "^noctalia-(bar-[^\"]+|notification|dock|panel|attached-panel|osd|desktop-widget-[^\"]*)$";
+          blur = true;
+          blur_ignore_alpha = 0.5;
+          blur_popups = true;
+          blur_optimized = false;
+        }
+      ];
+    };
 
     # Starship reads the palette that noctalia writes to its cache.
     home.activation.starshipNoctaliaPalette = lib.mkIf config.programs.starship.enable (lib.hm.dag.entryAfter ["writeBoundary"] ''
