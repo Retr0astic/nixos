@@ -9,29 +9,10 @@
     # submap in modules/shells/noctalia.nix), so no hyprshot here either.
     home.packages = [pkgs.wl-clipboard pkgs.wlsunset];
 
-    services.hypridle = {
-      enable = true;
-      settings = {
-        general = {
-          lock_cmd = "noctalia msg session lock";
-          before_sleep_cmd = "noctalia msg session lock";
-          ignore_dbus_inhibit = false;
-          ignore_systemd_inhibit = false;
-          ignore_wayland_inhibit = false;
-        };
-
-        listener = [
-          {
-            timeout = 600;
-            on-timeout = "noctalia msg session lock";
-          }
-          {
-            timeout = 900;
-            on-timeout = "noctalia msg session lock-and-suspend";
-          }
-        ];
-      };
-    };
+    # Idle, lock and suspend come from noctalia's own [idle] config, as on
+    # the Hyprland side (modules/desktops/hyprland/session.nix). hypridle ran
+    # the same lock and suspend timeouts a second time and had no screen-off.
+    services.hypridle.enable = false;
 
     systemd.user.sessionVariables = {
       XDG_CURRENT_DESKTOP = "Umbriel";

@@ -130,6 +130,8 @@ enabled = true
 mode = "5120x1440@239.76"
 position = [0, 0]
 scale = 1
+bit_depth = 10                                  # Matches bitdepth = 10 on the Hyprland side
+sdr_white = 250                                 # Matches sdr_max_luminance = 250 on the Hyprland side
 hdr = "fullscreen"                              # Matches render.cm_auto_hdr = 2 on the Hyprland side —
 # "auto" only enables HDR when a client explicitly requests it, which most
 # games (especially over Proton) never do even in exclusive fullscreen
@@ -354,20 +356,22 @@ name = "media"
 [keybinds]
 
 # Applications and session
-"Mod+Return" = "spawn:kitty"
-"Mod+Shift+Return" = "spawn:zen"
-"Mod+E" = "spawn:nautilus"
-"Mod" = "spawn:noctalia msg panel-toggle launcher"
+"Mod+Return" = "spawn kitty"
+"Mod+Shift+Return" = "spawn zen"
+"Mod+E" = "spawn nautilus"
+"Mod" = "spawn noctalia msg panel-toggle launcher"
 "Mod+Q" = "window-close"
 "Mod+C" = "window-close"                        # Matches the close key on the Hyprland side
 
 # Noctalia panels
-"Alt+Tab" = "spawn:noctalia msg window-switcher"
-"Mod+Z" = "spawn:noctalia msg panel-toggle control-center"
-"Mod+X" = "spawn:noctalia msg settings-toggle"
-"Mod+Shift+C" = "spawn:noctalia msg panel-toggle launcher clipboard"
-"Mod+D" = "spawn:noctalia msg caffeine-disable"
-"Mod+Shift+D" = "spawn:noctalia msg caffeine-enable"
+"Alt+Tab" = "spawn noctalia msg window-switcher"
+"Mod+Z" = "spawn noctalia msg panel-toggle control-center"
+"Mod+X" = "spawn noctalia msg settings-toggle"
+"Mod+Shift+C" = "spawn noctalia msg panel-toggle launcher clipboard"
+# Mod+D and Mod+Shift+D run three binds each on the Hyprland side: DPMS,
+# caffeine and the OpenRGB profile (modules/hosts/chapel/openrgb.nix).
+"Mod+D" = "spawn umbriel msg dpms-on; noctalia msg caffeine-disable; openrgb --profile Default"
+"Mod+Shift+D" = "spawn umbriel msg dpms-off; noctalia msg caffeine-enable; openrgb --profile Off; sleep 1; openrgb --profile Off"
 
 # Focus navigation. In overview, Mod+Up/Down retain normal layout focus, so they
 # traverse stacks in the default horizontal layout. Bare Up/Down move between
@@ -388,6 +392,7 @@ name = "media"
 
 # Common keybinds
 "Mod+Escape" = "session-quit"
+"Mod+Ctrl+Escape" = "session-quit"             # Matches the exit key on the Hyprland side
 "Mod+F1" = "window-focus-next"
 "Mod+H" = "window-focus-left"
 "Mod+J" = "window-focus-down"
@@ -399,52 +404,64 @@ name = "media"
 "Mod+Shift+Right" = "column-move-right"
 "Mod+F" = "window-toggle-fullscreen"             # Exit restores the previous layout size immediately
 "Mod+Ctrl+F" = "window-toggle-maximize"
-"Mod+R" = "window-cycle-width"
-"Mod+Shift+R" = "window-cycle-width-back"
-"Mod+Comma" = "window-consume-left"
-"Mod+Period" = "window-consume-right"
-"Mod+WheelUp" = "window-focus-left"
-"Mod+WheelDown" = "window-focus-right"
+"Mod+R" = "spawn noctalia msg panel-toggle launcher" # Matches the launcher key on the Hyprland side
+"Mod+Ctrl+R" = "window-cycle-primary-extent"
+"Mod+Ctrl+Shift+R" = "window-cycle-primary-extent-back"
+"Mod+Comma" = "spawn noctalia msg settings-toggle" # Matches the settings key on the Hyprland side
+"Mod+Ctrl+Comma" = "window-consume-left"
+"Mod+Ctrl+Period" = "window-consume-right"
+"Mod+WheelUp" = { action = "workspace-previous", cooldown_ms = 150 } # Matches mouse_up on the Hyprland side
+"Mod+WheelDown" = { action = "workspace-next", cooldown_ms = 150 }   # Matches mouse_down on the Hyprland side
+"Mod+Shift+WheelUp" = "window-focus-left"
+"Mod+Shift+WheelDown" = "window-focus-right"
+
+# Tab groups, matching the "group" submap on the Hyprland side. Umbriel has
+# no group lock and no move-into-group, so L and M are not bound.
+"Mod+T" = { action = "submap group", repeat = false }
+"submap[group],T" = "column-toggle-tabbed"
+"submap[group],N" = "column-focus-tab-next"
+"submap[group],P" = "column-focus-tab-previous"
+"submap[group],Escape" = "submap reset"
 
 # Workspaces
-"Mod+1" = "workspace-switch:1"
-"Mod+2" = "workspace-switch:2"
-"Mod+3" = "workspace-switch:3"
-"Mod+4" = "workspace-switch:4"
-"Mod+5" = "workspace-switch:5"
-"Mod+6" = "workspace-switch:6"
-"Mod+7" = "workspace-switch:7"
-"Mod+8" = "workspace-switch:8"
-"Mod+9" = "workspace-switch:9"
-"Mod+0" = "workspace-switch:10"
-"Mod+G" = "workspace-switch:10"                 # Games workspace, matching the Hyprland side in spirit —
-"Mod+Shift+G" = "window-move-to-workspace:10"   # named workspaces need a static inventory, which dynamic outputs don't have
-"Mod+Shift+1" = "window-move-to-workspace:1"
-"Mod+Shift+2" = "window-move-to-workspace:2"
-"Mod+Shift+3" = "window-move-to-workspace:3"
-"Mod+Shift+4" = "window-move-to-workspace:4"
-"Mod+Shift+5" = "window-move-to-workspace:5"
-"Mod+Shift+6" = "window-move-to-workspace:6"
-"Mod+Shift+7" = "window-move-to-workspace:7"
-"Mod+Shift+8" = "window-move-to-workspace:8"
-"Mod+Shift+9" = "window-move-to-workspace:9"
-"Mod+Shift+0" = "window-move-to-workspace:10"
+"Mod+1" = "workspace-switch 1"
+"Mod+2" = "workspace-switch 2"
+"Mod+3" = "workspace-switch 3"
+"Mod+4" = "workspace-switch 4"
+"Mod+5" = "workspace-switch 5"
+"Mod+6" = "workspace-switch 6"
+"Mod+7" = "workspace-switch 7"
+"Mod+8" = "workspace-switch 8"
+"Mod+9" = "workspace-switch 9"
+"Mod+0" = "workspace-switch 10"
+"Mod+G" = "workspace-switch 10"                 # Games workspace, matching the Hyprland side in spirit —
+"Mod+Shift+G" = "window-move-to-workspace 10"   # named workspaces need a static inventory, which dynamic outputs don't have
+"Mod+Shift+1" = "window-move-to-workspace 1"
+"Mod+Shift+2" = "window-move-to-workspace 2"
+"Mod+Shift+3" = "window-move-to-workspace 3"
+"Mod+Shift+4" = "window-move-to-workspace 4"
+"Mod+Shift+5" = "window-move-to-workspace 5"
+"Mod+Shift+6" = "window-move-to-workspace 6"
+"Mod+Shift+7" = "window-move-to-workspace 7"
+"Mod+Shift+8" = "window-move-to-workspace 8"
+"Mod+Shift+9" = "window-move-to-workspace 9"
+"Mod+Shift+0" = "window-move-to-workspace 10"
 
 # Scratchpads. Named mode: the Hyprland side has three distinct special
 # workspaces (scratch, chat, media), which needs three named scratchpads here
 # rather than the single implicit `default` one — every scratchpad action in
 # this file must use named form once any of them does.
 # Documentation: https://docs.noctalia.dev/umbriel/scratchpads/
-"Mod+S" = "scratchpad-toggle:launchers"          # Matches special:scratch on the Hyprland side
-"Mod+Shift+S" = "window-move-to-scratchpad:launchers"
-"Mod+Ctrl+Space" = "window-restore-from-scratchpad:launchers"
-"Mod+Tab" = "scratchpad-focus-next:launchers"
-"Mod+A" = "scratchpad-toggle:chat"               # Matches special:chat on the Hyprland side
-"Mod+Shift+A" = "window-move-to-scratchpad:chat"
-"Mod+M" = "scratchpad-toggle:media"              # Matches special:media on the Hyprland side
-"Mod+Shift+M" = "window-move-to-scratchpad:media"
-"Mod+Ctrl+A" = "spawn:vesktop"
-"Mod+Ctrl+M" = "spawn:spotify"
+"Mod+S" = "scratchpad-toggle launchers"          # Matches special:scratch on the Hyprland side
+"Mod+Shift+S" = "window-move-to-scratchpad launchers"
+"Mod+Ctrl+Space" = "window-restore-from-scratchpad launchers"
+"Mod+Tab" = "scratchpad-focus-next launchers"
+"Mod+A" = "scratchpad-toggle chat"               # Matches special:chat on the Hyprland side
+"Mod+Shift+A" = "window-move-to-scratchpad chat"
+"Mod+M" = "scratchpad-toggle media"              # Matches special:media on the Hyprland side
+"Mod+Shift+M" = "window-move-to-scratchpad media"
+"Mod+Ctrl+A" = "spawn vesktop"
+"Mod+Ctrl+M" = "spawn spotify"
 
 # Optional navigation and sizing recipes. These chords do not replace active
 # bindings above when uncommented.
@@ -460,17 +477,17 @@ name = "media"
 # "Mod+Bracketleft" = "window-focus-previous"
 # "Mod+Shift+Bracketright" = "window-swap-next"
 # "Mod+Shift+Bracketleft" = "window-swap-previous"
-# "Mod+Minus" = "window-modify-width:-0.1"
-# "Mod+Equal" = "window-modify-width:0.1"
-# "Mod+Alt+Minus" = "window-modify-height:-0.1"
-# "Mod+Alt+Equal" = "window-modify-height:0.1"
+# "Mod+Minus" = "window-modify-width -0.1"
+# "Mod+Equal" = "window-modify-width 0.1"
+# "Mod+Alt+Minus" = "window-modify-height -0.1"
+# "Mod+Alt+Equal" = "window-modify-height 0.1"
 # "Mod+Alt+R" = "window-cycle-height"
 # "Mod+Alt+Shift+R" = "window-cycle-height-back"
 # "Mod+Grave" = "window-focus-last"
 # "Mod+BackSpace" = "window-consume-or-expel-left"
 # "Mod+C" = "column-center"
 # "Mod+Shift+C" = "window-center"
-# "Mod+Ctrl+T" = "workspace-set-layout:toggle"
+# "Mod+Ctrl+T" = "workspace-set-layout toggle"
 # "Mod+MouseMiddle" = "layout-scroll-drag"
 # "Mod+Alt+K" = "keyboard-layout-next"
 # "Mod+WheelUp" = { action = "workspace-previous", cooldown_ms = 150 }
@@ -480,36 +497,42 @@ name = "media"
 # binds must not repeat. A table-form bind can run an action and then reset one
 # level, while a global reset provides an emergency exit from any layer.
 # Submaps: https://docs.noctalia.dev/umbriel/keybinds/#submaps
-# "Mod+S" = { action = "submap:resize", repeat = false }
-# "submap[resize],1" = { action = "window-set-width:0.5", submap = "reset" }
-# "submap[resize],N" = { action = "submap:nudge", repeat = false }
-# "submap[resize],Escape" = "submap:reset"
-# "submap[nudge],Left" = "window-modify-width:-0.1"
-# "submap[nudge],Right" = "window-modify-width:0.1"
-# "submap[nudge],Escape" = "submap:reset"
-# "Escape" = "submap:reset"
+# "Mod+S" = { action = "submap resize", repeat = false }
+# "submap[resize],1" = { action = "window-set-width 0.5", submap = "reset" }
+# "submap[resize],N" = { action = "submap nudge", repeat = false }
+# "submap[resize],Escape" = "submap reset"
+# "submap[nudge],Left" = "window-modify-width -0.1"
+# "submap[nudge],Right" = "window-modify-width 0.1"
+# "submap[nudge],Escape" = "submap reset"
+# "Escape" = "submap reset"
 
 # Media and brightness. Matches the wpctl/playerctl/brightnessctl commands
 # bound on the Hyprland side.
 # Documentation: https://docs.noctalia.dev/umbriel/keybinds/#example-media-and-brightness-keys
-"XF86AudioRaiseVolume" = {action = "spawn:wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+", allow_when_locked = true}
-"XF86AudioLowerVolume" = {action = "spawn:wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-", allow_when_locked = true}
-"XF86AudioMute" = {action = "spawn:wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle", allow_when_locked = true}
-"XF86AudioMicMute" = {action = "spawn:wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle", allow_when_locked = true}
-"XF86AudioPlay" = {action = "spawn:playerctl --player=playerctld,%any play-pause", allow_when_locked = true}
-"XF86AudioPause" = {action = "spawn:playerctl --player=playerctld,%any play-pause", allow_when_locked = true}
-"XF86AudioNext" = {action = "spawn:playerctl --player=playerctld,%any next", allow_when_locked = true}
-"XF86AudioPrev" = {action = "spawn:playerctl --player=playerctld,%any previous", allow_when_locked = true}
+"XF86AudioRaiseVolume" = {action = "spawn wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+", allow_when_locked = true}
+"XF86AudioLowerVolume" = {action = "spawn wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-", allow_when_locked = true}
+"XF86AudioMute" = {action = "spawn wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle", allow_when_locked = true}
+"XF86AudioMicMute" = {action = "spawn wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle", allow_when_locked = true}
+"XF86AudioPlay" = {action = "spawn playerctl --player=playerctld,%any play-pause", allow_when_locked = true}
+"XF86AudioPause" = {action = "spawn playerctl --player=playerctld,%any play-pause", allow_when_locked = true}
+"XF86AudioNext" = {action = "spawn playerctl --player=playerctld,%any next", allow_when_locked = true}
+"XF86AudioPrev" = {action = "spawn playerctl --player=playerctld,%any previous", allow_when_locked = true}
 # Binds intended to work while locked use the table form.
-"XF86MonBrightnessDown" = { action = "spawn:brightnessctl -e4 -n2 set 5%-", allow_when_locked = true }
-"XF86MonBrightnessUp" = { action = "spawn:brightnessctl -e4 -n2 set 5%+", allow_when_locked = true }
+"XF86MonBrightnessDown" = { action = "spawn brightnessctl -e4 -n2 set 5%-", allow_when_locked = true }
+"XF86MonBrightnessUp" = { action = "spawn brightnessctl -e4 -n2 set 5%+", allow_when_locked = true }
 
 # Screenshots. Noctalia ships its own capture tool, so this replaces the
 # hyprshot submap bound on the Hyprland side (hyprshot needs hyprctl and
 # does not work under Umbriel).
-"Print" = "spawn:noctalia msg screenshot-region"
-"Shift+Print" = "spawn:noctalia msg screenshot-fullscreen pick"
-"Ctrl+Print" = "spawn:noctalia msg screenshot-annotate"
+# Screenshot submap, matching the one on the Hyprland side.
+"Print" = { action = "submap screenshot", repeat = false }
+"submap[screenshot],R" = { action = "spawn noctalia msg screenshot-region", submap = "reset" }
+"submap[screenshot],O" = { action = "spawn noctalia msg screenshot-fullscreen monitor", submap = "reset" }
+"submap[screenshot],Shift+O" = { action = "spawn noctalia msg screenshot-fullscreen all", submap = "reset" }
+"submap[screenshot],A" = { action = "spawn noctalia msg screenshot-annotate", submap = "reset" }
+"submap[screenshot],Escape" = "submap reset"
+"Shift+Print" = "spawn noctalia msg screenshot-fullscreen pick"
+"Ctrl+Print" = "spawn noctalia msg screenshot-annotate"
 
 # ─────────────────────────────── Layout ─────────────────────────────────────
 # Configure the default tiling mode and shared sizing behavior. Workspace rules
@@ -520,7 +543,7 @@ name = "media"
 [layout]
 mode = "scrolling"                              # Better fit than master for a 5120x1440 ultrawide
 gap = 4                                         # Matches general.gaps_in on the Hyprland side
-width_presets = [0.333, 0.5, 0.667]             # Width and height cycling fractions
+extent_presets = [0.333, 0.5, 0.667]             # Width and height cycling fractions
 
 [layout.struts]
 # Matches general.gaps_out on the Hyprland side (closest approximation —
@@ -534,7 +557,7 @@ bottom = 8
 
 [layout.scrolling]
 # The strip axis is perpendicular to the output's workspace_axis.
-default_width_fraction = 0.6                    # Initial width for new columns, 0.1-1.0
+default_extent_fraction = 0.6                    # Initial width for new columns, 0.1-1.0
 center_underfull_strip = true                   # Center a strip narrower than the viewport
 center_focused = "never"                        # never, always, or on_overflow
 
@@ -562,13 +585,13 @@ blur_optimized = false
 [[window_rule]]
 match.app_id = "^dev.noctalia.Noctalia$"
 default_floating = true
-default_size = [1020, 900]
+default_floating_size_px = { width = 1020, height = 900 }
 
 # Noctalia share picker
 [[window_rule]]
 match.app_id = "^dev.noctalia.UmbrielSharePicker$"
 default_floating = true
-default_size = [800, 600]
+default_floating_size_px = { width = 800, height = 600 }
 
 # Browsers expose no semantic PiP role or global position control.
 [[window_rule]]
@@ -613,8 +636,17 @@ hdr = "on"
 [[window_rule]]
 match.xdg_tag = "^proton-game$"
 default_workspace = 10                          # Dedicated games workspace
+default_fullscreen = true                       # Matches fullscreen = true on the Hyprland side
 tearing = true                                    # Matches misc.allow_tearing on the Hyprland side, scoped to fullscreen games only
 hdr = "on"
+
+[[window_rule]]
+match.is_dialog = true                          # Matches match.modal on the Hyprland side
+default_floating = true
+
+[[window_rule]]
+match.app_id = "^libreoffice-.*$"
+default_maximize = false                        # Matches suppress_event = "maximize" on the Hyprland side
 
 [[window_rule]]
 match.app_id = "^xdg-desktop-portal-gtk$"
@@ -842,13 +874,8 @@ duration_ms = 150                               # Sped up from the Hyprland-matc
 curve = "md3_decel"                             # Matches specialWorkspace bezier on the Hyprland side
 dim = 0.6                                       # Matches decoration.dim_special on the Hyprland side
 blur = false                                    # Requires appearance.blur.enabled
-scale = 0.85                                    # 0 keeps geometry; 0.1-1.0 centers and scales — there is
-# no slide-direction option here at all (checked the Scratchpad struct in
-# config.h: enabled/duration_ms/curve/dim/blur/scale/maximize/fullscreen/
-# shader, nothing else), so "slidefadevert, 20%" can't be matched exactly.
-# This gives it some entrance motion (grow+fade) instead of appearing static.
-maximize = false                                # Maximize to usable-area edges while shown
-fullscreen = false                              # Make the scratchpad window fullscreen while shown
+# The scale/maximize/fullscreen keys were removed upstream; the scratchpad
+# now shows at its own size with the fade and dim above.
 
 # Focus border color
 [animation.border]
@@ -923,7 +950,7 @@ action = "overview-toggle"
 [hot_corners.bottom_right]
 enabled = false
 delay_ms = 500
-action = "spawn:notify-send 'Bottom right'"
+action = "spawn notify-send 'Bottom right'"
 
 # ─────────────────────── Security Context Rules ─────────────────────────────
 # Sandboxed clients receive a restricted Wayland global set. Grant extra

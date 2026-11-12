@@ -18,6 +18,9 @@ in {
   }: let
     openrgb = "${pkgs.openrgb-with-all-plugins}/bin/openrgb";
   in {
+    # The Umbriel binds in modules/umbriel/config.toml call openrgb by name.
+    home.packages = [pkgs.openrgb-with-all-plugins];
+
     # The RAM keeps one LED lit after a single load, so the Off binding loads twice.
     # The SDK server lets `openrgb --profile` reach the running tray instance.
     wayland.windowManager.hyprland.settings.bind = lib.mkAfter [
