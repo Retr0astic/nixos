@@ -82,8 +82,6 @@
             popups_ignorealpha = 0.6;
             input_methods = true;
             input_methods_ignorealpha = 0.8;
-            # Static lens effect; the animated variants cost more GPU time.
-            variant = "acrylic";
           };
           wobble.enabled = true;
           dim_inactive = true;
