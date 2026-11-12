@@ -61,6 +61,30 @@ Run this before you commit a new package. It finds duplicate entries.
 
     grep -rhoP '^\s+\K[\w.-]+$' --include=*.nix modules hosts | sort | uniq -d
 
+## Shell and compositor glue
+
+A shell owns its glue for every compositor. Put each shell keybind and layer
+rule in `modules/shells/<shell>.nix`, one block per compositor. The
+compositor files keep only compositor binds.
+
+- Hyprland: the shell module adds to `wayland.windowManager.hyprland`.
+- Umbriel: the shell module writes a TOML file to `~/.config/umbriel/`, and
+  `modules/umbriel/config.toml` loads it with `[include]`. Umbriel merges
+  `[keybinds]` by key and collects `[[layer_rule]]` entries.
+- A bind that also drives a non-shell tool (DPMS, OpenRGB) stays in the
+  compositor file, with a comment that names each part.
+- Umbriel autostart stays in `config.toml`. An included file replaces a
+  plain array such as `general.autostart`, so the list cannot be split.
+
+### Parity
+
+When you port a feature between sessions, match its placement as well as its
+behaviour. Find where the source session defines it, and put it in the same
+aspect for the target session. A port is done when each feature has one owner
+per compositor, and the target config validates:
+
+    umbriel config validate -c ~/.config/umbriel/config.toml
+
 ## Commit attribution
 
 Keep this repository free of assistant attribution. The rule covers commits,
