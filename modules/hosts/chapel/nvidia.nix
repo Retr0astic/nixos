@@ -28,7 +28,7 @@
           power_mizer_mode = "PreferMaximumPerformance";
           power_cap = 314.0;
           min_core_clock = 1500;
-          max_core_clock = 2835;
+          max_core_clock = 3120; # clocks.max.graphics, so boost stays uncapped
           min_memory_clock = 10501;
           max_memory_clock = 10501;
         };
