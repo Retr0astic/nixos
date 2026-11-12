@@ -10,17 +10,32 @@
       # that returns, pin 610.57.04 with mkDriver again (see git history).
       package = config.boot.kernelPackages.nvidiaPackages.bleeding_edge;
     };
-    systemd.services.nvidia-power-limit = {
-      description = "Set NVIDIA GPU Power Limit";
-      wantedBy = ["multi-user.target"];
-      serviceConfig = {
-        Type = "oneshot";
-        ExecStart = "/run/current-system/sw/bin/nvidia-smi -pl 314";
+    # Holds the clocks above idle. At P8 (405 MHz memory) the reclock on the
+    # next workspace switch shows as a stutter at 5120x1440@240. LACT also
+    # owns the power limit: it resets any limit that nvidia-smi sets.
+    services.lact = {
+      enable = true;
+      settings = {
+        version = 7;
+        daemon = {
+          log_level = "info";
+          admin_group = "wheel";
+          disable_clocks_cleanup = false;
+        };
+        apply_settings_timer = 5;
+        gpus."10DE:2782-1043:88A3-0000:01:00.0" = {
+          fan_control_enabled = false;
+          power_mizer_mode = "PreferMaximumPerformance";
+          power_cap = 314.0;
+          min_core_clock = 1500;
+          max_core_clock = 2835;
+          min_memory_clock = 10501;
+          max_memory_clock = 10501;
+        };
+        current_profile = null;
+        auto_switch_profiles = false;
       };
     };
-    # Holds the clocks above idle. At P8 (405 MHz memory) the reclock on the
-    # next workspace switch shows as a stutter at 5120x1440@240.
-    services.lact.enable = true;
   };
 
   flake.modules.homeManager.chapel = {
