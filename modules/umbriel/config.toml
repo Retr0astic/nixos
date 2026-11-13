@@ -245,6 +245,11 @@ outer_border_width = 0                          # Optional outer ring, 0-100 log
 corner_radius = 10                              # Radius of the final decorated edge, 0-100
 drag_opacity = 0.75                             # Window opacity during a tiled or floating drag
 
+# Tab groups draw their bar only once they hold a second tab, so a lone
+# browser in the tabbed browsers column has no bar above it.
+[appearance.tab_bar]
+hide_when_single = true
+
 [appearance.blur]
 # This is the global blur engine. A matching window or layer rule must still
 # opt a surface into blur.
