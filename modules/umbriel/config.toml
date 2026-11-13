@@ -983,8 +983,8 @@ effect = "unfold"
 # session has window wobble for the same feel.
 [animation.windows_drag]
 physics = true
-stiffness = 28.0
-damping = 4.5
+stiffness = 60.0
+damping = 8.0
 coupling = 60.0
 pointer_response = 3.0
 max_displacement_px = 260.0
@@ -1002,7 +1002,7 @@ menu_decel = [0.1, 1.0, 0.0, 1.0]
 menu_accel = [0.38, 0.04, 1.0, 0.07]
 
 [animation.springs]
-wobbly = { damping = 0.55, stiffness = 420 }   # Overshoots twice, then settles
+wobbly = { damping = 0.75, stiffness = 900 }   # One small overshoot, settles in about half the old time
 bouncy = { damping = 0.75, stiffness = 650 }   # One soft overshoot
 
 # ──────────────────────────────── Effects ───────────────────────────────────
