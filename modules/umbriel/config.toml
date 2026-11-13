@@ -575,7 +575,7 @@ bottom = 8
 
 [layout.scrolling]
 # The strip axis is perpendicular to the output's workspace_axis.
-default_extent_fraction = 0.6                    # Initial width for new columns, 0.1-1.0
+default_extent_fraction = 0.5                    # New columns open at half the output, so two fit side by side
 center_underfull_strip = true                   # Center a strip narrower than the viewport
 center_focused = "never"                        # never, always, or on_overflow
 
