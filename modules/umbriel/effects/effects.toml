@@ -1,0 +1,73 @@
+# Custom animation and border presets for the Umbriel session.
+# config.toml includes this file. Shader paths are relative to this file.
+
+# Windows open as a noise dissolve with a glowing accent edge.
+[effects.preset.materialize]
+kind = "animation"
+shader = "materialize.glsl"
+palette = true
+
+# Windows close as embers that drift up and away.
+[effects.preset.disintegrate]
+kind = "animation"
+shader = "disintegrate.glsl"
+palette = true
+
+# Workspace switch: a ripple portal opens from the centre of the output.
+[effects.preset.portal]
+kind = "animation"
+shader = "portal.glsl"
+palette = true
+
+# Scratchpads arrive and leave as staggered, RGB-split glitch bands.
+[effects.preset.glitch]
+kind = "animation"
+shader = "glitch.glsl"
+
+# Layer surfaces (panels, launcher, notifications) unfold from a thin line.
+[effects.preset.unfold]
+kind = "animation"
+shader = "unfold.glsl"
+
+# Focused border: accent colours flow around the ring and light the desktop.
+[effects.preset.aurora]
+kind = "border"
+shader = "aurora.glsl"
+palette = true
+padding = 20
+speed = 1.0
+
+[effects.preset.aurora.light]
+spread = 64
+intensity = 1.1
+threshold = 0.35
+
+# Unfocused windows lose some colour, so the focused one stands out.
+[effects.preset.muted]
+kind = "window"
+shader = "muted.glsl"
+
+# Screen share reminder: a red glow breathes on the output edges while a
+# client captures the whole output. Viewers do not see it.
+[effects.preset.on_air]
+kind = "screen"
+shader = "on_air.glsl"
+
+# Mod+Ctrl+B cycles the focused window's border through these.
+[effects.pool.borders]
+kind = "border"
+choose = ["aurora", "pulse", "audio", "beat"]
+selection = "round_robin"
+
+# Spotify's border: a spectrum ring. Each point of the ring rises with one
+# band, mirrored around the window, and the bass floods the glow.
+[effects.preset.beat]
+kind = "border"
+shader = "beat.glsl"
+palette = true
+padding = 36
+
+[effects.preset.beat.light]
+spread = 110
+intensity = 1.8
+threshold = 0.25

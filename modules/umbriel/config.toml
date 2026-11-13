@@ -28,7 +28,15 @@
 # noctalia-binds.toml comes from modules/shells/noctalia.nix: the noctalia
 # keybinds and layer rule, as on the Hyprland side.
 [include]
-files = ["noctalia-binds.toml"]
+files = [
+  "noctalia-binds.toml",
+  "~/nixos/modules/umbriel/effects/effects.toml",                        # Custom animation and border presets
+  "/run/current-system/sw/share/umbriel/effects/animation/squash/effect.toml",
+  "/run/current-system/sw/share/umbriel/effects/border/pulse/effect.toml",
+  "/run/current-system/sw/share/umbriel/effects/border/audio/effect.toml",
+  "/run/current-system/sw/share/umbriel/effects/cursor/trail/effect.toml",
+  "/run/current-system/sw/share/umbriel/effects/screen/vignette/effect.toml",
+]
 
 [include.optional]
 files = ["noctalia.toml"]                                      # Example: ["~/.config/umbriel/noctalia.toml"]
@@ -134,7 +142,7 @@ position = [0, 0]
 scale = 1
 bit_depth = 10                                  # Matches bitdepth = 10 on the Hyprland side
 sdr_white = 250                                 # Matches sdr_max_luminance = 250 on the Hyprland side
-hdr = "fullscreen"                              # Matches render.cm_auto_hdr = 2 on the Hyprland side —
+hdr = "auto"                                    # Matches render.cm_auto_hdr = 2 on the Hyprland side —
 # "auto" only enables HDR when a client explicitly requests it, which most
 # games (especially over Proton) never do even in exclusive fullscreen
 vrr = "fullscreen"                              # Matches misc.vrr = 2 on the Hyprland side
@@ -171,6 +179,20 @@ empty_above = false                             # Keep one empty workspace above
 # layout.struts.top = 24
 # layout.scrolling.center_underfull_strip = false
 # layout.dwindle.preserve_split = true
+
+# Workspace 3 tiles with dwindle splits for side-by-side work.
+[[workspace]]
+index = 3
+layout.mode = "dwindle"
+
+# Workspace 10 holds games: no gaps and no struts.
+[[workspace]]
+index = 10
+layout.gap = 0
+layout.struts.left = 0
+layout.struts.right = 0
+layout.struts.top = 0
+layout.struts.bottom = 0
 
 # A name selector must exist in a static output inventory, for example
 # `workspaces = ["WEB", "CHAT"]` in the matching output block.
@@ -337,16 +359,14 @@ follows_mouse = true                            # Matches input.follow_mouse = 1
 # Documentation: https://docs.noctalia.dev/umbriel/scratchpads/
 # ────────────────────────────────────────────────────────────────────────────
 
-# Matches the three special workspaces on the Hyprland side (special:scratch,
-# special:chat, special:media).
+# special:scratch on the Hyprland side becomes "launchers". Its special:chat
+# and special:media share one "social" pad here, so chat and music show side
+# by side.
 [[scratchpad]]
 name = "launchers"
 
 [[scratchpad]]
-name = "chat"
-
-[[scratchpad]]
-name = "media"
+name = "social"
 
 # ─────────────────────────────── Keybinds ───────────────────────────────────
 # Bind chords to compositor actions. A configuration file replaces the built-in
@@ -451,10 +471,17 @@ name = "media"
 "Mod+Shift+S" = "window-move-to-scratchpad launchers"
 "Mod+Ctrl+Space" = "window-restore-from-scratchpad launchers"
 "Mod+Tab" = "scratchpad-focus-next launchers"
-"Mod+A" = "scratchpad-toggle chat"               # Matches special:chat on the Hyprland side
-"Mod+Shift+A" = "window-move-to-scratchpad chat"
-"Mod+M" = "scratchpad-toggle media"              # Matches special:media on the Hyprland side
-"Mod+Shift+M" = "window-move-to-scratchpad media"
+"Mod+A" = "scratchpad-toggle social"             # Chat and music together; special:chat on the Hyprland side
+"Mod+Shift+A" = "window-move-to-scratchpad social"
+"Mod+M" = "scratchpad-toggle social"             # Same pad as Mod+A; special:media on the Hyprland side
+"Mod+Shift+M" = "window-move-to-scratchpad social"
+
+# Effects
+"Mod+Ctrl+B" = "effect-border-cycle borders"    # Focused border: aurora, pulse, audio
+"Mod+Ctrl+T" = "effect-cursor-set trail"         # Cursor trail on. Off by default: cursor effects stop direct scanout
+"Mod+Ctrl+Shift+T" = "effect-cursor-set off"
+"Mod+Ctrl+V" = "effect-screen-set vignette"      # Screen vignette on, with the same scanout cost
+"Mod+Ctrl+Shift+V" = "effect-screen-set off"
 "Mod+Ctrl+A" = "spawn vesktop"
 "Mod+Ctrl+M" = "spawn spotify"
 
@@ -536,7 +563,7 @@ extent_presets = [0.333, 0.5, 0.667]             # Width and height cycling frac
 # struts reserve edge space unconditionally rather than acting as a gap).
 # Signed logical pixels reserved after panel exclusive zones. Negative values
 # expand the tiled area beyond that edge.
-left = 8                                         # -65535 to 65535
+left = 0                                         # The bar covers this edge. A strut here shows a sliver of the previous column, which steals hover focus
 right = 8
 top = 8
 bottom = 8
@@ -617,14 +644,46 @@ tearing = true                                   # Matches misc.allow_tearing on
 match.app_id = "^steam_app_.*$"
 default_workspace = 10                          # Dedicated games workspace
 tearing = true                                    # Matches misc.allow_tearing on the Hyprland side, scoped to fullscreen games only
-hdr = "on"
+# hdr = "on"
 
 [[window_rule]]
 match.xdg_tag = "^proton-game$"
 default_workspace = 10                          # Dedicated games workspace
 default_fullscreen = true                       # Matches fullscreen = true on the Hyprland side
 tearing = true                                    # Matches misc.allow_tearing on the Hyprland side, scoped to fullscreen games only
-hdr = "on"
+# hdr = "on"
+
+# A lone column sits centred at 55% of the ultrawide instead of filling it.
+# The column returns to its own width when a second column opens.
+[[window_rule]]
+match.is_alone = true
+match.layout = "scrolling"
+default_scrolling_extent = 0.55
+
+# Browsers share one tabbed column on each workspace.
+[[window_rule]]
+match.app_id = ["^zen$", "^chromium(-browser)?$"]
+default_scrolling_column = "browsers"
+default_column_display = "tabbed"
+
+# Floating windows get a title bar with close and maximize, so they move and
+# resize without Mod. "on" keeps a client's own headerbar where it asks for one.
+[[window_rule]]
+match.is_floating = true
+title_bar = "on"
+
+# A red frame shows which window a screen share is capturing. Viewers do not
+# see it.
+[[window_rule]]
+match.is_cast_target = true
+border_width = 4
+border_color_focused = "#FF4D4DFF"
+border_color_unfocused = "#FF4D4DFF"
+
+# Unfocused windows lose some colour.
+[[window_rule]]
+match.is_focused = false
+window_effect = "muted"
 
 [[window_rule]]
 match.is_dialog = true                          # Matches match.modal on the Hyprland side
@@ -645,31 +704,49 @@ default_floating = true
 # Game launchers open straight into the launchers scratchpad instead of a
 # visible workspace.
 [[window_rule]]
-match.app_id = "^heroic$"
+match.app_id = '^(heroic|com\.heroicgameslauncher\.hgl)$'      # Wayland app_id, plus the XWayland class
 default_scratchpad = "launchers"
-hdr = "on"                                      # Output must already be HDR when a Proton launcher starts (see game rules above)
+# hdr = "on"                                      # Output must already be HDR when a Proton launcher starts (see game rules above)
 
 [[window_rule]]
 match.app_id = "^steam$"
 default_scratchpad = "launchers"
 
-# Chat and media apps open hidden in their own scratchpads (unfocused, so
+# Chat and media apps open hidden in the social scratchpad (unfocused, so
 # they don't steal focus on launch — matches "silent" on the Hyprland side).
+# Vesktop takes 40% of the usable area (2029 px of 5073) in the centre.
+# Spotify and Ferdium (or WhatsApp in Zen) take 29% (1471 px), 16 px to its
+# right and left. The x values count from the left edge of the usable area,
+# after the bar.
 [[window_rule]]
 match.app_id = "^(vesktop|Vesktop)$"
-default_scratchpad = "chat"
+default_scratchpad = "social"
 default_focused = false
+default_floating_size = { width = 0.40, height = 0.92 }
+default_position = { x = 1522, y = 57, anchor = "top_left" }
+
+[[window_rule]]
+match.app_id = "^(ferdium|Ferdium)$"           # Messenger hub in the left-hand slot
+default_scratchpad = "social"
+default_focused = false
+default_floating_size = { width = 0.29, height = 0.92 }
+default_position = { x = 35, y = 57, anchor = "top_left" }
 
 [[window_rule]]
 match.app_id = "^zen$"
 match.title = ".*WhatsApp.*"
-default_scratchpad = "chat"
+default_scratchpad = "social"
 default_focused = false
+default_floating_size = { width = 0.29, height = 0.92 }
+default_position = { x = 35, y = 57, anchor = "top_left" }
 
 [[window_rule]]
-match.app_id = "^(Spotify|spotify)$"
-default_scratchpad = "media"
+match.app_id = ["^(Spotify|spotify)$", "^(feishin|Feishin)$"]  # Music players share the right-hand slot
+default_scratchpad = "social"
 default_focused = false
+default_floating_size = { width = 0.29, height = 0.92 }
+default_position = { x = 3567, y = 57, anchor = "top_left" }
+border_effect = "beat"                          # Spectrum ring driven by Noctalia's audio feed
 # No idle_inhibit equivalent exists here (same gap as mpv on the Hyprland
 # side) — dropped rather than guessed at.
 
@@ -809,55 +886,70 @@ default_focused = false
 
 [animation]
 enabled = true                                  # Master animation switch
-duration_ms = 130                               # Shared duration, 1-10000 ms
+duration_ms = 250                               # Shared duration, 1-10000 ms
 curve = "easeout"                               # Built-in or registered bezier/spring curve name
 
-# Window opening
+# Showcase set. Each event runs a shader from modules/umbriel/effects/, so
+# this session no longer matches the Hyprland animations on purpose.
+
+# Window opening: noise dissolve from the centre with an accent edge
 [animation.windows_in]
 enabled = true
-duration_ms = 150                               # Sped up from the Hyprland-matched 300ms
-curve = "md3_decel"                             # Matches windowsIn bezier on the Hyprland side
-style = "popin"                                 # popin, zoom, slide, fade, or none
-scale = 0.6                                     # Matches "popin 60%" on the Hyprland side
-# shader = "shaders/reveal.glsl"      # Replaces the built-in opening style
+duration_ms = 480
+curve = "md3_decel"
+effect = "materialize"
 
-# Window closing
+# Window closing: embers sweep off from the left
 [animation.windows_out]
 enabled = true
-duration_ms = 150                               # Sped up from the Hyprland-matched 300ms
-curve = "md3_accel"                             # Matches windowsOut bezier on the Hyprland side
-style = "fade"                                  # fade or slide — no popin-on-close here, unlike Hyprland
-# shader = "shaders/reveal.glsl"
+duration_ms = 520
+curve = "easeout"
+effect = "disintegrate"
 
-# Window movement, resizing, and floating maximize. Visible scratchpad keybind
-# resizing uses this event too.
+# Window movement, reflow and maximize: an underdamped spring that overshoots
+# and settles, with the bundled squash on top
 [animation.windows_move]
 enabled = true
-duration_ms = 130
-curve = "snappy"
-# shader = "shaders/squash.glsl"      # Subtle compression and settle during move/resize
+curve = "wobbly"
+effect = "squash"
 
-# Workspace switching
+[animation.windows_resize]
+enabled = true
+curve = "wobbly"
+
+# Focus changes to rule opacity and blur
+[animation.windows_opacity]
+enabled = true
+curve = "spring:1,700"
+
+# Workspace switching: a ripple portal opens from the centre. Both scenes stay
+# live; touchpad swipes scrub the portal.
 [animation.workspaces]
 enabled = true
-duration_ms = 250                               # Sped up from the Hyprland-matched 700ms
-curve = "menu_decel"                            # Matches workspaces bezier on the Hyprland side
+style = "reveal"
+effect = "portal"
+duration_ms = 650
+curve = "md3_decel"
 
-# Overview opening, closing, and row settling
+# Overview opening, closing, and filmstrip movement
 [animation.overview]
 enabled = true
-duration_ms = 150
-curve = "easeout"
+curve = "bouncy"
+workspace_curve = "spring:0.85,900"
 
-# Scratchpad show, hide, and backdrop
+# Scratchpad show, hide, and backdrop: glitch bands lock into place
 [animation.scratchpad]
-enabled = true                                  # Matches specialWorkspace.enabled on the Hyprland side
-duration_ms = 150                               # Sped up from the Hyprland-matched 300ms
-curve = "md3_decel"                             # Matches specialWorkspace bezier on the Hyprland side
+enabled = true
+duration_ms = 380
+curve = "easeout"
+effect = "glitch"
 dim = 0.6                                       # Matches decoration.dim_special on the Hyprland side
-blur = false                                    # Requires appearance.blur.enabled
-# The scale/maximize/fullscreen keys were removed upstream; the scratchpad
-# now shows at its own size with the fade and dim above.
+blur = true                                     # Blur the desktop behind a visible scratchpad
+
+# Shade over a window while a modal dialog is attached
+[animation.dialogs]
+enabled = true
+dim = 0.4
 
 # Focus border color
 [animation.border]
@@ -866,8 +958,7 @@ blur = false                                    # Requires appearance.blur.enabl
 # instead of animating it (noctalia-dev/umbriel#183, open). Configured for
 # when that lands, harmless either way in the meantime.
 enabled = true
-duration_ms = 400                               # Sped up from the Hyprland-matched 1000ms
-curve = "easeout"                               # Closest built-in match for Hyprland's "default" bezier
+curve = "spring:1,900"
 
 # Unfocused window opacity
 [animation.dim_unfocused]
@@ -876,14 +967,22 @@ duration_ms = 130
 curve = "easeout"
 dim = 0.05                                      # Matches decoration.dim_strength on the Hyprland side
 
-# Layer-shell surface mapping and unmapping
+# Layer-shell surface mapping and unmapping: panels unfold from a line
 [animation.layers]
-# Matches layersIn on the Hyprland side (which also had a separate, faster
-# layersOut: speed 1.6/menu_accel — no separate in/out setting here, so that
-# distinction is dropped).
 enabled = true
-duration_ms = 150
-curve = "menu_decel"
+duration_ms = 260
+curve = "md3_decel"
+effect = "unfold"
+
+# Dragged windows bend like a jelly sheet under the pointer. The Hyprland
+# session has window wobble for the same feel.
+[animation.windows_drag]
+physics = true
+stiffness = 28.0
+damping = 4.5
+coupling = 60.0
+pointer_response = 3.0
+max_displacement_px = 260.0
 
 # Register reusable curves by adding or uncommenting entries below.
 # Documentation: https://docs.noctalia.dev/umbriel/animation/#curves
@@ -898,7 +997,18 @@ menu_decel = [0.1, 1.0, 0.0, 1.0]
 menu_accel = [0.38, 0.04, 1.0, 0.07]
 
 [animation.springs]
-# myBounce = { damping = 0.5, stiffness = 200 }
+wobbly = { damping = 0.55, stiffness = 420 }   # Overshoots twice, then settles
+bouncy = { damping = 0.75, stiffness = 650 }   # One soft overshoot
+
+# ──────────────────────────────── Effects ───────────────────────────────────
+# Persistent shader effects. Presets come from the [include] files above.
+# Documentation: https://docs.noctalia.dev/umbriel/effects/
+# ────────────────────────────────────────────────────────────────────────────
+
+[effects]
+border = "aurora"                               # Focused window only; fullscreen windows have no border
+screen_cast = "on_air"                          # Red edge glow on an output while it is shared whole
+max_fps = 120                                   # Cap frames drawn only for effect animation
 
 # ─────────────────────── Overview and Hot Corners ───────────────────────────
 # Configure the all-workspaces overview and pointer-triggered corner actions.
