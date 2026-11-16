@@ -9,66 +9,36 @@ order = [ "widgets" ]
 
     [bar.widgets]
     auto_hide = false
-    background_opacity = 0.54999998770654202
-    border = "on_tertiary"
-    border_width = 2.0
+    background_opacity = 0.78000000000000003
+    border = "outline_variant"
+    border_width = 1.0
     capsule = false
-    capsule_border = "primary"
-    capsule_fill = "on_primary"
-    capsule_foreground = "tertiary"
+    capsule_border = "outline_variant"
+    capsule_fill = "surface_container_high"
+    capsule_foreground = "on_surface"
+    capsule_group = [
+        { accordion = false, accordion_direction = "end", border = "outline_variant", border_width = 1.0, enabled = true, fill = "surface_container_high", foreground = "on_surface", id = "g1", members = [ "media" ], opacity = 0.90000000000000002, padding = 6.0, radius = 10.0 },
+        { accordion = true, accordion_delay_ms = 120, accordion_direction = "end", border = "outline_variant", border_width = 1.0, enabled = true, fill = "surface_container_high", foreground = "on_surface", id = "g2", members = [ "bar", "recorder", "status", "clipboard", "tray" ], opacity = 0.90000000000000002, padding = 6.0, radius = 10.0 },
+        { accordion = true, accordion_delay_ms = 120, accordion_direction = "end", border = "outline_variant", border_width = 1.0, enabled = true, fill = "surface_container_high", foreground = "on_surface", id = "g3", members = [ "workspaces", "active_window" ], opacity = 0.90000000000000002, padding = 6.0, radius = 10.0 }
+    ]
+    capsule_radius = 10
     capsule_thickness = 0.82999998517334461
     center = [ "session", "group:g1", "notifications" ]
-    color = "tertiary"
+    color = "on_surface"
     contact_shadow = true
     end = [ "group:g2", "volume" ]
-    icon_color = "secondary"
-    margin_edge = 10
-    margin_ends = 1500
-    margin_opposite_edge = 5
-    radius = 80
+    icon_color = "primary"
+    margin_edge = 0
+    margin_ends = "10%"
+    margin_opposite_edge = 300
+    padding = 14
+    radius = 18
     reserve_space = false
     scale = 1.0500000081956387
     smart_auto_hide = true
-    start = [ "group:g3", "temp", "cpu" ]
-    thickness = 39
+    start = [ "group:g3", "temp", "cpu", "privacy" ]
+    thickness = 36
     widget_spacing = 4
-
-        [[bar.widgets.capsule_group]]
-        accordion = false
-        accordion_direction = "end"
-        border = "primary"
-        enabled = true
-        fill = "on_primary"
-        foreground = "tertiary"
-        id = "g1"
-        members = [ "media" ]
-        opacity = 1.0
-        padding = 6.0
-        radius = 50.0
-
-        [[bar.widgets.capsule_group]]
-        accordion = true
-        accordion_direction = "end"
-        border = "primary"
-        enabled = true
-        fill = "on_primary"
-        foreground = "tertiary"
-        id = "g2"
-        members = [ "bar", "recorder", "status", "clipboard", "tray" ]
-        opacity = 1.0
-        padding = 6.0
-
-        [[bar.widgets.capsule_group]]
-        accordion = true
-        accordion_direction = "end"
-        border = "primary"
-        enabled = true
-        fill = "on_primary"
-        foreground = "tertiary"
-        id = "g3"
-        members = [ "workspaces", "active_window" ]
-        opacity = 1.0
-        padding = 6.0
 
 [calendar]
 enabled = true
@@ -114,11 +84,18 @@ sidebar_section = "full"
     [[control_center.shortcuts]]
     type = "power_profile"
 
+    [[control_center.shortcuts]]
+    type = "system"
+
 [desktop_widgets]
 schema_version = 2
 widget_order = [
     "desktop-widget-000000000000000e",
+    "desktop-widget-0000000000000003",
     "desktop-widget-0000000000000011",
+    "desktop-widget-0000000000000006",
+    "desktop-widget-000000000000000f",
+    "desktop-widget-0000000000000009",
     "desktop-widget-0000000000000014",
     "desktop-widget-0000000000000015",
     "desktop-widget-0000000000000016",
@@ -141,23 +118,28 @@ widget_order = [
 
         [desktop_widgets.widget.desktop-widget-0000000000000002.settings]
         background = false
-        bands = 32
-        show_when_idle = true
 
     [desktop_widgets.widget.desktop-widget-0000000000000003]
-    box_height = 288.0
-    box_width = 344.0
-    cx = 2380.0
-    cy = 576.0
+    box_height = 380.0
+    box_width = 380.0
+    cx = 640.0
+    cy = 1170.0
     output = "DP-2"
+    placement_height = 1440.0
+    placement_width = 5120.0
     rotation = 0.0
     type = "fancy_audio_visualizer"
 
         [desktop_widgets.widget.desktop-widget-0000000000000003.settings]
-        background = true
+        background = false
         background_opacity = 0.32000000000000001
         background_padding = 13
         background_radius = 32
+        bloom_intensity = 0.69999999999999996
+        fade_when_idle = true
+        primary_color = "#F5AB4E"
+        secondary_color = "primary"
+        visualization_mode = "wave_rings"
 
     [desktop_widgets.widget.desktop-widget-0000000000000004]
     box_height = 280.0
@@ -191,21 +173,26 @@ widget_order = [
         show_forecast = false
 
     [desktop_widgets.widget.desktop-widget-0000000000000006]
-    box_height = 96.0
-    box_width = 192.0
-    cx = 3190.35546875
-    cy = 595.77734375
+    box_height = 72.0
+    box_width = 820.0
+    cx = 640.0
+    cy = 590.0
     output = "DP-2"
+    placement_height = 1440.0
+    placement_width = 5120.0
     rotation = 0.0
     type = "clock"
 
         [desktop_widgets.widget.desktop-widget-0000000000000006.settings]
+        background = false
         background_opacity = 0.23000000000000001
         background_radius = 32
         center_text = true
         clock_style = "digital"
-        color = "primary"
-        font_family = "FreeSerif"
+        color = "on_surface"
+        font_family = ""
+        format = "{:%A, %d %B}"
+        shadow = true
 
     [desktop_widgets.widget.desktop-widget-0000000000000008]
     box_height = 103.859375
@@ -224,52 +211,57 @@ widget_order = [
         show_when_idle = true
 
     [desktop_widgets.widget.desktop-widget-0000000000000009]
-    box_height = 197.31735229492188
-    box_width = 399.42340087890625
-    cx = 492.2364501953125
-    cy = 810.419677734375
+    box_height = 220.0
+    box_width = 620.0
+    cx = 4480.0
+    cy = 330.0
     output = "DP-2"
     placement_height = 1440.0
     placement_width = 5120.0
-    rotation = -0.0063870251178741455
+    rotation = 0.0
     type = "media_player"
 
         [desktop_widgets.widget.desktop-widget-0000000000000009.settings]
+        album_art_background = true
+        album_art_blur = 40
+        audio_visualizer = true
         background = true
-        background_color = "on_secondary"
-        background_opacity = 0.25
-        background_padding = 0
-        background_radius = 0
-        color = "primary"
-        font_family = "DejaVu Sans"
+        background_color = "surface"
+        background_opacity = 0.34999999999999998
+        background_padding = 14
+        background_radius = 14
+        color = "on_surface"
+        font_family = ""
+        hide_when_no_media = true
         layout = "horizontal"
         shadow = true
 
     [desktop_widgets.widget.desktop-widget-000000000000000e]
-    box_height = 512.0
-    box_width = 2560.0
+    box_height = 260.0
+    box_width = 2400.0
     cx = 2560.0
-    cy = 1184.0
+    cy = 1300.0
     output = "DP-2"
     placement_height = 1440.0
     placement_width = 5120.0
-    rotation = -0.0
+    rotation = 0.0
     type = "audio_visualizer"
 
         [desktop_widgets.widget.desktop-widget-000000000000000e.settings]
         background = false
         bands = 32
         centered = false
-        color_1 = "secondary"
-        color_2 = "hover"
+        color_1 = "#F5AB4E"
+        color_2 = "primary"
         mirrored = true
-        show_when_idle = true
+        show_wave = true
+        show_when_idle = false
 
     [desktop_widgets.widget.desktop-widget-000000000000000f]
-    box_height = 192.0
-    box_width = 256.0
-    cx = 182.1953125
-    cy = 818.46484375
+    box_height = 250.0
+    box_width = 420.0
+    cx = 640.0
+    cy = 810.0
     output = "DP-2"
     placement_height = 1440.0
     placement_width = 5120.0
@@ -278,29 +270,35 @@ widget_order = [
 
         [desktop_widgets.widget.desktop-widget-000000000000000f.settings]
         background = true
-        background_color = "on_secondary"
-        background_opacity = 0.25
-        color = "primary"
-        font_family = "Liberation Mono"
+        background_color = "surface"
+        background_opacity = 0.34999999999999998
+        background_padding = 14
+        background_radius = 14
+        color = "on_surface"
+        font_family = ""
         forecast_days = 4
         show_forecast = true
 
     [desktop_widgets.widget.desktop-widget-0000000000000011]
-    box_height = 192.0
-    box_width = 640.0
-    cx = 4784.6328125
-    cy = 605.55078125
+    box_height = 280.0
+    box_width = 820.0
+    cx = 640.0
+    cy = 400.0
     output = "DP-2"
     placement_height = 1440.0
     placement_width = 5120.0
-    rotation = -0.0
+    rotation = 0.0
     type = "clock"
 
         [desktop_widgets.widget.desktop-widget-0000000000000011.settings]
+        background = false
         background_opacity = 0.25
         background_radius = 0
         center_text = true
-        format = "{:%H:%M:%S}"
+        color = "#F5AB4E"
+        font_family = ""
+        format = "{:%H:%M}"
+        shadow = true
 
     [desktop_widgets.widget.desktop-widget-0000000000000013]
     box_height = 92.125
@@ -319,66 +317,94 @@ widget_order = [
         opacity = 1.0
 
     [desktop_widgets.widget.desktop-widget-0000000000000014]
-    box_height = 395.6328125
-    box_width = 535.4609375
-    cx = 4108.189453125
-    cy = 1104.0
+    box_height = 420.0
+    box_width = 620.0
+    cx = 4480.0
+    cy = 720.0
     output = "DP-2"
     placement_height = 1440.0
     placement_width = 5120.0
-    rotation = 0.0023235976696014404
+    rotation = 0.0
     type = "calendar"
 
         [desktop_widgets.widget.desktop-widget-0000000000000014.settings]
+        background = true
+        background_color = "surface"
+        background_opacity = 0.34999999999999998
+        background_padding = 14
+        background_radius = 14
         show_events = true
         show_week_numbers = false
 
     [desktop_widgets.widget.desktop-widget-0000000000000015]
-    box_height = 141.89453125
-    box_width = 257.9609375
-    cx = 1700.92578125
-    cy = 552.103515625
+    box_height = 150.0
+    box_width = 196.0
+    cx = 4270.0
+    cy = 1090.0
     output = "DP-2"
     placement_height = 1440.0
     placement_width = 5120.0
-    rotation = 0.023104190826416016
+    rotation = 0.0
     type = "sysmon"
 
         [desktop_widgets.widget.desktop-widget-0000000000000015.settings]
+        background = true
+        background_color = "surface"
+        background_opacity = 0.34999999999999998
+        background_padding = 14
+        background_radius = 14
+        color = "#F5AB4E"
+        color2 = "primary"
+        display = "graph"
+        show_label = true
         stat = "cpu_usage"
         stat2 = "cpu_temp"
 
     [desktop_widgets.widget.desktop-widget-0000000000000016]
-    box_height = 141.89453125
-    box_width = 257.9609375
-    cx = 1965.609375
-    cy = 562.556640625
+    box_height = 150.0
+    box_width = 196.0
+    cx = 4482.0
+    cy = 1090.0
     output = "DP-2"
     placement_height = 1440.0
     placement_width = 5120.0
-    rotation = 0.057755172252655029
+    rotation = 0.0
     type = "sysmon"
 
         [desktop_widgets.widget.desktop-widget-0000000000000016.settings]
         background = true
-        background_opacity = 0.51000000000000001
+        background_color = "surface"
+        background_opacity = 0.34999999999999998
+        background_padding = 14
+        background_radius = 14
+        color = "#F5AB4E"
+        color2 = "primary"
+        display = "graph"
         show_label = true
         stat = "gpu_usage"
         stat2 = "gpu_temp"
 
     [desktop_widgets.widget.desktop-widget-0000000000000017]
-    box_height = 145.4278564453125
-    box_width = 234.38351440429688
-    cx = 2245.153564453125
-    cy = 581.96185302734375
+    box_height = 150.0
+    box_width = 196.0
+    cx = 4694.0
+    cy = 1090.0
     output = "DP-2"
     placement_height = 1440.0
     placement_width = 5120.0
-    rotation = 0.055135495960712433
+    rotation = 0.0
     type = "sysmon"
 
         [desktop_widgets.widget.desktop-widget-0000000000000017.settings]
-        background_opacity = 0.55000000000000004
+        background = true
+        background_color = "surface"
+        background_opacity = 0.34999999999999998
+        background_padding = 14
+        background_radius = 14
+        color = "#F5AB4E"
+        color2 = "primary"
+        display = "graph"
+        show_label = true
         stat = "ram_pct"
         stat2 = "gpu_vram_used"
 
@@ -386,13 +412,16 @@ widget_order = [
 background_opacity = 0.54999998770654202
 border_width = 1.5
 concave_edge_corners = false
-enabled = true
+enabled = false
 inactive_opacity = 0.79999998211860657
 inactive_scale = 0.7500000111758709
 radius = 40
 reserve_space = false
 show_dots = true
 smart_auto_hide = true
+
+[hot_corners.top_left]
+action = "launcher"
 
 [idle]
 behavior_order = [ "lock", "screen-off", "lock-and-suspend" ]
@@ -416,8 +445,8 @@ behavior_order = [ "lock", "screen-off", "lock-and-suspend" ]
 auto_locate = true
 
 [lockscreen]
-blur_intensity = 0.14999999664723873
-tint_intensity = 0.14999999664723873
+blur_intensity = 0.40000000000000002
+tint_intensity = 0.25
 
 [lockscreen_widgets]
 enabled = true
@@ -475,7 +504,7 @@ widget_order = [
     type = "login_box"
 
         [lockscreen_widgets.widget."lockscreen-login-box@DP-5".settings]
-        background_color = "surface_variant"
+        background_color = "surface_container"
         background_opacity = 0.88
         background_radius = 12.0
         center_password_text = false
@@ -502,7 +531,7 @@ widget_order = [
     type = "login_box"
 
         [lockscreen_widgets.widget."lockscreen-login-box@FALLBACK".settings]
-        background_color = "surface_variant"
+        background_color = "surface_container"
         background_opacity = 0.88
         background_radius = 12.0
         center_password_text = false
@@ -732,16 +761,10 @@ widget_order = [
         background_opacity = 0.25
         background_padding = 10
         background_radius = 12
-        device = "output"
-        fill_color = "primary"
-        font_family = "Iosevka Extralight"
-        glyph = ""
+        font_family = ""
         hide_when_no_media = false
         layout = "horizontal"
-        scroll_step = 5
         shadow = false
-        show_device = true
-        track_color = "on_surface_variant"
 
     [lockscreen_widgets.widget.lockscreen-widget-000000000000000f]
     box_height = 192.0
@@ -759,23 +782,26 @@ widget_order = [
         center_text = false
         clock_style = "digital"
         color = "on_surface"
-        font_family = "Iosevka Heavy"
+        font_family = "Rubik Black"
         format = "{:%H:%M:%S}"
         shadow = true
 
 [notification]
-background_opacity = 0.54999998770654202
-border = false
-offset_y = 10
+background_opacity = 0.84999999999999998
+border = true
+border_color = "outline_variant"
+border_width = 1
+offset_y = 20
 position = "top_center"
 
 [osd]
-background_opacity = 0.44999998994171619
-border = false
+background_opacity = 0.84999999999999998
+border = true
+border_color = "outline_variant"
+border_width = 1
 offset_y = 50
-
-[plugin_settings."alexander/game-launcher"]
-browser_placement = "attached"
+position = "bottom_center"
+position_vertical = "bottom_center"
 
 [plugin_settings."noctalia/screen_recorder"]
 audio_codec = "flac"
@@ -794,18 +820,19 @@ auto_update = "official"
 enabled = [ "pozzoo/hassio", "yuuto/calculator", "noctalia/screen_recorder", "weinguyen/procmon", "noctalia/wallhaven" ]
 
 [shell]
-app_icon_color = "secondary"
+app_icon_color = "primary"
 avatar_path = "/home/sree/.face"
+corner_radius_scale = 0.69999999999999996
 date_format = "%d/%m/%Y"
-font_family = "Comfortaa Medium"
+font_family = "Figtree"
 launch_apps_as_systemd_services = true
 password_style = "random"
 polkit_agent = true
 screen_time_enabled = true
 settings_window_translucent = true
+umbriel_audio_provider_enabled = true
 umbriel_overview_close_on_launch_enabled = true
 umbriel_overview_type_to_launch_enabled = false
-umbriel_audio_provider_enabled = true
 
     [shell.animation]
     speed = 1.2500000186264515
@@ -813,22 +840,25 @@ umbriel_audio_provider_enabled = true
     [shell.greeter_sync]
     auto_sync = true
 
-    [shell.launcher.providers.emoji]
-    global = false
+    [shell.launcher]
+    width = 680
 
-    [shell.launcher.providers.session]
-    global = true
+        [shell.launcher.providers.emoji]
+        global = false
 
-    [shell.launcher.providers.wallpaper]
-    global = false
+        [shell.launcher.providers.session]
+        global = true
 
-    [shell.launcher.providers.windows]
-    global = true
+        [shell.launcher.providers.wallpaper]
+        global = false
+
+        [shell.launcher.providers.windows]
+        global = true
 
     [shell.panel]
     clipboard_position = "auto"
     control_center_placement = "floating"
-    list_item_background = true
+    list_item_background = false
     open_near_click_clipboard = true
     open_near_click_control_center = true
     open_near_click_wallpaper = true
@@ -836,23 +866,29 @@ umbriel_audio_provider_enabled = true
 
     [shell.screenshot]
     directory = "/home/sree/Pictures/Screenshots"
+    pipe_command = "cat >/dev/null; noctalia msg notification-show Screenshot \"Copied to clipboard\""
+    pipe_to_command = true
+    save_to_file = false
 
     [shell.session]
     grid = true
+
+    [shell.shadow]
+    alpha = 0.40000000000000002
 
     [shell.window_switcher]
     mru = true
 
 [theme]
-builtin = "Dracula"
+builtin = "Eldritch"
 community_palette = "Ayu Red"
 mode = "dark"
-pure_black_dark = true
+pure_black_dark = false
 source = "wallpaper"
-wallpaper_scheme = "vibrant"
+wallpaper_scheme = "soft"
 
     [theme.templates]
-    builtin_ids = [ "btop", "gtk3", "gtk4", "hyprland", "kcolorscheme", "kitty", "qt", "starship" ]
+    builtin_ids = [ "btop", "gtk3", "gtk4", "hyprland", "kcolorscheme", "kitty", "qt", "starship", "umbriel" ]
     community_ids = [
         "claude-code",
         "opencode",
@@ -873,6 +909,8 @@ wallpaper_scheme = "vibrant"
         "hyprtoolkit",
         "bat",
         "fzf",
+        "starship",
+        "superfile",
         "yazi"
     ]
 
@@ -880,13 +918,13 @@ wallpaper_scheme = "vibrant"
 directory = "/home/sree/Pictures/Wallpapers"
 
     [wallpaper.default]
-    path = "/home/sree/Pictures/Wallpapers/Glitched Ronin.png"
+    path = "/home/sree/Pictures/Wallpapers/aishot-2697.jpg"
 
     [wallpaper.last]
-    path = "/home/sree/Pictures/Wallpapers/Glitched Ronin.png"
+    path = "/home/sree/Pictures/Wallpapers/aishot-2697.jpg"
 
     [wallpaper.monitors.DP-2]
-    path = "/home/sree/Pictures/Wallpapers/Glitched Ronin.png"
+    path = "/home/sree/Pictures/Wallpapers/aishot-2697.jpg"
 
     [wallpaper.monitors.DP-5]
     path = "/home/sree/Pictures/Wallpapers/Arcane S1 V Fighting.jpg"
@@ -934,14 +972,13 @@ stat = "gpu_temp"
 
 [widget.media]
 hide_when_no_media = true
+peek = true
+rotate_album_art = true
 show_progress = true
 title_scroll = "on_hover"
 
 [widget.recorder]
 type = "noctalia/screen_recorder:recorder"
-
-[widget.special-workspaces]
-type = "jamesfeeder/special-workspaces:special-workspaces"
 
 [widget.status]
 type = "pozzoo/hassio:status"
@@ -951,15 +988,17 @@ stat = "gpu_usage"
 
 [widget.tray]
 capsule = true
-capsule_border = "tertiary"
-capsule_fill = "on_tertiary"
-capsule_foreground = "secondary"
+capsule_border = "outline_variant"
+capsule_fill = "surface_container_high"
+capsule_foreground = "on_surface"
 
 [widget.volume]
-capsule = true
-capsule_border = "primary"
-capsule_fill = "on_secondary"
-capsule_foreground = "secondary"
+capsule = false
+capsule_border = "outline_variant"
+capsule_fill = "surface_container_high"
+capsule_foreground = "on_surface"
+peek = true
+peek_delay_ms = 75
 
 [widget.weather]
 show_condition = false
@@ -968,7 +1007,8 @@ show_condition = false
 capsule = false
 capsule_border = "tertiary"
 capsule_fill = "on_tertiary"
-capsule_foreground = "tertiary"
+capsule_foreground = "primary"
+focused_color = "#F5AB4E"
 hide_when_empty = true
 label_source = "name"
 labels_only_when_occupied = true
