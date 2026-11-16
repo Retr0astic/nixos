@@ -13,6 +13,7 @@
       fonts = {
         packages = with pkgs; [
           rubik
+          figtree
           jetbrains-mono
           iosevka
           noto-fonts
