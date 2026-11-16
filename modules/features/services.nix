@@ -58,6 +58,10 @@
       # Used by programs.virt-manager above.
       qemu
       quickemu
+      # Cursor theme named in noctalia-greeter's settings above. The greeter
+      # user has no home-manager profile, so its XCURSOR_PATH only sees
+      # /run/current-system/sw/share/icons.
+      bibata-cursors
     ];
     security.pam.services.greetd.enableGnomeKeyring = true;
     hardware.bluetooth.enable = true;
