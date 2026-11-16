@@ -48,7 +48,7 @@ files = ["noctalia.toml"]                                      # Example: ["~/.c
 # ────────────────────────────────────────────────────────────────────────────
 
 [general]
-autostart = ["noctalia", "spotify", "vesktop", "easyeffects --gapplication-service"] # Commands run once when the session starts
+autostart = ["noctalia", "spotify", "vesktop", "easyeffects --gapplication-service", "bash ~/nixos/modules/umbriel/effects/cursor-fullscreen-guard.sh"] # Commands run once when the session starts
 # mod_key = "Super"                             # Force Super instead of nested-session Alt
 xwayland = true                                 # Requires xwayland-satellite; restart to change
 show_cheatsheet = true                          # Show the keybind overlay on startup
@@ -256,7 +256,7 @@ hide_when_single = true
 enabled = true                                  # Disable blur and release per-output effect buffers
 optimized = true                                # Reuse one cached background blur per output
 passes = 3                                      # Blur passes, 0-8
-radius = 3                                      # Blur radius, 0-100
+radius = 5                                      # Blur radius, 0-100
 noise = 0.02                                    # Noise overlay, 0.0-1.0
 brightness = 0.9                                # 0.0-2.0
 contrast = 0.9                                  # 0.0-2.0
@@ -266,9 +266,9 @@ saturation = 1.1                                # 0.0-2.0
 # Custom window shaders automatically shape the shadow from their output alpha.
 # Shadows stay beneath windows and follow closing snapshots as well.
 enabled = true                                  # Draw shadows behind non-fullscreen windows
-softness = 10                                   # Gaussian softness, 0-200; 0 is a hard edge
-offset_x = 2                                    # Horizontal offset, -200 to 200
-offset_y = 2                                    # Vertical offset, -200 to 200
+softness = 12                                   # Gaussian softness, 0-200; 0 is a hard edge
+offset_x = 0                                    # Horizontal offset, -200 to 200
+offset_y = 3                                    # Vertical offset, -200 to 200
 
 # ──────────────────────────────── Input ─────────────────────────────────────
 # Configure keyboards, pointers, tablets, cursor behavior, and focus policy.
@@ -568,10 +568,10 @@ extent_presets = [0.333, 0.5, 0.667]             # Width and height cycling frac
 # struts reserve edge space unconditionally rather than acting as a gap).
 # Signed logical pixels reserved after panel exclusive zones. Negative values
 # expand the tiled area beyond that edge.
-left = 0                                         # The bar covers this edge. A strut here shows a sliver of the previous column, which steals hover focus
-right = 8
-top = 8
-bottom = 8
+left = 4                                         # The sliver of the previous column is the hover target for scrolling back. Set 0 again if the bar moves to the left edge
+right = 4
+top = 4
+bottom = 4
 
 [layout.scrolling]
 # The strip axis is perpendicular to the output's workspace_axis.
@@ -900,14 +900,14 @@ curve = "easeout"                               # Built-in or registered bezier/
 # Window opening: noise dissolve from the centre with an accent edge
 [animation.windows_in]
 enabled = true
-duration_ms = 480
+duration_ms = 340
 curve = "md3_decel"
 effect = "materialize"
 
 # Window closing: embers sweep off from the left
 [animation.windows_out]
 enabled = true
-duration_ms = 520
+duration_ms = 360
 curve = "easeout"
 effect = "disintegrate"
 
@@ -933,7 +933,7 @@ curve = "spring:1,700"
 enabled = true
 style = "reveal"
 effect = "portal"
-duration_ms = 650
+duration_ms = 460
 curve = "md3_decel"
 
 # Overview opening, closing, and filmstrip movement
@@ -945,7 +945,7 @@ workspace_curve = "spring:0.85,900"
 # Scratchpad show, hide, and backdrop: glitch bands lock into place
 [animation.scratchpad]
 enabled = true
-duration_ms = 380
+duration_ms = 300
 curve = "easeout"
 effect = "glitch"
 dim = 0.6                                       # Matches decoration.dim_special on the Hyprland side
@@ -1013,6 +1013,7 @@ bouncy = { damping = 0.75, stiffness = 650 }   # One soft overshoot
 [effects]
 border = "aurora"                               # Focused window only; fullscreen windows have no border
 screen_cast = "on_air"                          # Red edge glow on an output while it is shared whole
+cursor = "trail"                                # Motion tail. effects/cursor-fullscreen-guard.sh turns it off while a window is fullscreen, to keep direct scanout
 max_fps = 120                                   # Cap frames drawn only for effect animation
 
 # ─────────────────────── Overview and Hot Corners ───────────────────────────
