@@ -65,6 +65,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Native Wayland file manager from the Noctalia team. Its nixpkgs is not
+    # overridden: upstream warns that `follows` changes the hash and misses
+    # noctalia.cachix.org.
+    luciole.url = "github:noctalia-dev/luciole";
+
     lucidglyph = {
       url = "github:maximilionus/lucidglyph";
       flake = false;

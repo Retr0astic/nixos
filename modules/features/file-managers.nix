@@ -1,4 +1,8 @@
-{config, ...}: {
+{
+  config,
+  inputs,
+  ...
+}: {
   # File managers, their archive handlers, and the shared menu definition
   # that makes Dolphin's "Open With" list match the rest of the session.
   #
@@ -24,6 +28,11 @@
   };
 
   flake.modules.homeManager.file-managers = {pkgs, ...}: {
+    # Luciole needs GVfs for trash and remote folders. The `services` aspect
+    # enables it (modules/features/services.nix).
+    imports = [inputs.luciole.homeModules.default];
+    programs.luciole.enable = true;
+
     home.packages = with pkgs; [
       nautilus
       kdePackages.dolphin
