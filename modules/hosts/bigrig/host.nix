@@ -16,6 +16,8 @@
     # to.
     users.users.sree.openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJj+EmkhR8opwF5DsQlGtjeZh5aM3BoX2GKszpbY9bfu sree2399@gmail.com"
+      # Termius on the phone.
+      "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBCYuAkWuKIhc8mBSuAJJ+MvknK93Vtc9ey/cCgLVYuvTERs/JBQKbsyXNuAJaUZ4K+cHY9pDBP6QbAN3BQerMDA= termius"
     ];
 
     # Matches the old system exactly (`id sree`, `id vicky`, /etc/subuid,
