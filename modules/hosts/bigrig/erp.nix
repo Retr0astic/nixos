@@ -9,7 +9,11 @@
 # not move an existing user, so the 1002 -> 1003 move ran by hand with
 # usermod/groupmod on 2026-11-11.
 {...}: {
-  flake.modules.nixos.bigrig = {config, ...}: {
+  flake.modules.nixos.bigrig = {
+    config,
+    pkgs,
+    ...
+  }: {
     users.groups.erp.gid = 1003;
     users.users.erp = {
       isNormalUser = true;
@@ -31,6 +35,8 @@
       ];
       # The same keys as sree, written once in host.nix.
       openssh.authorizedKeys.keys = config.users.users.sree.openssh.authorizedKeys.keys;
+      # podman/deploy/launch-check.sh (ERP spec 0064) needs openssl on PATH.
+      packages = [pkgs.openssl];
     };
 
     # ERP_ROOT of install-quadlets.sh: the container logs live here.
