@@ -415,6 +415,7 @@ name = "social"
 # Common keybinds
 "Mod+Escape" = "session-quit"
 "Mod+Ctrl+Escape" = "session-quit"             # Matches the exit key on the Hyprland side
+"Mod+Slash" = "cheatsheet-toggle"                  # Show or hide the keybind cheatsheet
 "Mod+F1" = "window-focus-next"
 "Mod+H" = "window-focus-left"
 "Mod+J" = "window-focus-down"
