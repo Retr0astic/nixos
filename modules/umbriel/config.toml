@@ -685,10 +685,24 @@ border_width = 4
 border_color_focused = "#FF4D4DFF"
 border_color_unfocused = "#FF4D4DFF"
 
-# Unfocused windows lose some colour.
+# Unfocused windows lose some colour and fade a little. This opacity replaces
+# [animation.dim_unfocused], which has no per-window opt-out.
 [[window_rule]]
 match.is_focused = false
 window_effect = "muted"
+opacity = 0.95
+
+# Media windows keep full colour and opacity while unfocused. Browsers report
+# content_type "none" for video, so they need an app_id match.
+[[window_rule]]
+match.app_id = ["^zen$", "^firefox$", "^chromium-browser$", "^mpv$", "^celluloid$", "^vlc$"]
+window_effect = "off"
+opacity = 1.0
+
+[[window_rule]]
+match.content_type = "video"
+window_effect = "off"
+opacity = 1.0
 
 [[window_rule]]
 match.is_dialog = true                          # Matches match.modal on the Hyprland side
@@ -967,7 +981,7 @@ curve = "spring:1,900"
 
 # Unfocused window opacity
 [animation.dim_unfocused]
-enabled = true                                  # Matches decoration.dim_inactive on the Hyprland side
+enabled = false                                 # Off: the unfocused window rule sets opacity, so media can opt out
 duration_ms = 130
 curve = "easeout"
 dim = 0.05                                      # Matches decoration.dim_strength on the Hyprland side
